@@ -1,0 +1,31 @@
+<!--<h1>Home View, Welcome!</h1>-->
+
+<div class="col-md-12">
+    <div ng-show="serverOnline">
+        <h2>
+            <span class="glyphicon glyphicon-ok text-success"></span>
+            Server is online
+        </h2>
+    </div>
+    <div ng-hide="serverOnline">
+        <h2>
+            <span class="glyphicon glyphicon-exclamation-sign text-danger"></span>
+            Server is offline
+        </h2>
+    </div>
+</div>
+
+<div class="col-md-6">
+    <table class="table table-bordered" ng-show="serverOnline">
+        <tbody>
+        <tr><td>Total Articles</td><td>{{ stats.articlesCount }}</td></tr>
+        <tr><td>Matched Articles</td><td>{{ stats.matchedArticlesCount }}</td></tr>
+        <tr><td>Not Matched Articles</td><td>{{ stats.notMatchedArticlesCount }}</td></tr>
+        <tr><td>Last Download</td><td>{{ stats.mostRecentArticleDate | date : "dd-MM-yyyy HH:mm:ss"}}</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="col-md-6" ng-show="serverOnline">
+    <div google-chart chart="articlesChart"></div>
+</div>

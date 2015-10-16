@@ -1,0 +1,21 @@
+<h1>Articles</h1>
+<div>
+    <p><strong>Filters: </strong>&nbsp;
+        <input type="checkbox" ng-model="onlyNotMatched"> Only not matched
+    </p>
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr><td ng-click="sortingCol = 'id'">Id</td><td ng-click="sortingCol = 'title'">Title</td><td ng-click="sortingCol = 'source'">Source</td></tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="a in articles | orderBy:sortingCol | filter: onlyNotMatchedFilter">
+            <td>{{ a.id }}</td>
+            <td>{{ a.title | limitTo : 200 }}</td>
+            <td>{{ a.source }}</td>
+            <td><a href="#/articles/{{a.id}}">Details</a></td>
+            <td><a href="" ng-click="deleteArticle(a)">Delete</a></td>
+            <td><a href="#/articles/match/{{a.id}}">Match</a></td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+    <title>News Application Client</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.min.js"></script>
+    <script src="../bower_components/angular-google-chart/ng-google-chart.js"></script>
+    <script src="js/NewsApp.js"></script>
+    <script src="js/LoginCtrl.js"></script>
+    <script src="js/LogoutCtrl.js"></script>
+    <script src="js/ArticlesCtrl.js"></script>
+    <script src="js/FrontPagesCtrl.js"></script>
+    <script src="js/TestCtrl.js"></script>
+
+</head>
+<body ng-app="NewsApp">
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mynavbar-content">
+                <span style="color: white;" class="glyphicon glyphicon-menu-hamburger"></span>
+            </button>
+            <a class="navbar-brand" href="#">News</a>
+        </div>
+        <div class="collapse navbar-collapse" id="mynavbar-content">
+            <ul class="nav navbar-nav">
+                <li><a href="#/home"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-duplicate"></span> Articles <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/articles/list">List</a></li>
+                        <li><a href="#/articles/download">Download</a></li>
+                    </ul>
+                </li>
+                <li><a href="#/front-pages"><span>Front Pages</span></a></li>
+                <li><a href="#/logout"><span class="glyphicon glyphicon-off"></span> Logout</a></li>
+            </ul>
+            <div id="loading-spinner" class="spinner" style="display: none;">
+                <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"
+                        style="color: #eeeeee;"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--<ol class="breadcrumb">-->
+    <!--<li><a href="#">Home</a></li>-->
+    <!--<li><a href="#">About</a></li>-->
+    <!--<li class="active">Author</li>-->
+<!--</ol>-->
+
+<!-- Partial Views -->
+<div ng-view></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+</body>
+</html>

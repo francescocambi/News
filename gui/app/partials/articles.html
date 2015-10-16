@@ -1,0 +1,15 @@
+<h1>Articles</h1>
+
+<!--<div>-->
+    <!--<label>Progress </label><input type="text" ng-model="progress">-->
+<!--</div>-->
+<br>
+
+<div class="progress">
+    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{progress}}"
+         aria-valuemin="0" aria-valuemax="100" ng-style="{'width': progress+'%'}">
+        {{progress | number : 0 }}%
+    </div>
+</div>
+
+<button type="button" class="btn btn-primary" ng-click="beginDownload()">Download Articles</button>

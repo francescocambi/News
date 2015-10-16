@@ -1,0 +1,13 @@
+<div style="width: 500px; margin: auto; padding: 20px; padding-top: 5px; border: solid 1px #616161; background: #f5f5f5; border-radius: 10px;">
+    <h1 style="text-align: center;"><span class="glyphicon glyphicon-lock text-warning" style="font-size: 50px;"></span> &nbsp;Private Area</h1>
+    <hr>
+    <input type="text" class="form-control input-lg" placeholder="Username" aria-describedby="username" ng-model="username">
+    <br>
+    <input type="password" class="form-control input-lg" placeholder="Password" aria-describedby="password" ng-model="password">
+    <br>
+    <button type="button" class="btn btn-primary" style="width: 100%;" ng-click="doLogin(username, password)">Confirm</button>
+    <hr>
+    <div class="alert alert-danger" ng-show="errorMessage">
+        {{ errorMessage }}
+    </div>
+</div>

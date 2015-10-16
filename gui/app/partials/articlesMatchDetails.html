@@ -1,0 +1,50 @@
+<h3>Cosine <div class="progress">
+    <div class="progress-bar"
+         ng-class="similarityProgressBarColor(matchingArticle.similarities.cosine)"
+         role="progressbar" aria-valuenow="{{matchingArticle.similarities.cosine*100}}"
+         aria-valuemin="0" aria-valuemax="100"
+         ng-style="{'width': matchingArticle.similarities.cosine*100+'%'}">
+
+        {{ matchingArticle.similarities.cosine*100 | number : 0 }}%
+    </div>
+</div></h3>
+<h3>Jaccard
+    <div class="progress">
+        <div class="progress-bar"
+             ng-class="similarityProgressBarColor(matchingArticle.similarities.jaccard+0.2)"
+             role="progressbar" aria-valuenow="{{matchingArticle.similarities.jaccard*100}}"
+             aria-valuemin="0" aria-valuemax="100"
+             ng-style="{'width': matchingArticle.similarities.jaccard*100+'%'}">
+
+            {{ matchingArticle.similarities.jaccard*100 | number : 0 }}%
+        </div>
+    </div>
+</h3>
+
+<div role="button" class="btn btn-primary col-xs-12 col-md-12" style="margin-bottom: 20px;" ng-click="matchArticle(currentArticle.id, matchingArticle.article.id)">Match</div>
+<br><br>
+<div class="col-md-6">
+    <div class="panel panel-default">
+        <div class="panel-heading">From {{currentArticle.source}}</div>
+        <h1>
+            {{currentArticle.title}}
+        </h1>
+        <p>
+            {{currentArticle.description}}
+        </p>
+    </div>
+    <p>
+        {{currentArticle.body}}
+    </p>
+</div>
+<div class="col-md-6">
+    <div class="panel panel-default">
+        <div class="panel-heading">From {{matchingArticle.article.source}}</div>
+        <h1 ng-bind-html="highlightedTitle | to_trusted">
+        </h1>
+        <p ng-bind-html="highlightedDescription | to_trusted">
+        </p>
+    </div>
+    <p ng-bind-html="highlightedBody | to_trusted">
+    </p>
+</div>

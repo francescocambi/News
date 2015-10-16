@@ -1,0 +1,23 @@
+<h1>Front Pages</h1>
+<hr>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <td>Id</td>
+        <td>Timestamp</td>
+        <td>Newspaper</td>
+        <td></td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="frontpage in frontpages">
+        <td>{{ frontpage.id }}</td>
+        <td>{{ frontpage.timestamp | date : "dd-MM-yyyy HH:mm:ss"}}</td>
+        <td>{{ frontpage.newspaper | NewspaperName }}</td>
+        <td>
+            <a href="#/front-pages/{{ frontpage.id }}">Details</a>
+        </td>
+    </tr>
+    </tbody>
+
+</table>
