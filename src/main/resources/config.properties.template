@@ -1,0 +1,10 @@
+# Http Server Properties
+BIND_URI=https://localhost:8000
+GUI_APP_PATH=/path/to/gui
+FINE_LOGGING=true
+
+# Persistence Unit Properties
+PERSISTENCE_UNIT=it.fcambi.news.jpa.some...
+
+# Scheduled Tasks
+HOURLY_ARTICLE_DOWNLOAD=true
