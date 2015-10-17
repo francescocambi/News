@@ -1,25 +1,31 @@
 package it.fcambi.news.metrics;
 
 /**
- * Created by Francesco on 30/09/15.
+ * Created by Francesco on 16/10/15.
  */
-public class JaccardSimilarity implements Metric {
+public class TanimotoSimilarity implements Metric {
 
+    @Override
     public double compute(int[] a, int[] b) {
         if (a.length != b.length)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Vectors must have same dimension.");
 
-        double intersection = 0;
-        for(int i=0; i < a.length; i++)
-            if ( (a[i] > 0 && b[i] > 0)
-                    || (a[i]==0 && b[i]==0) )
-                intersection++;
+        double scalar = 0;
+        double a_norm = 0;
+        double b_norm = 0;
+        for (int i=0; i < a.length; i++) {
+            scalar += a[i]*b[i];
+            a_norm += a[i]*a[i];
+            b_norm += b[i]*b[i];
+        }
 
-        return intersection/a.length;
+        return scalar/(a_norm+b_norm-scalar);
+
     }
 
+    @Override
     public String getName() {
-        return "jaccard";
+        return "tanimoto";
     }
 
     @Override

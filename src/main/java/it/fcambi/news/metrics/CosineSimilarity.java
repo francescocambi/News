@@ -28,6 +28,26 @@ public class CosineSimilarity implements Metric {
     public String getName() {
         return "cosine";
     }
-    
 
+    @Override
+    public int compare(double a, double b) {
+        if (a<b) return -1;
+        if (a>b) return 1;
+        else return 0;
+    }
+
+    @Override
+    public double getMaxValue() {
+        return 1;
+    }
+
+    @Override
+    public double getMinValue() {
+        return 0;
+    }
+
+    @Override
+    public double getThreshold() {
+        return 0.8;
+    }
 }

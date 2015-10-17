@@ -152,4 +152,11 @@ public class Article {
     protected void onUpdate() {
         updated = new Date();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof Article
+        && ((Article) obj).getId() > 0
+        && ((Article) obj).getId() == this.id);
+    }
 }

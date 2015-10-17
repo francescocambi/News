@@ -20,7 +20,7 @@ import java.util.logging.SimpleFormatter;
  */
 public class Application {
 
-    private static EntityManagerFactory emFactory;
+    private static PersistenceManager persistenceManager;
     private static Server httpServer;
     private static PropertyConfig props;
 
@@ -39,7 +39,7 @@ public class Application {
 
         log.info("Initializing Entity Manager factory...");
         log.info("Persistence Unit: "+props.getProp("PERSISTENCE_UNIT"));
-        emFactory = Persistence.createEntityManagerFactory(props.getProp("PERSISTENCE_UNIT"));
+        persistenceManager = new PersistenceManager(props.getProp("PERSISTENCE_UNIT"));
 
         log.info("Starting up Web Services...");
         log.info("Bind url >> "+props.getProp("BIND_URI"));
@@ -51,8 +51,8 @@ public class Application {
             public void run() { Application.tearDown(); }
         });
 
-        log.info("Configuring scheduled tasks...");
         configureScheduledTasks();
+
         log.info(">>> READY! <<<");
 
         try {
@@ -65,15 +65,13 @@ public class Application {
     }
 
     private static void configureScheduledTasks() {
-        if (Boolean.parseBoolean(props.getProp("HOURLY_ARTICLE_DOWNLOAD"))) return;
+        if (!Boolean.parseBoolean(props.getProp("HOURLY_ARTICLE_DOWNLOAD"))) return;
+        log.info("Configuring scheduled tasks...");
         //Execute Article Download task every hour
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        Runnable downloaderTask = new Runnable() {
-            @Override
-            public void run() {
-                log.info("Launching articles download scheduled task");
-                new ArticlesDownloader().downloadArticles();
-            }
+        Runnable downloaderTask = () -> {
+            log.info("Launching articles download scheduled task");
+            new ArticlesDownloader().downloadArticles();
         };
 
         //Compute difference in minutes from now to next o'clock hour
@@ -85,12 +83,12 @@ public class Application {
 
     private static void tearDown() {
         log.info("Shutting Down...");
+        persistenceManager.close();
         httpServer.stop();
-        emFactory.close();
     }
 
     public static EntityManager getEntityManager() {
-        return emFactory.createEntityManager();
+        return persistenceManager.createEntityManager();
     }
 
     public static void setUpLogging() throws IOException {

@@ -38,4 +38,9 @@ public class News {
         return articles;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof News
+        && ((News) obj).getId() == this.id);
+    }
 }
