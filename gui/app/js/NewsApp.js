@@ -27,7 +27,7 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
             'responseError': function (errorResponse) {
                 if (errorResponse.status == 403) {
                     console.log("403 - Session Expired");
-                    $rootScope.sessionErrorMessage = "Session expired or you can't access this area."
+                    $rootScope.sessionErrorMessage = "Session expired or you can't access this area.";
                     $location.path("/login");
                 }
                 return $q.reject(errorResponse);
@@ -169,12 +169,15 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
         };
 
         $scope.updateProgress = function () {
-            $http.get(SERVER_URL+"/crawlers/progress").success(function (progress) {
+            $http.get(SERVER_URL+"/crawlers/progress").then(function (response) {
+                var progress = response.data;
                 console.log("Progress response: "+progress);
                 $scope.progress = progress;
+                $scope.downloadActive = ($scope.progress < 99.9);
+            }, function (response) {
+                console.log(response);
+                $scope.downloadActive = false;
             });
-
-            $scope.downloadActive = ($scope.progress < 99.9);
 
             if ($scope.downloadActive)
                 $timeout($scope.updateProgress, 1000);
