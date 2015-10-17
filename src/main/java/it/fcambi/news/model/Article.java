@@ -153,10 +153,7 @@ public class Article {
         updated = new Date();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof Article
-        && ((Article) obj).getId() > 0
-        && ((Article) obj).getId() == this.id);
+    public boolean equals(Article obj) {
+        return obj.getId() == this.getId();
     }
 }

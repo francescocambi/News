@@ -79,20 +79,13 @@ public class ArticlesDownloader implements ProgressObservable {
 
             for (Article a : page.getArticles()) {
                 List<Article> articles = em.createQuery("select a from Article a " +
-                        "where a.title like concat('%', ?1, '%') and a.source=?2", Article.class)
+                        "where a.title like concat('%', ?1,'%') and a.source=?2 order by a.created desc", Article.class)
                         .setParameter(1, a.getTitle())
                         .setParameter(2, a.getSource())
                         .getResultList();
 
                 if (articles.size() > 0) {
-                    Article article = null;
-                    if (articles.size() > 1) {
-                        Optional<Article> o = articles.stream().max((x, y) -> x.getCreated().compareTo(y.getCreated()));
-                        if (o.isPresent())
-                            article = o.get();
-                    } else if (articles.size() == 1) {
-                        article = articles.get(0);
-                    }
+                    Article article = articles.get(0);
                     // Replace detached article with the attached one
                     page.getArticles().set(page.getArticles().indexOf(a), article);
                     log.log(Level.INFO, "Skipped (exists) " + a.getTitle());
