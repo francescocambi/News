@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class MatchArticlesRequestDTO {
 
     private long articleId;
-    private long matchId;
+    private long newsId;
 
     public long getArticleId() {
         return articleId;
@@ -19,11 +19,11 @@ public class MatchArticlesRequestDTO {
         this.articleId = articleId;
     }
 
-    public long getMatchId() {
-        return matchId;
+    public long getNewsId() {
+        return newsId;
     }
 
-    public void setMatchId(long matchId) {
-        this.matchId = matchId;
+    public void setNewsId(long newsId) {
+        this.newsId = newsId;
     }
 }

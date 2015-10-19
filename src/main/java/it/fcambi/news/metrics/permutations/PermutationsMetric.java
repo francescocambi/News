@@ -5,7 +5,7 @@ package it.fcambi.news.metrics.permutations;
  */
 public interface PermutationsMetric {
 
-    double compute(int[] a, int[] b);
+    double compute(long[] a, long[] b);
     String getName();
 
 }

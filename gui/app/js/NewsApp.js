@@ -72,8 +72,8 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
         });
 
         $routeProvider.when("/articles/match/:id", {
-            templateUrl: "partials/articlesMatchList.html",
-            controller: "articlesCtrl"
+            templateUrl: "partials/newsMatchList.html",
+            controller: "NewsMatchListCtrl"
         });
 
         $routeProvider.when("/articles/match/details/:id-:matchid", {
@@ -145,7 +145,7 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
                         ]
                     }
                 };
-            }).finally(function () { loadingSpinner.end(); });
+            }).finally(loadingSpinner.end());
 
     })
     .controller("articlesDownloadCtrl", function ($scope, $http, SERVER_URL, $timeout) {

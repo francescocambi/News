@@ -1,5 +1,6 @@
 package it.fcambi.news.matchers;
 
+import it.fcambi.news.MatchingArticle;
 import it.fcambi.news.data.WordVector;
 import it.fcambi.news.filters.StandardizeStringFilter;
 import it.fcambi.news.filters.VectorFilter;
@@ -17,6 +18,8 @@ import java.util.List;
 public class NewsMatcher {
 
     private Article source;
+    private WordVector sourceWordVector;
+    private int[] sourceFrequencies;
     private List<Metric> metrics;
 
     public NewsMatcher() {
@@ -37,22 +40,22 @@ public class NewsMatcher {
 
     public void setSourceArticle(Article a) {
         this.source = a;
+
+        //Clean source article text and prepare word vector
+        sourceWordVector = new WordVector();
+        sourceWordVector.addStringFilter(new StandardizeStringFilter());
+        sourceWordVector.setSourceText(source.getTitle() + " " + source.getDescription(), "[ ]+");
+        VectorFilter noiseWordFilter = new NoiseWordsVectorFilter();
+        noiseWordFilter.filter(sourceWordVector);
+        sourceFrequencies = sourceWordVector.getWordsFrequencyIn(source.getBody(), "[ ]+");
     }
 
     public List<MatchingArticleDTO> match(List<Article> articles) {
-        //Clean source article text
-        WordVector w = new WordVector();
-        w.addStringFilter(new StandardizeStringFilter());
-        w.setSourceText(source.getTitle()+" "+source.getDescription(), "[ ]+");
-        VectorFilter noiseWordsFilter = new NoiseWordsVectorFilter();
-        noiseWordsFilter.filter(w);
-
-        int[] sourceFrequencies = w.getWordsFrequencyIn(source.getBody(), "[ ]+");
 
         List<MatchingArticleDTO> result = new LinkedList<>();
         //Iterates over other articles
         for (Article a: articles) {
-            int[] matchingFrequencies = w.getWordsFrequencyIn(a.getBody(), "[ ]+");
+            int[] matchingFrequencies = sourceWordVector.getWordsFrequencyIn(a.getBody(), "[ ]+");
             //Compute similarity and prepare map
             MatchingArticleDTO item = new MatchingArticleDTO();
             item.setArticle(a);
@@ -63,6 +66,19 @@ public class NewsMatcher {
         }
 
         return result;
+    }
+
+    public MatchingArticleDTO match(Article a) {
+
+        int[] matchingFrequencies = sourceWordVector.getWordsFrequencyIn(a.getBody(), "[ ]+");
+        MatchingArticleDTO matching = new MatchingArticleDTO();
+        matching.setArticle(a);
+        this.metrics.forEach(metric -> matching.putSimilarity(
+                metric.getName(),
+                metric.compute(sourceFrequencies, matchingFrequencies)
+        ));
+
+        return matching;
     }
 
 

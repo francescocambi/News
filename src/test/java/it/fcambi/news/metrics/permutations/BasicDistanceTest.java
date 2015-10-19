@@ -10,8 +10,8 @@ public class BasicDistanceTest {
 
     @Test
     public void testCompute() {
-        int[] a = { 5,6,3,4,2,9 };
-        int[] b = { 18,3,21,4,6,5,2,1 };
+        long[] a = { 5,6,3,4,2,9 };
+        long[] b = { 18,3,21,4,6,5,2,1 };
 
         BasicDistance d = new BasicDistance();
         assertEquals(4, d.compute(a,b), 0.1);

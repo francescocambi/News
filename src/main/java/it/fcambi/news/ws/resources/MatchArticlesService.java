@@ -26,6 +26,7 @@ public class MatchArticlesService {
     @GET
     @Path("/matching/{id}")
     @Produces("application/json")
+    @Deprecated
     public List<MatchingArticleDTO> getMatchingArticles(@PathParam("id") long articleId) {
         List<MatchingArticleDTO> result = matchingArticles(articleId, -1);
 
@@ -60,36 +61,27 @@ public class MatchArticlesService {
         EntityManager em = Application.getEntityManager();
 
         Article article = em.find(Article.class, m.getArticleId());
-        News n;
-        Article match = null;
 
-        if (m.getMatchId() == 0) {
+        News n;
+        if (m.getNewsId() == 0) {
+            //Create new news
             n = new News();
             n.setDescription(article.getTitle());
         } else {
-
-            match = em.find(Article.class, m.getMatchId());
-
-            if (article.getNews() != null)
-                n = article.getNews();
-            else if (match.getNews() != null)
-                n = match.getNews();
-            else {
-                n = new News();
-                n.setDescription(article.getTitle());
-            }
-            match.setNews(n);
+            //Retrieve existing one
+            n = em.find(News.class, m.getNewsId());
         }
-
+        //Matches article with news
         article.setNews(n);
 
+        //Persist
         em.getTransaction().begin();
-        em.persist(n);
+        if (m.getNewsId() == 0)
+            em.persist(n);
         em.merge(article);
-        if (match != null)
-            em.merge(match);
         em.flush();
         em.getTransaction().commit();
+        em.close();
 
         return Response.status(201).build();
     }

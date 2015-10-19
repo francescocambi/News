@@ -12,9 +12,9 @@
         <tr ng-repeat="a in articles | orderBy:sortingCol | filter: onlyNotMatchedFilter">
             <td>{{ a.id }}</td>
             <td>{{ a.title | limitTo : 200 }}</td>
-            <td>{{ a.source }}</td>
+            <td>{{ a.source | NewspaperName }}</td>
             <td><a href="#/articles/{{a.id}}">Details</a></td>
-            <td><a href="" ng-click="deleteArticle(a)">Delete</a></td>
+            <!--<td><a href="" ng-click="deleteArticle(a)">Delete</a></td>-->
             <td><a href="#/articles/match/{{a.id}}">Match</a></td>
         </tr>
     </tbody>

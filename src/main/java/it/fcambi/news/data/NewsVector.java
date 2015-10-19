@@ -7,22 +7,22 @@ import it.fcambi.news.model.FrontPage;
  */
 public class NewsVector {
 
-    int[] newsIds;
+    long[] newsIds;
 
     public NewsVector(FrontPage page) {
 
         newsIds = page.getArticles().stream()
                 .filter(a -> a.getNews() != null)
-                .mapToInt(a -> a.getNews().getId())
+                .mapToLong(a -> a.getNews().getId())
                 .toArray();
 
     }
 
-    public int[] getNewsIds() {
+    public long[] getNewsIds() {
         return newsIds;
     }
 
-    public void setNewsIds(int[] newsIds) {
+    public void setNewsIds(long[] newsIds) {
         this.newsIds = newsIds;
     }
 }

@@ -51,12 +51,6 @@ angular.module("NewsApp")
             $scope.sortingCol = 0;
         }
 
-        $scope.similarityProgressBarColor = function (val) {
-            if (val < 0.35) return 'progress-bar-danger';
-            if (val < 0.60) return 'progress-bar-warning';
-            else return 'progress-bar-success';
-        }
-
         $scope.prepareText = function () {
             var text = $scope.currentArticle.title+" "+$scope.currentArticle.description+" "+$scope.currentArticle.body;
 
@@ -96,23 +90,6 @@ angular.module("NewsApp")
             return result;
         }
 
-        $scope.matchArticle = function(articleId, matchId) {
-            //if (!confirm("You really want to match these articles?")) return;
-
-            loadingSpinner.begin();
-            $http({
-                url: SERVER_URL+"/matcharticles/match",
-                method: "POST",
-                data: {'articleId': articleId, 'matchId': matchId},
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).success(function (data) {
-                $location.path('/articles/list');
-            }).finally(function () { loadingSpinner.end(); });
-
-        }
-
         $scope.deleteArticle = function (article) {
             if (!confirm("You really want to delete this article?")) return;
             var i = $scope.articles.indexOf(article);
@@ -123,21 +100,6 @@ angular.module("NewsApp")
                 method: "DELETE"
             }).success(function (data) {
                 $scope.articles.splice(i, 1);
-            }).finally(function () { loadingSpinner.end(); });
-        }
-
-        $scope.noMatch = function (articleId) {
-
-            loadingSpinner.begin();
-            $http({
-                url: SERVER_URL+"/matcharticles/match",
-                method: "POST",
-                data: {'articleId': articleId, 'matchId': 0},
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).success(function (data) {
-                $location.path('/articles/list');
             }).finally(function () { loadingSpinner.end(); });
         }
 

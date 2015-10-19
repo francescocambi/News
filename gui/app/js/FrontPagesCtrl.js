@@ -2,13 +2,6 @@
  * Created by Francesco on 12/10/15.
  */
 angular.module("NewsApp")
-.filter("NewspaperName", function () {
-        return function (name) {
-            return name.split("_").map(function (item) {
-                return item.charAt(0).toUpperCase()+item.slice(1).toLowerCase();
-            }).join(" ");
-        }
-    })
     .controller("FrontPagesListCtrl", function ($scope, $http, SERVER_URL, loadingSpinner) {
 
         loadingSpinner.begin();

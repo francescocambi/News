@@ -6,7 +6,7 @@ package it.fcambi.news.metrics.permutations;
 public class BasicDistance implements PermutationsMetric {
 
     @Override
-    public double compute(int[] a, int[] b) {
+    public double compute(long[] a, long[] b) {
         int min = (a.length < b.length) ? a.length : b.length;
         int distance = 0;
 

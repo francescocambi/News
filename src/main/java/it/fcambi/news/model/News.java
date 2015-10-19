@@ -13,7 +13,7 @@ public class News {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -22,7 +22,7 @@ public class News {
     @JsonBackReference
     private List<Article> articles;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
