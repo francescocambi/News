@@ -11,8 +11,7 @@ public class JaccardSimilarity implements Metric {
 
         double intersection = 0;
         for(int i=0; i < a.length; i++)
-            if ( (a[i] > 0 && b[i] > 0)
-                    || (a[i]==0 && b[i]==0) )
+            if ( a[i] > 0 && b[i] > 0)
                 intersection++;
 
         return intersection/a.length;
