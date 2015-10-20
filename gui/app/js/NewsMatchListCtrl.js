@@ -8,11 +8,11 @@ angular.module("NewsApp")
         $http.get(SERVER_URL+"/articles/"+$routeParams['id'])
             .then(function (response) {
                 $scope.currentArticle = response.data;
-            }).finally(loadingSpinner.end());
+            }).finally(function () { loadingSpinner.end(); });
         $http.get(SERVER_URL+"/news/match-article/"+$routeParams['id'])
             .then(function (response) {
                 $scope.newsList = response.data;
-            }).finally(loadingSpinner.end());
+            }).finally(function () { loadingSpinner.end(); });
 
 
         $scope.matchArticleWithNews = function (articleId, newsId) {

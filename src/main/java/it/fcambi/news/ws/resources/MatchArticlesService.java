@@ -59,6 +59,7 @@ public class MatchArticlesService {
 
 //        System.out.println("matchArticles("+m.getArticleId()+", "+m.getMatchId()+")");
         EntityManager em = Application.getEntityManager();
+        em.getTransaction().begin();
 
         Article article = em.find(Article.class, m.getArticleId());
 
@@ -71,11 +72,17 @@ public class MatchArticlesService {
             //Retrieve existing one
             n = em.find(News.class, m.getNewsId());
         }
+        //Checks that article's old news doesn't become orphan
+        if (article.getNews() != null && article.getNews().getArticles().size() < 2) {
+            // remove orphan
+            em.remove(article.getNews());
+
+        }
+
         //Matches article with news
         article.setNews(n);
 
         //Persist
-        em.getTransaction().begin();
         if (m.getNewsId() == 0)
             em.persist(n);
         em.merge(article);
@@ -93,7 +100,7 @@ public class MatchArticlesService {
 
         List<Article> articles;
         if (matchId < 0) {
-            articles = em.createQuery("select a from Article a where a.source <> ?1")
+            articles = em.createQuery("select a from Article a where a.source <> ?1", Article.class)
                     .setParameter(1, source.getSource())
                     .getResultList();
         } else {

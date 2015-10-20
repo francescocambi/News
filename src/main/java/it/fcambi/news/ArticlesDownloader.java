@@ -79,9 +79,10 @@ public class ArticlesDownloader implements ProgressObservable {
 
             for (Article a : page.getArticles()) {
                 List<Article> articles = em.createQuery("select a from Article a " +
-                        "where a.title like concat('%', ?1,'%') and a.source=?2 order by a.created desc", Article.class)
+                        "where (a.title like concat('%', ?1,'%') or a.sourceUrl=?2) and a.source=?3 order by a.created desc", Article.class)
                         .setParameter(1, a.getTitle())
-                        .setParameter(2, a.getSource())
+                        .setParameter(2, a.getSourceUrl())
+                        .setParameter(3, a.getSource())
                         .getResultList();
 
                 if (articles.size() > 0) {

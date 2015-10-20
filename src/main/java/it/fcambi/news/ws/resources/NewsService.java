@@ -55,14 +55,21 @@ public class NewsService {
 
         results.sort( (a, b) ->  {
             // If got NullPointer exception there are orphan news
-            double d = a.getMeanSimilarities().get("cosine")+a.getMeanSimilarities().get("jaccard")
-                    -b.getMeanSimilarities().get("cosine")-b.getMeanSimilarities().get("jaccard");
-
-            if (d > 0) return -1;
-            else if (d < 0) return 1;
-            else return 0;
-
+            try {
+                if (a.getMeanSimilarities().get("cosine") + a.getMeanSimilarities().get("jaccard") >
+                        b.getMeanSimilarities().get("cosine") + b.getMeanSimilarities().get("jaccard"))
+                    return -1;
+                else if (a.getMeanSimilarities().get("cosine") + a.getMeanSimilarities().get("jaccard") <
+                        b.getMeanSimilarities().get("cosine") + b.getMeanSimilarities().get("jaccard"))
+                    return 1;
+                else
+                    return 0;
+            } catch (NullPointerException e) {
+                return 0;
+            }
         });
+
+        em.close();
 
         if (results.size() > 50)
             return results.subList(0, 50);
