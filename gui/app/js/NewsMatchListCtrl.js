@@ -12,6 +12,7 @@ angular.module("NewsApp")
         $http.get(SERVER_URL+"/news/match-article/"+$routeParams['id'])
             .then(function (response) {
                 $scope.newsList = response.data;
+                $scope.similarityKey = Object.keys(response.data[0].similarities)[0];
             }).finally(function () { loadingSpinner.end(); });
 
 
@@ -26,7 +27,7 @@ angular.module("NewsApp")
                 }
             }).then(function (response) {
                 $location.path('/articles/list');
-            }).finally(loadingSpinner.end());
+            }).finally(function () {loadingSpinner.end() });
         };
 
         $scope.noMatch = function (articleId) {

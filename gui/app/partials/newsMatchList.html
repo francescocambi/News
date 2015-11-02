@@ -6,8 +6,7 @@
     <thead>
     <tr>
         <th style="width: 44px;">Id</th>
-        <th style="width: 101px;">Cosine</th>
-        <th style="width: 101px;">Jaccard</th>
+        <th style="width: 101px;">Similarity</th>
         <th colspan="2">Description</th>
         <th style="width: 130px;"></th>
     </tr>
@@ -17,19 +16,10 @@
         <td>{{ n.news.id }}</td>
         <td>
             <div class="progress" style="width: 100px;">
-                <div class="progress-bar" ng-class="n.meanSimilarities.cosine | toProgressColor" role="progressbar"
-                     aria-valuenow="{{n.meanSimilarities.cosine*100}}"
-                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': n.meanSimilarities.cosine*100+'%'}">
-                    {{n.meanSimilarities.cosine*100 | number : 0 }}%
-                </div>
-            </div>
-        </td>
-        <td>
-            <div class="progress" style="width: 100px;">
-                <div class="progress-bar" ng-class="n.meanSimilarities.jaccard+0.2 | toProgressColor" role="progressbar"
-                     aria-valuenow="{{n.meanSimilarities.jaccard*100}}"
-                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': n.meanSimilarities.jaccard*100+'%'}">
-                    {{n.meanSimilarities.jaccard*100 | number : 0 }}%
+                <div class="progress-bar" ng-class="n.similarities[similarityKey] | toProgressColor" role="progressbar"
+                     aria-valuenow="{{n.similarities[similarityKey]*100}}"
+                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': n.similarities[similarityKey]*100+'%'}">
+                    {{n.similarities[similarityKey]*100 | number : 0 }}%
                 </div>
             </div>
         </td>
@@ -44,7 +34,7 @@
                     ng-click="matchArticleWithNews(currentArticle.id, n.news.id)">Match</button>
         </td>
     </tr>
-    <tr ng-repeat="article in n.articles" ng-repeat-end ng-show="n.showArticles" style="background-color: rgb(249,249,249);">
+    <tr ng-repeat="article in n.matchingArticles" ng-repeat-end ng-show="n.showArticles" style="background-color: rgb(249,249,249);">
         <td><span class="glyphicon glyphicon-arrow-right"></span> {{ article.article.id }}</td>
         <td>
             <div class="progress" style="width: 100px;">
@@ -52,15 +42,6 @@
                      aria-valuenow="{{article.similarities.cosine*100}}"
                      aria-valuemin="0" aria-valuemax="100" ng-style="{'width': article.similarities.cosine*100+'%'}">
                     {{article.similarities.cosine*100 | number : 0 }}%
-                </div>
-            </div>
-        </td>
-        <td>
-            <div class="progress" style="width: 100px;">
-                <div class="progress-bar" ng-class="article.similarities.jaccard+0.2 | toProgressColor" role="progressbar"
-                     aria-valuenow="{{article.similarities.jaccard*100}}"
-                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': article.similarities.jaccard*100+'%'}">
-                    {{article.similarities.jaccard*100 | number : 0 }}%
                 </div>
             </div>
         </td>

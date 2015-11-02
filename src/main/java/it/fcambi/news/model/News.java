@@ -38,6 +38,10 @@ public class News {
         return articles;
     }
 
+    public void setArticles(List<Article> articles) {
+        this.articles = articles;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof News

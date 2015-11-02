@@ -4,8 +4,8 @@
 angular.module("NewsApp")
     .filter("toProgressColor", function () {
         return function (val) {
-            if (val < 0.35) return 'progress-bar-danger';
-            if (val < 0.60) return 'progress-bar-warning';
+            if (val < 0.25) return 'progress-bar-danger';
+            if (val < 0.47) return 'progress-bar-warning';
             else return 'progress-bar-success';
         }
     })

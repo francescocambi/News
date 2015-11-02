@@ -8,10 +8,15 @@
     <title>News Application Client</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <!--<link href="../bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">-->
+    <!--<link href="../bower_components/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet">-->
     <link href="style.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.min.js"></script>
+    <!--<script src="../bower_components/angular/angular.js"></script>-->
+    <!--<script src="../bower_components/angular-route/angular-route.js"></script>-->
+    <!--<script src="../bower_components/angular-cookies/angular-cookies.js"></script>-->
     <script src="../bower_components/angular-google-chart/ng-google-chart.js"></script>
     <script src="js/NewsApp.js"></script>
     <script src="js/filters.js"></script>
@@ -44,7 +49,8 @@
                         <li><a href="#/articles/download">Download</a></li>
                     </ul>
                 </li>
-                <li><a href="#/front-pages"><span>Front Pages</span></a></li>
+                <li><a href="#/front-pages">
+                    <span class="glyphicon glyphicon-th-list"></span> Front Pages</a></li>
                 <li><a href="#/logout"><span class="glyphicon glyphicon-off"></span> Logout</a></li>
             </ul>
             <div id="loading-spinner" class="spinner" style="display: none;">

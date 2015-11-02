@@ -24,6 +24,24 @@ public class TanimotoSimilarity implements Metric {
     }
 
     @Override
+    public double compute(double[] a, double[] b) {
+        if (a.length != b.length)
+            throw new IllegalArgumentException("Vectors must have same dimension.");
+
+        double scalar = 0;
+        double a_norm = 0;
+        double b_norm = 0;
+        for (int i=0; i < a.length; i++) {
+            scalar += a[i]*b[i];
+            a_norm += a[i]*a[i];
+            b_norm += b[i]*b[i];
+        }
+
+        return scalar/(a_norm+b_norm-scalar);
+
+    }
+
+    @Override
     public String getName() {
         return "tanimoto";
     }

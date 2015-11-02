@@ -25,6 +25,26 @@ public class CosineSimilarity implements Metric {
 
     }
 
+    public double compute(double[] a, double[] b) {
+
+        if (a.length != b.length)
+            throw new IllegalArgumentException();
+
+        double den = 0;
+        double suma = 0;
+        double sumb = 0;
+        for (int i=0; i<a.length; i++) {
+            den += a[i]*b[i];
+            suma += a[i]*a[i];
+            sumb += b[i]*b[i];
+        }
+
+        if (suma*sumb == 0) return 0.0;
+
+        return den/(Math.sqrt(suma)*Math.sqrt(sumb));
+
+    }
+
     public String getName() {
         return "cosine";
     }
@@ -48,6 +68,6 @@ public class CosineSimilarity implements Metric {
 
     @Override
     public double getThreshold() {
-        return 0.8;
+        return 0.47;
     }
 }

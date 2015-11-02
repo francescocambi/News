@@ -17,6 +17,18 @@ public class JaccardSimilarity implements Metric {
         return intersection/a.length;
     }
 
+    public double compute(double[] a, double[] b) {
+        if (a.length != b.length)
+            throw new IllegalArgumentException();
+
+        double intersection = 0;
+        for(int i=0; i < a.length; i++)
+            if ( a[i] > 0.0 && b[i] > 0.0)
+                intersection++;
+
+        return intersection/a.length;
+    }
+
     public String getName() {
         return "jaccard";
     }

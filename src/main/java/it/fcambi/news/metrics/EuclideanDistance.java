@@ -21,6 +21,21 @@ public class EuclideanDistance implements Metric {
     }
 
     @Override
+    public double compute(double[] a, double[] b) {
+        if (a.length != b.length)
+            throw new IllegalArgumentException("Vectors must have same dimension.");
+
+        double distance = 0;
+        for (int i=0; i<a.length; i++) {
+            distance += (a[i]-b[i])*(a[i]-b[i]);
+        }
+
+        distance = Math.sqrt(distance);
+
+        return distance;
+    }
+
+    @Override
     public String getName() {
         return "euclidean";
     }

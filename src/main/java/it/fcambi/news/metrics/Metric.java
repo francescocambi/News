@@ -6,6 +6,7 @@ package it.fcambi.news.metrics;
 public interface Metric {
 
     double compute(int[] a, int[] b);
+    double compute(double[] a, double[] b);
     String getName();
     int compare(double a, double b);
     double getMaxValue();

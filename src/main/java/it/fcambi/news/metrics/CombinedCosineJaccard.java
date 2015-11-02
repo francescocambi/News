@@ -14,6 +14,11 @@ public class CombinedCosineJaccard implements Metric {
     }
 
     @Override
+    public double compute(double[] a, double[] b) {
+        return cosine.compute(a, b)+jaccard.compute(a, b);
+    }
+
+    @Override
     public String getName() {
         return "cosine_jaccard";
     }

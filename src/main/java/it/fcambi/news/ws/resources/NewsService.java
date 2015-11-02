@@ -1,12 +1,16 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
-import it.fcambi.news.matchers.NewsMatcher;
+import it.fcambi.news.clustering.*;
+import it.fcambi.news.model.MatchingArticle;
+import it.fcambi.news.data.TFIDFWordVectorFactory;
+import it.fcambi.news.filters.NoiseWordsTextFilter;
+import it.fcambi.news.filters.StemmerTextFilter;
 import it.fcambi.news.metrics.CosineSimilarity;
-import it.fcambi.news.metrics.JaccardSimilarity;
+import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.Article;
-import it.fcambi.news.model.News;
-import it.fcambi.news.ws.resources.dto.MatchingNews;
+import it.fcambi.news.model.TFDictionary;
+import it.fcambi.news.model.MatchingNews;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -16,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Francesco on 18/10/15.
@@ -32,50 +37,31 @@ public class NewsService {
 
         //TODO Surround NoResult exception
         Article sourceArticle = em.find(Article.class, articleId);
+        List<Article> targetArticles = new ArrayList<>();
+        targetArticles.add(sourceArticle);
 
-        List<News> news = em.createQuery("select n from News n", News.class).getResultList();
+        List<Article> articles = em.createQuery("select a from Article a where a.news is not null", Article.class).getResultList();
 
-        NewsMatcher matcher = new NewsMatcher();
-        matcher.setSourceArticle(sourceArticle);
-        matcher.addMetric(new CosineSimilarity());
-        matcher.addMetric(new JaccardSimilarity());
+        Metric cosine = new CosineSimilarity();
 
-        List<MatchingNews> results = new ArrayList<>();
+        MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
+                .addMetric(cosine)
+                .addTextFilter(new NoiseWordsTextFilter())
+                .addTextFilter(new StemmerTextFilter())
+                .setWordVectorFactory(new TFIDFWordVectorFactory(em.find(TFDictionary.class, "italian_stemmed")));
+        MatchMapGenerator generator = new MatchMapGenerator(conf);
 
-        // foreach news
-        news.forEach(n -> {
-            MatchingNews matchingNews = new MatchingNews();
-            matchingNews.setNews(n);
+        Map<Article, List<MatchingArticle>> matchMap = generator.generateMap(targetArticles, articles);
 
-            // foreach article related to news n
-            n.getArticles().forEach(article -> matchingNews.addMatchingArticle(matcher.match(article)));
-
-            results.add(matchingNews);
-        });
-
-        results.sort( (a, b) ->  {
-            // If got NullPointer exception there are orphan news
-            try {
-                if (a.getMeanSimilarities().get("cosine") + a.getMeanSimilarities().get("jaccard") >
-                        b.getMeanSimilarities().get("cosine") + b.getMeanSimilarities().get("jaccard"))
-                    return -1;
-                else if (a.getMeanSimilarities().get("cosine") + a.getMeanSimilarities().get("jaccard") <
-                        b.getMeanSimilarities().get("cosine") + b.getMeanSimilarities().get("jaccard"))
-                    return 1;
-                else
-                    return 0;
-            } catch (NullPointerException e) {
-                return 0;
-            }
-        });
+        Matcher matcher = new HighestMeanMatcher();
+        Map<Article, List<MatchingNews>> clusterMap = matcher.getRankedList(cosine, matchMap, 0.47);
 
         em.close();
 
-        if (results.size() > 50)
-            return results.subList(0, 50);
+        if (clusterMap.get(sourceArticle).size() > 50)
+            return clusterMap.get(sourceArticle).subList(0, 50);
         else
-            return results;
-
+            return clusterMap.get(sourceArticle);
     }
 
 }
