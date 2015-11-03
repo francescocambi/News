@@ -1,7 +1,6 @@
 package it.fcambi.news.ws.server;
 
-import it.fcambi.news.Application;
-import it.fcambi.news.PropertyConfig;
+import it.fcambi.news.*;
 import it.fcambi.news.ws.auth.SecurityFilter;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -43,32 +42,20 @@ public class Server {
         URI BASE_URI = UriBuilder.fromUri(props.getProp("BIND_URI")).build();
 
         if (!sslContext.validateConfiguration(true)) {
-            log.severe(">>> SSL CONFIGURATION NOT VALID <<<");
+            log.severe(" !!! Invalid SSL Configuration");
         } else {
-            log.info(">>> SSL CONFIGURATION VALID <<<");
+            log.info("SSL Configuration OK");
         }
 
         SSLEngineConfigurator sslConf = new SSLEngineConfigurator(sslContext, false, false, false);
         server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc, true, sslConf);
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler(props.getProp("GUI_APP_PATH")), "/gui");
 
+        log.info("Web Services initialization completed.");
+
         // Set up web services logger
-        if (Boolean.parseBoolean(props.getProp("FINE_LOGGING"))) {
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            consoleHandler.setLevel(Level.ALL);
-            consoleHandler.setFormatter(new SimpleFormatter());
-            Logger l = Logger.getLogger("org.glassfish.grizzly.http.server.HttpHandler");
-            l.setLevel(Level.FINE);
-            l.setUseParentHandlers(false);
-            l.addHandler(consoleHandler);
-            try {
-                FileHandler webServicesFileHandler = new FileHandler("./logs/http.server.HttpHandler.log");
-                webServicesFileHandler.setFormatter(new SimpleFormatter());
-                webServicesFileHandler.setLevel(Level.ALL);
-                l.addHandler(webServicesFileHandler);
-            } catch (IOException e) {
-                log.log(Level.SEVERE, e.getMessage(), e);
-            }
+        if (Boolean.parseBoolean(props.getProp("WS_FINE_LOGGING"))) {
+            Logger l = Logging.registerLogger("org.glassfish.grizzly.http.server", Level.ALL);
         }
 
         return server;

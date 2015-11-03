@@ -1,6 +1,7 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
+import it.fcambi.news.Logging;
 import it.fcambi.news.model.auth.Session;
 import it.fcambi.news.model.auth.User;
 import it.fcambi.news.ws.resources.dto.AuthenticationDTO;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.logging.Logger;
 
 /**
  * Created by Francesco on 07/10/15.
@@ -21,11 +23,7 @@ import javax.ws.rs.core.SecurityContext;
 @Path("/security")
 public class SecurityService {
 
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public SecurityContext getSecurityContext(@Context SecurityContext sc) {
-//        return sc;
-//    }
+    private final Logger log = Logging.registerLogger("it.fcambi.news.security");
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -51,18 +49,10 @@ public class SecurityService {
         AuthenticationDTO dto = new AuthenticationDTO();
         dto.setSessionId(""+s.getId());
 
+        log.info("Logged in user "+u.getName()+" with session ID "+s.getId());
+
         return Response.status(200).entity(dto).build();
     }
-
-//    @GET
-//    @Path("/check")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response checkSession(@Context SecurityContext sc) {
-//        if (sc.getUserPrincipal() != null)
-//            return Response.status(200).build();
-//        else
-//            return Response.status(401).build();
-//    }
 
     @POST
     @Path("/logout")
@@ -84,6 +74,8 @@ public class SecurityService {
         em.getTransaction().begin();
         em.merge(s);
         em.getTransaction().commit();
+
+        log.info("Logged out "+s.getUser().getName()+" with session ID "+s.getId());
 
         return Response.status(200).build();
     }

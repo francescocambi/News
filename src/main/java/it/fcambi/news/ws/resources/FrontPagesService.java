@@ -24,11 +24,12 @@ public class FrontPagesService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Object> getAll() {
-        EntityManager em = Application.getEntityManager();
-        List<Object> pages = em.createQuery("select p.id, p.timestamp, p.newspaper from FrontPage p")
-                .getResultList();
-        em.close();
-        return pages;
+        throw new IllegalArgumentException("Hello Exception!!!");
+//        EntityManager em = Application.getEntityManager();
+//        List<Object> pages = em.createQuery("select p.id, p.timestamp, p.newspaper from FrontPage p")
+//                .getResultList();
+//        em.close();
+//        return pages;
     }
 
     @GET
@@ -46,7 +47,7 @@ public class FrontPagesService {
     @Produces(MediaType.APPLICATION_JSON)
     public Map<Newspaper, Double> getChangesOnTime() {
         EntityManager em = Application.getEntityManager();
-        List<FrontPage> pages = em.createQuery("select p from FrontPage p").getResultList();
+        List<FrontPage> pages = em.createQuery("select p from FrontPage p", FrontPage.class).getResultList();
 
         //Separates front pages for each newspaper
         Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream().collect(Collectors.groupingBy(FrontPage::getNewspaper));

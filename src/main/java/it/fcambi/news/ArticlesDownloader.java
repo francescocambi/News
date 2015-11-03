@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class ArticlesDownloader implements ProgressObservable {
 
-    private static final Logger log = Logger.getLogger(ArticlesDownloader.class.getName());
+    private static final Logger log = Logging.registerLogger(ArticlesDownloader.class.getName());
 
     Vector<ProgressObserver> observers;
 
@@ -28,7 +28,7 @@ public class ArticlesDownloader implements ProgressObservable {
         EntityManager em = Application.getEntityManager();
 
         //Crawl articles
-        log.log(Level.INFO, "Article downloader process started.");
+        log.info("Article downloader process started.");
         Crawler[] crawlers = new Crawler[6];
         crawlers[0] = new LaRepubblicaCrawler();
         crawlers[1] = new LaStampaCrawler();
@@ -69,7 +69,7 @@ public class ArticlesDownloader implements ProgressObservable {
             }
         }
 
-        log.log(Level.INFO, "Articles download completed. Persisting articles...");
+        log.info("Articles download completed. Persisting articles...");
 
         //Persist articles on db
         float statusPageUnit = 25F/frontPages.size();

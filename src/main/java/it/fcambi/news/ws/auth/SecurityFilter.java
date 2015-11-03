@@ -1,6 +1,7 @@
 package it.fcambi.news.ws.auth;
 
 import it.fcambi.news.Application;
+import it.fcambi.news.Logging;
 import it.fcambi.news.model.auth.Session;
 import it.fcambi.news.model.auth.User;
 import org.glassfish.jersey.server.ContainerRequest;
@@ -10,9 +11,9 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -21,6 +22,8 @@ import java.util.logging.Logger;
 @PreMatching
 public class SecurityFilter implements ContainerRequestFilter {
 
+    private final Logger log = Logging.registerLogger("it.fcambi.news.secruity");
+
     @Context
     UriInfo uriInfo;
     private static final String REALM = "NewsAppSecurityRealm";
@@ -28,8 +31,10 @@ public class SecurityFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
         User user = authenticate(containerRequestContext);
-        if (user != null)
+        if (user != null) {
+            log.finer("Authenticated user "+user.getUsername());
             containerRequestContext.setSecurityContext(new Authorizer(user, uriInfo));
+        }
     }
 
     private User authenticate(ContainerRequestContext request) {
@@ -47,8 +52,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             else
                 return null;
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Exception trying to retrieve user session.", e);
             return null;
         }
     }

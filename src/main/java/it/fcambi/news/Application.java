@@ -3,17 +3,12 @@ package it.fcambi.news;
 import it.fcambi.news.ws.server.Server;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import java.io.IOException;
 import java.time.LocalTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by Francesco on 29/09/15.
@@ -24,13 +19,28 @@ public class Application {
     private static Server httpServer;
     private static PropertyConfig props;
 
-    private static final Logger log = Logger.getLogger(Application.class.getName());
+    private static Logger log;
 
     public static void main(String[] args) {
 
+        String title = "\n"+
+        "      _   __                     ___                \n"+
+        "     / | / /__ _      _______   /   |  ____  ____   \n"+
+        "    /  |/ / _ \\ | /| / / ___/  / /| | / __ \\/ __ \\  \n"+
+        "   / /|  /  __/ |/ |/ (__  )  / ___ |/ /_/ / /_/ /  \n"+
+        "  /_/ |_/\\___/|__/|__/____/  /_/  |_/ .___/ .___/   \n"+
+        "                                   /_/   /_/        \n";
+
+        System.out.println(title);
+        System.out.println("Starting Up...");
+
+                Logging.setUp();
+        log = Logging.registerLogger(Application.class.getName());
+        Logging.registerLogger("");
+        Logging.registerLogger("org.hibernate", Level.WARNING);
+
         try {
             props = new PropertyConfig();
-            setUpLogging();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -53,12 +63,16 @@ public class Application {
 
         configureScheduledTasks();
 
-        log.info(">>> READY! <<<");
+        log.info("Startup Completed - All OK");
+
+        System.out.println("\nApplication Ready\n\t- Server @ "+props.getProp("BIND_URI")+"\n\t- GUI @ "+
+                props.getProp("BIND_URI")+"/"+props.getProp("GUI_APP_PATH")+"app/\n");
+        System.out.println("Press CTRL+C to stop...");
 
         try {
             Thread.currentThread().join();
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Error joining curent thread.", e);
+            log.log(Level.SEVERE, "Error joining current thread.", e);
             System.exit(-1);
         }
 
@@ -70,7 +84,6 @@ public class Application {
         //Execute Article Download task every hour
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable downloaderTask = () -> {
-            log.info("Launching articles download scheduled task");
             new ArticlesDownloader().downloadArticles();
         };
 
@@ -85,28 +98,12 @@ public class Application {
         log.info("Shutting Down...");
         persistenceManager.close();
         httpServer.stop();
+        Logging.tearDown();
     }
 
     public static EntityManager getEntityManager() {
         return persistenceManager.createEntityManager();
     }
 
-    public static void setUpLogging() throws IOException {
-        String[] loggers = {
-                Application.class.getName(),
-                ArticlesDownloader.class.getName(),
-                "it.fcambi.news.ws.resources.requests"
-        };
-        Level level = Level.ALL;
 
-        //Set up logger
-        for (String logger : loggers) {
-            FileHandler handler = new FileHandler("./logs/"+logger+".log");
-            Logger l = Logger.getLogger(logger);
-            l.setLevel(level);
-            handler.setLevel(level);
-            handler.setFormatter(new SimpleFormatter());
-            l.addHandler(handler);
-        }
-    }
 }
