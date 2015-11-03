@@ -55,12 +55,13 @@ public class Article {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
-
     @ManyToOne
     @JsonManagedReference
     private News news;
+
+    @ManyToOne
+    @JsonManagedReference
+    private PredictedNews predictedNews;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
@@ -110,10 +111,6 @@ public class Article {
         return created;
     }
 
-    public Date getUpdated() {
-        return updated;
-    }
-
     public String getSourceHtml() {
         return sourceHtml.getHtml();
     }
@@ -139,18 +136,25 @@ public class Article {
         this.news = news;
     }
 
+    public PredictedNews getPredictedNews() {
+        return predictedNews;
+    }
+
+    public void setPredictedNews(PredictedNews predictedNews) {
+        this.predictedNews = predictedNews;
+    }
+
     public List<FrontPage> getFrontPages() {
         return frontPages;
+    }
+
+    public void setFrontPages(List<FrontPage> frontPages) {
+        this.frontPages = frontPages;
     }
 
     @PrePersist
     protected void onCreate() {
         created = new Date();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updated = new Date();
     }
 
     public boolean equals(Article obj) {

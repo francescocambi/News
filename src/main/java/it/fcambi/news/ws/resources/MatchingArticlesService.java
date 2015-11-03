@@ -62,7 +62,6 @@ public class MatchingArticlesService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response matchArticles(MatchArticlesRequestDTO m) {
 
-//        System.out.println("matchArticles("+m.getArticleId()+", "+m.getMatchId()+")");
         EntityManager em = Application.getEntityManager();
         em.getTransaction().begin();
 
@@ -81,7 +80,6 @@ public class MatchingArticlesService {
         if (article.getNews() != null && article.getNews().getArticles().size() < 2) {
             // remove orphan
             em.remove(article.getNews());
-
         }
 
         //Matches article with news
