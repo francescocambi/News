@@ -31,11 +31,11 @@ public class Logging {
         if (logHandlers.containsKey(logger.getName()))
             return logger;
 
-        Handler handler;
+        Handler handler = new ConsoleHandler();
         try {
-            handler = new FileHandler("./logs/" + (logger.getName().equals("") ? "root" : logger.getName()) + ".log",
-                    FILE_LIMIT_BYTES, ROTATING_FILES_NUM, true);
-        } catch (IOException e) {
+//            handler = new FileHandler("./logs/" + (logger.getName().equals("") ? "root" : logger.getName()) + ".log",
+//                    FILE_LIMIT_BYTES, ROTATING_FILES_NUM, true);
+        } catch (Exception e) {
             e.printStackTrace();
             handler = new ConsoleHandler();
         }

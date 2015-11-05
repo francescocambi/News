@@ -20,7 +20,7 @@ public class TFIDFDictionaryGenerationTask {
         PersistenceManager persistenceManager = new PersistenceManager("it.fcambi.news.jpa.local");
         EntityManager em = persistenceManager.createEntityManager();
 
-        List<Article> articles = em.createQuery("select a from Article a where a.news is not null", Article.class).getResultList();
+        List<Article> articles = em.createQuery("select a from Article a", Article.class).getResultList();
 
         TFDictionary dict = new TFDictionary();
         dict.setDescription("italian_stemmed");

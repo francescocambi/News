@@ -1,5 +1,8 @@
-package it.fcambi.news;
+package it.fcambi.news.tasks;
 
+import it.fcambi.news.Application;
+import it.fcambi.news.Logging;
+import it.fcambi.news.async.Task;
 import it.fcambi.news.crawlers.*;
 import it.fcambi.news.model.Article;
 import it.fcambi.news.model.FrontPage;
@@ -13,18 +16,23 @@ import java.util.logging.Logger;
 /**
  * Created by Francesco on 26/09/15.
  */
-public class ArticlesDownloader implements ProgressObservable {
+public class ArticlesDownloaderTask extends Task {
 
-    private static final Logger log = Logging.registerLogger(ArticlesDownloader.class.getName());
+    private static final Logger log = Logging.registerLogger(ArticlesDownloaderTask.class.getName());
 
-    Vector<ProgressObserver> observers;
-
-    public ArticlesDownloader() {
-        observers = new Vector<ProgressObserver>();
+    @Override
+    public String getName() {
+        return this.getClass().getName();
     }
 
-    public void downloadArticles() {
-        float statusCompleted = 0F;
+    @Override
+    public String getDescription() {
+        return "Collects articles from each newspaper website";
+    }
+
+    @Override
+    public void executeTask() {
+        progress = 0;
         EntityManager em = Application.getEntityManager();
 
         //Crawl articles
@@ -53,8 +61,7 @@ public class ArticlesDownloader implements ProgressObservable {
                     } catch (IOException | CrawlerCannotReadArticleException e) {
                         log.log(Level.WARNING, "Skipped article", e);
                     } finally {
-                        statusCompleted += statusArticleUnit;
-                        this.updateProgressObservers(statusCompleted);
+                        progress += statusArticleUnit;
                     }
                 }
 
@@ -102,33 +109,15 @@ public class ArticlesDownloader implements ProgressObservable {
             em.persist(page);
 
             //Update progress
-            statusCompleted += statusPageUnit;
-            this.updateProgressObservers(statusCompleted);
+            progress += statusPageUnit;
         }
 
         em.getTransaction().commit();
         em.close();
 
-        statusCompleted = 100F;
-        this.updateProgressObservers(statusCompleted);
-        this.flushObservers();
+        progress = 100;
 
         log.info("Articles download completed");
     }
 
-    private void updateProgressObservers(final float progress) {
-        observers.forEach(o -> o.update(progress));
-    }
-
-    private void flushObservers() {
-        observers.clear();
-    }
-
-    public void addProgressObserver(ProgressObserver o) {
-        observers.add(o);
-    }
-
-    public void removeProgressObserver(ProgressObserver o) {
-        observers.remove(o);
-    }
 }

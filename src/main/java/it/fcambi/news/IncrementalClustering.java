@@ -12,6 +12,11 @@ import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.*;
 
 import javax.persistence.EntityManager;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -74,7 +79,7 @@ public class IncrementalClustering {
         List<News> expectedClusters = em.createQuery("select n from News n", News.class).getResultList();
 
         //Now check congruency between predicted and effective graph
-        DoubleSummaryStatistics stats = generatedClusters.stream().mapToDouble(row -> {
+        double[] distribution = generatedClusters.stream().mapToDouble(row -> {
 
             return expectedClusters.stream().map(col -> {
 
@@ -86,9 +91,26 @@ public class IncrementalClustering {
 
             }).max(Double::compare).get();
 
-        }).summaryStatistics();
+        }).toArray();
+
+        Path filePath = Paths.get("jaccardDistribution.csv");
+        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
+            writer.write(Arrays.stream(distribution).sorted()
+                    .mapToObj(x -> String.valueOf(x))
+                    .collect(Collectors.joining("\n"))
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        DoubleSummaryStatistics stats = Arrays.stream(distribution).summaryStatistics();
+
+        //Compute standard deviation
+        double squaredOffsetSum = Arrays.stream(distribution).map(x -> Math.pow(x-stats.getAverage(), 2)).sum();
+        double stdDeviation = Math.sqrt(squaredOffsetSum/stats.getCount());
 
         System.out.println("Average Jacc: "+stats.getAverage());
+        System.out.println("Jacc Standard Deviation: "+stdDeviation);
         System.out.println("Min "+stats.getMin()+"\tMax "+stats.getMax());
         System.out.println("# of clusters obtained "+stats.getCount());
         System.out.println("# of clusters expected "+expectedClusters.size());

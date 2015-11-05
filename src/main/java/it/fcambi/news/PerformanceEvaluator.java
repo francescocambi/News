@@ -113,7 +113,7 @@ public class PerformanceEvaluator {
 //        articles.addAll(em.createQuery("select a from Article a where a.news.articles.size = 1", Article.class)
 //                .setMaxResults(50).getResultList());
 
-        Metric metric = new MyMetric();
+        Metric metric = new CosineSimilarity();
 
         MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
                 .addTextFilter(new NoiseWordsTextFilter())

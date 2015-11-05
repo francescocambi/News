@@ -1,8 +1,11 @@
 package it.fcambi.news.ws.resources;
 
-import it.fcambi.news.ArticlesDownloader;
+import it.fcambi.news.Application;
+import it.fcambi.news.async.Scheduler;
+import it.fcambi.news.async.Task;
+import it.fcambi.news.async.TaskStatus;
+import it.fcambi.news.tasks.ArticlesDownloaderTask;
 import it.fcambi.news.ProgressHolder;
-import it.fcambi.news.crawlers.Crawler;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
@@ -19,42 +22,39 @@ import javax.ws.rs.core.MediaType;
 @RolesAllowed({"user", "admin"})
 public class CrawlersService {
 
-    private Thread downloaderThread;
-    private ProgressHolder taskProgress;
+    private Task downloaderTask = new ArticlesDownloaderTask();
+
+    public CrawlersService() {
+        this.downloaderTask = new ArticlesDownloaderTask();
+        this.downloaderTask.setCreator(this.getClass().getName());
+    }
 
     @GET
     @Path("/start")
     @Produces(MediaType.APPLICATION_JSON)
     public boolean startDownload() {
-        if (downloaderThread == null || !downloaderThread.isAlive()) {
-            taskProgress = new ProgressHolder();
-            downloaderThread = new Thread(new Runnable() {
-                public void run() {
-                    ArticlesDownloader downloader = new ArticlesDownloader();
-                    downloader.addProgressObserver(taskProgress);
-                    downloader.downloadArticles();
-                }
-            });
+
+        if (downloaderTask.getStatus() != TaskStatus.QUEUED
+                && downloaderTask.getStatus() != TaskStatus.RUNNING) {
+            Application.getScheduler().schedule(downloaderTask);
         }
 
-        if (!downloaderThread.isAlive())
-            downloaderThread.start();
-
-        return downloaderThread.isAlive();
+        return true;
     }
 
     @GET
     @Path("/status")
     @Produces(MediaType.APPLICATION_JSON)
     public boolean getStatus() {
-        return (downloaderThread != null && downloaderThread.isAlive());
+        return (downloaderTask.getStatus() == TaskStatus.QUEUED
+                || downloaderTask.getStatus() == TaskStatus.RUNNING);
     }
 
     @GET
     @Path("/progress")
     @Produces(MediaType.APPLICATION_JSON)
-    public float getProgress() {
-        return taskProgress.getProgress();
+    public double getProgress() {
+        return downloaderTask.getProgress();
     }
 
 

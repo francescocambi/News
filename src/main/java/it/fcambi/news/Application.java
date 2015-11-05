@@ -1,12 +1,13 @@
 package it.fcambi.news;
 
+import it.fcambi.news.async.PastTaskTracer;
+import it.fcambi.news.async.Scheduler;
+import it.fcambi.news.tasks.ArticlesDownloaderTask;
 import it.fcambi.news.ws.server.Server;
 
 import javax.persistence.EntityManager;
 import java.time.LocalTime;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,6 +19,7 @@ public class Application {
     private static PersistenceManager persistenceManager;
     private static Server httpServer;
     private static PropertyConfig props;
+    private static Scheduler scheduler;
 
     private static Logger log;
 
@@ -51,6 +53,9 @@ public class Application {
         log.info("Persistence Unit: "+props.getProp("PERSISTENCE_UNIT"));
         persistenceManager = new PersistenceManager(props.getProp("PERSISTENCE_UNIT"));
 
+        log.info("Setting up Scheduler");
+        configureScheduler();
+
         log.info("Starting up Web Services...");
         log.info("Bind url >> "+props.getProp("BIND_URI"));
         httpServer = new Server(props);
@@ -61,7 +66,7 @@ public class Application {
             public void run() { Application.tearDown(); }
         });
 
-        configureScheduledTasks();
+        configureArticleDownloaderTask();
 
         log.info("Startup Completed - All OK");
 
@@ -78,20 +83,30 @@ public class Application {
 
     }
 
-    private static void configureScheduledTasks() {
+    private static void configureArticleDownloaderTask() {
         if (!Boolean.parseBoolean(props.getProp("HOURLY_ARTICLE_DOWNLOAD"))) return;
-        log.info("Configuring scheduled tasks...");
-        //Execute Article Download task every hour
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        Runnable downloaderTask = () -> {
-            new ArticlesDownloader().downloadArticles();
-        };
+        log.info("Configuring hourly Article Download task...");
+        ArticlesDownloaderTask task = new ArticlesDownloaderTask();
+        task.setCreator(Application.class.getName());
 
         //Compute difference in minutes from now to next o'clock hour
-        LocalTime now = LocalTime.now();
-        int diff = 60-now.getMinute();
+//        LocalTime now = LocalTime.now();
+//        int diff = 60-now.getMinute();
+        long now = System.currentTimeMillis() / 3600000;
+        long time = (now+1)*3600000;
+        Date schedule = new Date(time);
 
-        scheduler.scheduleAtFixedRate(downloaderTask, diff, 60, TimeUnit.MINUTES);
+        task.setScheduleTime(schedule);
+        task.setPeriod(60*60*1000);
+
+        scheduler.schedule(task);
+    }
+
+    private static void configureScheduler() {
+        scheduler = new Scheduler();
+        // This observer persist on db each tasks completed
+        // tracing the history of passed tasks
+        scheduler.addTaskCompletedObserver(new PastTaskTracer());
     }
 
     private static void tearDown() {
@@ -104,6 +119,8 @@ public class Application {
     public static EntityManager getEntityManager() {
         return persistenceManager.createEntityManager();
     }
+
+    public static Scheduler getScheduler() { return scheduler; }
 
 
 }
