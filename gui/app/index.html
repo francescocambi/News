@@ -18,14 +18,18 @@
     <!--<script src="../bower_components/angular-route/angular-route.js"></script>-->
     <!--<script src="../bower_components/angular-cookies/angular-cookies.js"></script>-->
     <script src="../bower_components/angular-google-chart/ng-google-chart.js"></script>
+    <script src="../bower_components/angularUtils-pagination/dirPagination.js"></script>
     <script src="js/NewsApp.js"></script>
     <script src="js/filters.js"></script>
     <script src="js/LoginCtrl.js"></script>
     <script src="js/LogoutCtrl.js"></script>
+    <script src="js/ArticlesDownloadCtrl.js"></script>
     <script src="js/ArticlesCtrl.js"></script>
     <script src="js/FrontPagesCtrl.js"></script>
     <script src="js/TestCtrl.js"></script>
     <script src="js/NewsMatchListCtrl.js"></script>
+    <script src="js/NewsListCtrl.js"></script>
+    <script src="js/NewsDetailsCtrl.js"></script>
 
 </head>
 <body ng-app="NewsApp">
@@ -49,6 +53,9 @@
                         <li><a href="#/articles/download">Download</a></li>
                     </ul>
                 </li>
+                <li><a href="#/news">
+                    <span class="glyphicon glyphicon-folder-close"></span> News
+                </a></li>
                 <li><a href="#/front-pages">
                     <span class="glyphicon glyphicon-th-list"></span> Front Pages</a></li>
                 <li><a href="#/logout"><span class="glyphicon glyphicon-off"></span> Logout</a></li>

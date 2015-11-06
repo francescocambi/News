@@ -2,7 +2,8 @@
  * Created by Francesco on 28/09/15.
  */
 
-angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
+angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart",
+    "angularUtils.directives.dirPagination"])
     .constant("SERVER_URL", "")
     .factory("loadingSpinner", function () {
         return {
@@ -57,7 +58,7 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
         });
 
         $routeProvider.when("/articles/download", {
-            templateUrl: "partials/articles.html",
+            templateUrl: "partials/articlesDownload.html",
             controller: "articlesDownloadCtrl"
         });
 
@@ -94,6 +95,16 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
         $routeProvider.when("/test", {
             templateUrl: "partials/test.html",
             controller: "TestCtrl"
+        });
+
+        $routeProvider.when("/news", {
+            templateUrl: "partials/newsList.html",
+            controller: "NewsListCtrl"
+        });
+
+        $routeProvider.when("/news/:id", {
+            templateUrl: "partials/newsDetails.html",
+            controller: "NewsDetailsCtrl"
         });
 
         $routeProvider.otherwise({
@@ -146,41 +157,5 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart"])
                     }
                 };
             }).finally(loadingSpinner.end());
-
-    })
-    .controller("articlesDownloadCtrl", function ($scope, $http, SERVER_URL, $timeout) {
-        $scope.progress = 0;
-        $scope.downloadActive = false;
-        $http.get(SERVER_URL+"/crawlers/status").success(function (status) {
-            if (status) {
-                $scope.downloadActive = true;
-                $scope.updateProgress();
-            }
-        });
-
-        $scope.beginDownload = function () {
-            $http.get(SERVER_URL+"/crawlers/start").success(function (response) {
-                console.log("Start response: "+response);
-                $scope.downloadActive = response;
-                if ($scope.downloadActive) {
-                    $scope.updateProgress();
-                }
-            });
-        };
-
-        $scope.updateProgress = function () {
-            $http.get(SERVER_URL+"/crawlers/progress").then(function (response) {
-                var progress = response.data;
-                console.log("Progress response: "+progress);
-                $scope.progress = progress;
-                $scope.downloadActive = ($scope.progress < 99.9);
-            }, function (response) {
-                console.log(response);
-                $scope.downloadActive = false;
-            });
-
-            if ($scope.downloadActive)
-                $timeout($scope.updateProgress, 1000);
-        };
 
     });

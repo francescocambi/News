@@ -6,6 +6,7 @@ import it.fcambi.news.metrics.permutations.BasicDistance;
 import it.fcambi.news.model.FrontPage;
 import it.fcambi.news.model.Newspaper;
 
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,17 +20,17 @@ import java.util.stream.Collectors;
  * Created by Francesco on 12/10/15.
  */
 @Path("/front-pages")
+@RolesAllowed({"user", "admin"})
 public class FrontPagesService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Object> getAll() {
-        throw new IllegalArgumentException("Hello Exception!!!");
-//        EntityManager em = Application.getEntityManager();
-//        List<Object> pages = em.createQuery("select p.id, p.timestamp, p.newspaper from FrontPage p")
-//                .getResultList();
-//        em.close();
-//        return pages;
+        EntityManager em = Application.getEntityManager();
+        List<Object> pages = em.createQuery("select p.id, p.timestamp, p.newspaper from FrontPage p")
+                .getResultList();
+        em.close();
+        return pages;
     }
 
     @GET

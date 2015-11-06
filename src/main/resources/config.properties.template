@@ -1,7 +1,7 @@
 # Http Server Properties
 BIND_URI=https://localhost:8000
 GUI_APP_PATH=/path/to/gui
-FINE_LOGGING=true
+WS_FINE_LOGGING=true
 
 # Persistence Unit Properties
 PERSISTENCE_UNIT=it.fcambi.news.jpa.some...

@@ -78,10 +78,21 @@ public class IncrementalClustering {
 
         List<News> expectedClusters = em.createQuery("select n from News n", News.class).getResultList();
 
-        //Now check congruency between predicted and effective graph
-        double[] distribution = generatedClusters.stream().mapToDouble(row -> {
+        Collection<News> rows;
+        Collection<News> cols;
+        if (generatedClusters.size() >= expectedClusters.size()) {
+            //Now check congruency between predicted and effective graph
+            rows = generatedClusters;
+            cols = expectedClusters;
+        } else {
+            //Check congruency between effective and predicted graph
+            rows = expectedClusters;
+            cols = generatedClusters;
+        }
 
-            return expectedClusters.stream().map(col -> {
+        double[] distribution = rows.stream().mapToDouble(row -> {
+
+            return cols.stream().map(col -> {
 
                 //Compute jaccard
                 long intersection = row.getArticles().stream().filter(a -> col.getArticles().contains(a)).collect(Collectors.counting());
@@ -96,8 +107,8 @@ public class IncrementalClustering {
         Path filePath = Paths.get("jaccardDistribution.csv");
         try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
             writer.write(Arrays.stream(distribution).sorted()
-                    .mapToObj(x -> String.valueOf(x))
-                    .collect(Collectors.joining("\n"))
+                            .mapToObj(String::valueOf)
+                            .collect(Collectors.joining("\n"))
             );
         } catch (IOException e) {
             e.printStackTrace();

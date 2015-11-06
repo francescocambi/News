@@ -1,5 +1,7 @@
-<h1>Front Pages</h1>
-<hr>
+<div class="col-xs-5">
+    <h1>Front Pages</h1>
+</div>
+<dir-pagination-controls class="pagination-right"></dir-pagination-controls>
 <table class="table table-striped">
     <thead>
     <tr>
@@ -10,7 +12,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="frontpage in frontpages">
+    <tr dir-paginate="frontpage in frontpages | itemsPerPage: 100">
         <td>{{ frontpage.id }}</td>
         <td>{{ frontpage.timestamp | date : "dd-MM-yyyy HH:mm:ss"}}</td>
         <td>{{ frontpage.newspaper | NewspaperName }}</td>

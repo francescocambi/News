@@ -1,7 +1,6 @@
 package it.fcambi.news.async;
 
 import it.fcambi.news.Logging;
-import sun.jvm.hotspot.StackTrace;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -33,8 +33,8 @@ public class Logging {
 
         Handler handler = new ConsoleHandler();
         try {
-//            handler = new FileHandler("./logs/" + (logger.getName().equals("") ? "root" : logger.getName()) + ".log",
-//                    FILE_LIMIT_BYTES, ROTATING_FILES_NUM, true);
+            handler = new FileHandler("./logs/" + (logger.getName().equals("") ? "root" : logger.getName()) + ".log",
+                    FILE_LIMIT_BYTES, ROTATING_FILES_NUM, true);
         } catch (Exception e) {
             e.printStackTrace();
             handler = new ConsoleHandler();
@@ -43,7 +43,7 @@ public class Logging {
         logger.setUseParentHandlers(false);
         logger.setLevel(requiredLevel);
 
-        handler.setLevel(LEVEL);
+        handler.setLevel(requiredLevel);
         handler.setFormatter(new SimpleFormatter());
         logger.addHandler(handler);
         logHandlers.put(logger.getName(), handler);

@@ -4,14 +4,12 @@ import it.fcambi.news.Application;
 import it.fcambi.news.model.Article;
 import it.fcambi.news.ws.resources.dto.StatsDTO;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import java.util.Date;
 import java.util.List;
 
@@ -24,13 +22,21 @@ public class ArticlesService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Object> getArticles() {
+    public List getArticles(@QueryParam("newsId") Long newsId,
+                            @QueryParam("predictedNewsId") Long predictedNewsId) {
         EntityManager em = Application.getEntityManager();
-        List<Object> o = em.createQuery("select a.id, a.title, a.source, a.news.id from Article a")
-                .getResultList();
+        String select = "select a.id, a.title, a.source, a.news.id, a.created from Article a";
+        if (newsId != null || predictedNewsId != null) select += " where ";
+        if (newsId != null) select += "a.news.id=:newsid ";
+        if (newsId != null && predictedNewsId != null) select += "and ";
+        if (predictedNewsId != null) select += "a.predictedNews.id=:predictednewsid";
+        Query o = em.createQuery(select);
+        if (newsId != null) o.setParameter("newsid", newsId);
+        if (predictedNewsId != null) o.setParameter("predictednewsid", predictedNewsId);
+        List articles = o.getResultList();
         em.close();
 
-        return o;
+        return articles;
     }
 
     @GET
