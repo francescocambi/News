@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 @PreMatching
 public class SecurityFilter implements ContainerRequestFilter {
 
-    private final Logger log = Logging.registerLogger("it.fcambi.news.secruity");
+    private final Logger log = Logging.registerLogger("it.fcambi.news.security");
 
     @Context
     UriInfo uriInfo;
