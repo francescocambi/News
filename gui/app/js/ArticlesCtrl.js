@@ -3,10 +3,10 @@
  */
 
 angular.module("NewsApp")
-    .controller("articlesCtrl", function ($scope, $http, SERVER_URL, $routeParams, $location, loadingSpinner) {
+    .controller("articlesCtrl", function ($scope, $http, SERVER_URL, $routeParams, $location, loadingSpinner, $rootScope) {
 
         if ($location.path().indexOf("/articles/list") == 0) {
-            $scope.onlyNotMatched = true;
+            $scope.onlyNotMatched = $rootScope.articleFilterOnlyNotMatched;
 
             loadingSpinner.begin();
             $http.get(SERVER_URL+"/articles/")
@@ -106,6 +106,10 @@ angular.module("NewsApp")
 
         $scope.onlyNotMatchedFilter = function (article) {
             return (!$scope.onlyNotMatched || article.news == null);
+        }
+
+        $scope.onlyNotMatchedFilterChanged = function () {
+            $rootScope.articleFilterOnlyNotMatched = $scope.onlyNotMatched;
         }
 
     });

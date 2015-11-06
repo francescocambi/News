@@ -6,16 +6,23 @@
 
     <persistence-unit name="it.fcambi.news.jpa.local" transaction-type="RESOURCE_LOCAL">
         <description>Persistence Unit</description>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <properties>
+
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/news" />
             <property name="javax.persistence.jdbc.user" value="francesco" />
             <property name="javax.persistence.jdbc.password" value="mysql" />
 
+            <property name="hibernate.connection.provider_class"
+                      value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
             <property name="hibernate.show_sql" value="false" />
             <!-- Following property updates db schema on start -->
             <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
             <!--<property name="hibernate.connection.characterEncoding" value="utf8mb4"/>-->
             <!--<property name="hibernate.connection.useUnicode" value="true"/>-->

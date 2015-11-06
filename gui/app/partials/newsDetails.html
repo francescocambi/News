@@ -1,0 +1,27 @@
+<pre>
+         <b>ID:</b>  {{news.id}}
+<b>Description:</b>  {{news.description}}
+</pre>
+<hr>
+<h3>Articles talking about this news:</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <td>Id</td>
+        <td>Title</td>
+        <td>Newspaper</td>
+        <td colspan="2">First Appearance On</td>
+        <td></td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="a in articles">
+        <td>{{a[0]}}</td>
+        <td>{{a[1] | limitTo: 200}}</td>
+        <td>{{a[2] | NewspaperName}}</td>
+        <td>@</td>
+        <td>{{a[4] | date : "dd-MM-yyyy HH:mm:ss"}}</td>
+        <td><a href="#/articles/{{a[0]}}">Details</a></td>
+    </tr>
+    </tbody>
+</table>

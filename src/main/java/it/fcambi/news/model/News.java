@@ -1,6 +1,7 @@
 package it.fcambi.news.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.List;
@@ -46,5 +47,10 @@ public class News {
     public boolean equals(Object obj) {
         return (obj instanceof News
         && ((News) obj).getId() == this.id);
+    }
+
+    @JsonProperty
+    public int size() {
+        return this.getArticles().size();
     }
 }

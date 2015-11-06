@@ -29,3 +29,8 @@ body {
     padding-right: 6px;
     float: right;
 }
+
+.pagination-right {
+    display: inline-block;
+    float: right;
+}

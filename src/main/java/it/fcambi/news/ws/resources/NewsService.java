@@ -2,16 +2,14 @@ package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
 import it.fcambi.news.clustering.*;
-import it.fcambi.news.model.MatchingArticle;
+import it.fcambi.news.model.*;
 import it.fcambi.news.data.TFIDFWordVectorFactory;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
 import it.fcambi.news.filters.StemmerTextFilter;
 import it.fcambi.news.metrics.CosineSimilarity;
 import it.fcambi.news.metrics.Metric;
-import it.fcambi.news.model.Article;
-import it.fcambi.news.model.TFDictionary;
-import it.fcambi.news.model.MatchingNews;
 
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,12 +24,33 @@ import java.util.Map;
  * Created by Francesco on 18/10/15.
  */
 @Path("/news")
+@RolesAllowed({"user", "admin"})
 public class NewsService {
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<News> getNews() {
+        EntityManager em = Application.getEntityManager();
+        List<News> news = em.createQuery("select n from News n", News.class).getResultList();
+        return news;
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public News getNewsById(@PathParam("id") long newsId) {
+        EntityManager em = Application.getEntityManager();
+        News n = em.find(News.class, newsId);
+        n.size();
+        em.close();
+        return n;
+    }
+
 
     @GET
     @Path("/match-article/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<MatchingNews> getNews(@PathParam("id") long articleId) {
+    public List<MatchingNews> getMatchingNewsFor(@PathParam("id") long articleId) {
 
         EntityManager em = Application.getEntityManager();
 

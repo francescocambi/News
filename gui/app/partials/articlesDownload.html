@@ -6,7 +6,10 @@
 <br>
 
 <div class="progress">
-    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{progress}}"
+    <div class="progress-bar"
+         ng-class="{'progress-bar-striped': downloadActive, active: downloadActive,
+         'progress-bar-success': (!downloadActive && progress > 99.9), 'progress-bar-danger': (!downloadActive && progress < 99.9)}"
+         role="progressbar" aria-valuenow="{{progress}}"
          aria-valuemin="0" aria-valuemax="100" ng-style="{'width': progress+'%'}">
         {{progress | number : 0 }}%
     </div>
