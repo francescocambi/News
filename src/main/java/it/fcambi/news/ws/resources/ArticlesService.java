@@ -22,17 +22,17 @@ public class ArticlesService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List getArticles(@QueryParam("newsId") Long newsId,
-                            @QueryParam("predictedNewsId") Long predictedNewsId) {
+    public List getArticles(@QueryParam("clustering") String clusteringName,
+                            @QueryParam("newsId") Long newsId) {
+        if (clusteringName == null) clusteringName = "manual";
         EntityManager em = Application.getEntityManager();
-        String select = "select a.id, a.title, a.source, a.news.id, a.created from Article a";
-        if (newsId != null || predictedNewsId != null) select += " where ";
-        if (newsId != null) select += "a.news.id=:newsid ";
-        if (newsId != null && predictedNewsId != null) select += "and ";
-        if (predictedNewsId != null) select += "a.predictedNews.id=:predictednewsid";
+        String select = "select a.id, a.title, a.source, n.id, a.created from Article a left join a.news n " +
+                "on n.clustering.name = :clusteringName";
+        if (newsId != null) select += " where n.id=:newsid";
+        select += " order by a.id";
         Query o = em.createQuery(select);
+        o.setParameter("clusteringName", clusteringName);
         if (newsId != null) o.setParameter("newsid", newsId);
-        if (predictedNewsId != null) o.setParameter("predictednewsid", predictedNewsId);
         List articles = o.getResultList();
         em.close();
 
@@ -46,7 +46,7 @@ public class ArticlesService {
         EntityManager em = Application.getEntityManager();
 
         Long articlesCount = em.createQuery("select count(a) from Article a", Long.class).getSingleResult();
-        Long matchedArtCount = em.createQuery("select count(a) from Article a where a.news is not null", Long.class).getSingleResult();
+        Long matchedArtCount = em.createQuery("select count(a) from Article a where key(a.news) = 'manual'", Long.class).getSingleResult();
         Long notMatchedArtCount = articlesCount-matchedArtCount;
         Date mostRecentArticle = em.createQuery("select max(a.created) from Article a", Date.class).getSingleResult();
 

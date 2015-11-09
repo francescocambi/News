@@ -9,7 +9,7 @@ angular.module("NewsApp")
             .then(function (response) {
                 $scope.news = response.data
             }).finally( function () {loadingSpinner.end();});
-        $http.get(SERVER_URL+"/articles/?newsId="+$routeParams['id'])
+        $http.get(SERVER_URL+"/articles/?clustering=manual&newsId="+$routeParams['id'])
             .then(function (response) {
                 $scope.articles = response.data;
             }).finally( function () { loadingSpinner.end(); });

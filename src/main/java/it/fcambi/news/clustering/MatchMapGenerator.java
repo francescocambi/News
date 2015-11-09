@@ -5,6 +5,7 @@ import it.fcambi.news.data.Text;
 import it.fcambi.news.data.WordVector;
 import it.fcambi.news.model.Article;
 
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class MatchMapGenerator {
      * @param knownArticles           Set of previously clustered articles
      * @return Map that bind each article with a list of possible matchings
      */
-    public Map<Article, List<MatchingArticle>> generateMap(List<Article> articlesToMatch, List<Article> knownArticles) {
+    public Map<Article, List<MatchingArticle>> generateMap(Collection<Article> articlesToMatch, Collection<Article> knownArticles) {
 
         // Source Article -> Similarities with all articles
         Map<Article, List<MatchingArticle>> matchMap = new Hashtable<Article, List<MatchingArticle>>(articlesToMatch.size());

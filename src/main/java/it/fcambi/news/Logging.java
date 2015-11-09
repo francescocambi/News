@@ -46,6 +46,12 @@ public class Logging {
         handler.setLevel(requiredLevel);
         handler.setFormatter(new SimpleFormatter());
         logger.addHandler(handler);
+        if (Boolean.parseBoolean(Application.getProperty("CONSOLE_LOG"))) {
+            Handler console = new ConsoleHandler();
+            console.setLevel(requiredLevel);
+            handler.setFormatter(new SimpleFormatter());
+            logger.addHandler(console);
+        }
         logHandlers.put(logger.getName(), handler);
 
         return logger;

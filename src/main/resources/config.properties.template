@@ -8,3 +8,6 @@ PERSISTENCE_UNIT=it.fcambi.news.jpa.some...
 
 # Scheduled Tasks
 HOURLY_ARTICLE_DOWNLOAD=true
+
+#General
+CONSOLE_LOG=false

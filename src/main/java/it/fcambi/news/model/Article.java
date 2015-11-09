@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represent an Article from a newspaper
@@ -55,13 +56,9 @@ public class Article {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
-    @ManyToOne
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JsonManagedReference
-    private News news;
-
-    @ManyToOne
-    @JsonManagedReference
-    private PredictedNews predictedNews;
+    private Map<Clustering, News> news;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
@@ -128,20 +125,12 @@ public class Article {
         this.sourceUrl = sourceUrl;
     }
 
-    public News getNews() {
-        return news;
+    public News getNews(Clustering c) {
+        return news.get(c);
     }
 
-    public void setNews(News news) {
-        this.news = news;
-    }
-
-    public PredictedNews getPredictedNews() {
-        return predictedNews;
-    }
-
-    public void setPredictedNews(PredictedNews predictedNews) {
-        this.predictedNews = predictedNews;
+    public void setNews(Clustering c, News news) {
+        this.news.put(c, news);
     }
 
     public List<FrontPage> getFrontPages() {

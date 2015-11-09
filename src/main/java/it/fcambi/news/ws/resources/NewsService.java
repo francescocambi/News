@@ -55,11 +55,17 @@ public class NewsService {
         EntityManager em = Application.getEntityManager();
 
         //TODO Surround NoResult exception
+
         Article sourceArticle = em.find(Article.class, articleId);
         List<Article> targetArticles = new ArrayList<>();
         targetArticles.add(sourceArticle);
 
-        List<Article> articles = em.createQuery("select a from Article a where a.news is not null", Article.class).getResultList();
+        List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'", Article.class).getResultList();
+
+        Clustering clustering = em.find(Clustering.class, "manual");
+        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
+
+        em.close();
 
         Metric cosine = new CosineSimilarity();
 
@@ -67,15 +73,13 @@ public class NewsService {
                 .addMetric(cosine)
                 .addTextFilter(new NoiseWordsTextFilter())
                 .addTextFilter(new StemmerTextFilter())
-                .setWordVectorFactory(new TFIDFWordVectorFactory(em.find(TFDictionary.class, "italian_stemmed")));
+                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
         MatchMapGenerator generator = new MatchMapGenerator(conf);
 
         Map<Article, List<MatchingArticle>> matchMap = generator.generateMap(targetArticles, articles);
 
-        Matcher matcher = new HighestMeanMatcher();
-        Map<Article, List<MatchingNews>> clusterMap = matcher.getRankedList(cosine, matchMap, 0.47);
-
-        em.close();
+        Matcher matcher = new HighestMeanMatcher(cosine, 0.47, clustering);
+        Map<Article, List<MatchingNews>> clusterMap = matcher.getRankedList(matchMap);
 
         if (clusterMap.get(sourceArticle).size() > 50)
             return clusterMap.get(sourceArticle).subList(0, 50);

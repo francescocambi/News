@@ -1,27 +1,48 @@
 package it.fcambi.news.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Francesco on 30/09/15.
+ * Created by Francesco on 03/11/15.
  */
 @Entity
 public class News {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    protected long id;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    protected String description;
 
-    @OneToMany(mappedBy = "news")
+    @ManyToOne(targetEntity = Clustering.class)
+    @JsonManagedReference
+    @NotNull
+    protected Clustering clustering;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "news")
     @JsonBackReference
-    private List<Article> articles;
+    protected List<Article> articles = new ArrayList<>();
+
+    public static News createForArticle(Article a, Clustering clustering) {
+        News n = new News(clustering);
+        n.description = a.getTitle();
+        n.addArticle(a);
+        return n;
+    }
+
+    protected News() {};
+
+    public News(Clustering clustering) {
+        this.clustering = clustering;
+    }
 
     public long getId() {
         return id;
@@ -43,14 +64,17 @@ public class News {
         this.articles = articles;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof News
-        && ((News) obj).getId() == this.id);
+    public void addArticle(Article a) {
+        this.articles.add(a);
+    }
+
+    public boolean equals(News n) {
+        return n.getId() == this.id;
     }
 
     @JsonProperty
     public int size() {
         return this.getArticles().size();
     }
+
 }

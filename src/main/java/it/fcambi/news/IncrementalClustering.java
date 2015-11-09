@@ -32,7 +32,10 @@ public class IncrementalClustering {
         PersistenceManager persistenceManager = new PersistenceManager("it.fcambi.news.jpa.local");
         EntityManager em = persistenceManager.createEntityManager();
 
-        List<Article> articles = em.createQuery("select a from Article a where a.news is not null", Article.class)
+        Clustering clustering = new Clustering();
+
+        List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'",
+                Article.class)
                 .getResultList();
 
         List<Article> classifiedArticles = new ArrayList<>();
@@ -54,18 +57,18 @@ public class IncrementalClustering {
 
             Map<Article, List<MatchingArticle>> map = generator.generateMap(articles.subList(i, i+1), classifiedArticles);
 
-            Matcher matcher = new HighestMeanOverThresholdMatcher();
-            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(metric, map, 0.47);
+            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, 0.47, clustering);
+            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(map);
 
             bestMatch.keySet().forEach(article -> {
                 if (bestMatch.get(article) != null) {
-                    article.setNews(bestMatch.get(article).getNews());
+                    article.setNews(clustering, bestMatch.get(article).getNews());
                 } else {
-                    article.setNews(new News());
-                    article.getNews().setDescription(article.getTitle());
-                    article.getNews().setArticles(new ArrayList<>());
+                    article.setNews(clustering, new News(clustering));
+                    article.getNews(clustering).setDescription(article.getTitle());
+                    article.getNews(clustering).setArticles(new ArrayList<>());
                 }
-                article.getNews().getArticles().add(article);
+                article.getNews(clustering).getArticles().add(article);
                 classifiedArticles.add(article);
             });
 
@@ -74,9 +77,9 @@ public class IncrementalClustering {
         }
 
         Set<News> generatedClusters = new HashSet<>();
-        classifiedArticles.forEach(article -> generatedClusters.add(article.getNews()));
+        classifiedArticles.forEach(article -> generatedClusters.add(article.getNews(clustering)));
 
-        List<News> expectedClusters = em.createQuery("select n from News n", News.class).getResultList();
+        List<News> expectedClusters = em.createQuery("select n from News n where n.clustering.name = 'manual'", News.class).getResultList();
 
         Collection<News> rows;
         Collection<News> cols;
@@ -104,15 +107,15 @@ public class IncrementalClustering {
 
         }).toArray();
 
-        Path filePath = Paths.get("jaccardDistribution.csv");
-        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
-            writer.write(Arrays.stream(distribution).sorted()
-                            .mapToObj(String::valueOf)
-                            .collect(Collectors.joining("\n"))
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Path filePath = Paths.get("jaccardDistribution.csv");
+//        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
+//            writer.write(Arrays.stream(distribution).sorted()
+//                            .mapToObj(String::valueOf)
+//                            .collect(Collectors.joining("\n"))
+//            );
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         DoubleSummaryStatistics stats = Arrays.stream(distribution).summaryStatistics();
 

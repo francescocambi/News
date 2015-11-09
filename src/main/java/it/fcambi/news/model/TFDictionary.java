@@ -18,7 +18,7 @@ public class TFDictionary {
 
     protected long numOfDocuments = 0;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(length = 60)
     protected Map<String, Long> terms = new Hashtable<>();
 

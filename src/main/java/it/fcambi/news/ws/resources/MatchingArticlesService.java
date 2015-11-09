@@ -7,10 +7,7 @@ import it.fcambi.news.data.TFIDFWordVectorFactory;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
 import it.fcambi.news.filters.StemmerTextFilter;
 import it.fcambi.news.metrics.CosineSimilarity;
-import it.fcambi.news.model.Article;
-import it.fcambi.news.model.MatchingArticle;
-import it.fcambi.news.model.News;
-import it.fcambi.news.model.TFDictionary;
+import it.fcambi.news.model.*;
 import it.fcambi.news.ws.resources.dto.MatchArticlesRequestDTO;
 
 import javax.annotation.security.RolesAllowed;
@@ -41,11 +38,13 @@ public class MatchingArticlesService {
 
         Article match = em.find(Article.class, matchId);
 
+        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
+
         MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
                 .addMetric(new CosineSimilarity())
                 .addTextFilter(new NoiseWordsTextFilter())
                 .addTextFilter(new StemmerTextFilter())
-                .setWordVectorFactory(new TFIDFWordVectorFactory(em.find(TFDictionary.class, "italian_stemmed")));
+                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
 
         List<Article> sourceList = new ArrayList<>();
         sourceList.add(source);
@@ -53,6 +52,8 @@ public class MatchingArticlesService {
         matchList.add(match);
 
         Map<Article, List<MatchingArticle>> matchMap = new MatchMapGenerator(conf).generateMap(sourceList, matchList);
+
+        em.close();
 
         return matchMap.get(source).get(0);
     }
@@ -63,29 +64,30 @@ public class MatchingArticlesService {
     public Response matchArticles(MatchArticlesRequestDTO m) {
 
         EntityManager em = Application.getEntityManager();
-        em.getTransaction().begin();
 
         Article article = em.find(Article.class, m.getArticleId());
+        Clustering clustering = em.find(Clustering.class, "manual");
 
         News n;
         if (m.getNewsId() == 0) {
             //Create new news
-            n = new News();
+            n = new News(clustering);
             n.setDescription(article.getTitle());
         } else {
             //Retrieve existing one
             n = em.find(News.class, m.getNewsId());
         }
         //Checks that article's old news doesn't become orphan
-        if (article.getNews() != null && article.getNews().getArticles().size() < 2) {
+        if (article.getNews(clustering) != null && article.getNews(clustering).getArticles().size() < 2) {
             // remove orphan
-            em.remove(article.getNews());
+            em.remove(article.getNews(clustering));
         }
 
         //Matches article with news
-        article.setNews(n);
+        article.setNews(clustering, n);
 
         //Persist
+        em.getTransaction().begin();
         if (m.getNewsId() == 0)
             em.persist(n);
         em.merge(article);

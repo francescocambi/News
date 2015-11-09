@@ -34,9 +34,4 @@ public class MatchingArticle {
     public double getSimilarity(String k) {
         return similarities.get(k);
     }
-
-    public News getNews() {
-        if (this.article != null) return this.article.getNews();
-        return null;
-    }
 }

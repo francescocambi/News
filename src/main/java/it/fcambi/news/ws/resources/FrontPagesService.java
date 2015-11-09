@@ -25,9 +25,9 @@ public class FrontPagesService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Object> getAll() {
+    public List getAll() {
         EntityManager em = Application.getEntityManager();
-        List<Object> pages = em.createQuery("select p.id, p.timestamp, p.newspaper from FrontPage p")
+        List pages = em.createQuery("select p.id, p.timestamp, p.newspaper from FrontPage p")
                 .getResultList();
         em.close();
         return pages;

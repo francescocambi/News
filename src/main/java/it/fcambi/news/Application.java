@@ -36,11 +36,6 @@ public class Application {
         System.out.println(title);
         System.out.println("Starting Up...");
 
-                Logging.setUp();
-        log = Logging.registerLogger(Application.class.getName());
-        Logging.registerLogger("");
-        Logging.registerLogger("org.hibernate", Level.WARNING);
-
         try {
             props = new PropertyConfig();
         } catch (Exception e) {
@@ -48,6 +43,11 @@ public class Application {
             e.printStackTrace();
             System.exit(-1);
         }
+
+        Logging.setUp();
+        log = Logging.registerLogger(Application.class.getName());
+        Logging.registerLogger("");
+        Logging.registerLogger("org.hibernate", Level.WARNING);
 
         log.info("Initializing Entity Manager factory...");
         log.info("Persistence Unit: "+props.getProp("PERSISTENCE_UNIT"));
@@ -114,6 +114,10 @@ public class Application {
         persistenceManager.close();
         httpServer.stop();
         Logging.tearDown();
+    }
+
+    public static String getProperty(String name) {
+        return props.getProp(name);
     }
 
     public static EntityManager getEntityManager() {

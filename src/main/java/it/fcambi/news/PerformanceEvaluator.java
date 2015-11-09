@@ -103,9 +103,12 @@ public class PerformanceEvaluator {
         PersistenceManager persistenceManager = new PersistenceManager("it.fcambi.news.jpa.local");
         EntityManager em = persistenceManager.createEntityManager();
 
+        Clustering manualClustering = em.find(Clustering.class, "manual");
+        Clustering generatedClustering = new Clustering();
+
         dict = em.find(TFDictionary.class, "italian_stemmed");
 
-        List<Article> articles = em.createQuery("select a from Article a where a.news is not null",
+        List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'",
                 Article.class).getResultList();
 //        List<Article> articles1 = em.createQuery("select a from Article a where a.id=98", Article.class).getResultList();
 //        List<Article> articles = em.createQuery("select a from Article a where a.news.articles.size > 1", Article.class)
@@ -137,15 +140,15 @@ public class PerformanceEvaluator {
 
         DoubleStream.iterate(0.1, a -> a+0.01).limit(81).forEach(threshold -> {
 
-            Matcher matcher = new HighestMeanOverThresholdMatcher();
-            Map<Article, MatchingNews> results = matcher.findBestMatch(metric, matchMap, threshold);
+            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, threshold, manualClustering);
+            Map<Article, MatchingNews> results = matcher.findBestMatch(matchMap);
 
             //Compute confusion matrix
             Map<c, Long> stats = results.entrySet().stream().map(entry -> {
 
                 if (entry.getValue() == null) {
                     // Article is the only member of his cluster
-                    if (entry.getKey().getNews().getArticles().size() == 1) return c.OK;
+                    if (entry.getKey().getNews(manualClustering).getArticles().size() == 1) return c.OK;
                     else {
 //                        System.err.println("------------------------------------------------------");
 //                        System.err.println("!! WRONG MATCH");
@@ -157,7 +160,7 @@ public class PerformanceEvaluator {
                 } else {
                     // Article is in a cluster
                     // but it's the right cluster?
-                    if (entry.getKey().getNews().equals(entry.getValue().getNews())) return c.OK;
+                    if (entry.getKey().getNews(manualClustering).equals(entry.getValue().getNews())) return c.OK;
                     else {
 //                        System.err.println("------------------------------------------------------");
 //                        System.err.println("!! WRONG MATCH");
@@ -190,32 +193,36 @@ public class PerformanceEvaluator {
 
     }
 
-    private static Map<m, Long> getConfusionMatrix(Map<Article, List<MatchingArticle>> matchMap, String metricName, double threshold) {
-        Iterator<Map<m, Long>> maps = matchMap.entrySet().stream().map(entry -> {
-
-            return entry.getValue().parallelStream().map(matchingArticle -> {
-                //Checks threshold and detect result
-                if (matchingArticle.getSimilarity(metricName) > threshold) {
-                    if (entry.getKey().getNews().equals(matchingArticle.getArticle().getNews()))
-                        return m.TP;
-                    else
-                        return m.FP;
-                } else {
-                    if (entry.getKey().getNews().equals(matchingArticle.getArticle().getNews()))
-                        return m.FN;
-                    else
-                        return m.TN;
-                }
-            }).collect(Collectors.groupingBy(s -> s, Collectors.counting()));
-
-        }).iterator();
-
-        Map<m, Long> results = new HashMap<>();
-        while (maps.hasNext()) {
-            maps.next().forEach( (key, val) -> results.put(key, results.getOrDefault(key, 0L)+val));
-        }
-        return results;
-    }
+//    private static Map<m, Long> getConfusionMatrix(Map<Article, List<MatchingArticle>> matchMap,
+//                                                   String metricName,
+//                                                   double threshold,
+//                                                   Clustering manualClustering,
+//                                                   Clustering generatedClustering) {
+//        Iterator<Map<m, Long>> maps = matchMap.entrySet().stream().map(entry -> {
+//
+//            return entry.getValue().parallelStream().map(matchingArticle -> {
+//                //Checks threshold and detect result
+//                if (matchingArticle.getSimilarity(metricName) > threshold) {
+//                    if (entry.getKey().getNews().equals(matchingArticle.getArticle().getNews()))
+//                        return m.TP;
+//                    else
+//                        return m.FP;
+//                } else {
+//                    if (entry.getKey().getNews().equals(matchingArticle.getArticle().getNews()))
+//                        return m.FN;
+//                    else
+//                        return m.TN;
+//                }
+//            }).collect(Collectors.groupingBy(s -> s, Collectors.counting()));
+//
+//        }).iterator();
+//
+//        Map<m, Long> results = new HashMap<>();
+//        while (maps.hasNext()) {
+//            maps.next().forEach( (key, val) -> results.put(key, results.getOrDefault(key, 0L)+val));
+//        }
+//        return results;
+//    }
 
     public static void main(String[] args) {
 

@@ -11,10 +11,10 @@ public class NewsVector {
 
     public NewsVector(FrontPage page) {
 
-        newsIds = page.getArticles().stream()
-                .filter(a -> a.getNews() != null)
-                .mapToLong(a -> a.getNews().getId())
-                .toArray();
+//        newsIds = page.getArticles().stream()
+//                .filter(a -> a.getNews() != null)
+//                .mapToLong(a -> a.getNews().getId())
+//                .toArray();
 
     }
 
