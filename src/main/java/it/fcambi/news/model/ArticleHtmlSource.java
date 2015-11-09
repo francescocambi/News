@@ -12,7 +12,7 @@ public class ArticleHtmlSource {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String html;
 
     public long getId() {
