@@ -37,6 +37,9 @@ public class MatchMapGeneratorConfiguration {
 
     };
 
+    public static BiFunction<Article, Text, String> headlineKeywords = (article, body) ->
+            article.getTitle()+" "+article.getDescription();
+
     public static Function<String, Text> onlyAlphaSpaceSepared = s -> new Text(s.replaceAll("[^\\p{Alpha}\\p{Space}]", " "), "\\p{Space}+");
 
     public static BiPredicate<Article, Article> ignoreReflectiveMatch = (a,b) -> a.equals(b);

@@ -45,6 +45,12 @@
         <div class="checkbox">
             <label><input type="checkbox" ng-model="taskConfig.noiseWordsFilter"> Remove Stop Words</label>
         </div>
+        <div class="radio">
+            <label><input type="radio" name="keywordExtraction" ng-model="taskConfig.keywordExtraction" value="headline"> Headline</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="keywordExtraction" ng-model="taskConfig.keywordExtraction" value="capitals"> Headline and Capitals</label>
+        </div>
     </div>
 
     <div class="col-md-12" style="text-align: right;">

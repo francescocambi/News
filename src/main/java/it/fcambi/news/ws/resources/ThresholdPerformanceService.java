@@ -47,7 +47,8 @@ public class ThresholdPerformanceService {
                               @QueryParam("metricName") String metricName,
                               @QueryParam("noiseWordsFilter") boolean noiseWordsFilter,
                               @QueryParam("stemming") boolean stemming,
-                              @QueryParam("tfidf") boolean tfidf) {
+                              @QueryParam("tfidf") boolean tfidf,
+                              @QueryParam("keywordExtraction") String keywordExtraction) {
 
         if (metricName == null)
             return Response.status(400).build();
@@ -80,6 +81,14 @@ public class ThresholdPerformanceService {
                 break;
         }
         config.addMetric(metric);
+
+        switch (keywordExtraction) {
+            case "headline":
+                config.setKeywordSelectionFunction(MatchMapGeneratorConfiguration.headlineKeywords);
+                break;
+            default:
+                config.setKeywordSelectionFunction(MatchMapGeneratorConfiguration.headlineAndCapitalsKeywords);
+        }
 
         ComputeThresholdPerformanceTask task;
         if (start >= 0 && step > 0 && limit > 0)

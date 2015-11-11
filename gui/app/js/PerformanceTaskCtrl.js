@@ -12,7 +12,8 @@ angular.module("NewsApp")
             limit: 9,
             noiseWordsFilter: true,
             stemming: true,
-            tfidf: true
+            tfidf: true,
+            keywordExtraction: "capitals"
         };
 
         function updateTaskList() {
