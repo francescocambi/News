@@ -19,5 +19,13 @@ angular.module("NewsApp")
                 return name;
             }
         }
+    })
+    .filter("taskStatus", function () {
+        return function (status) {
+            if (status) {
+                return status.charAt(0) + status.slice(1).toLowerCase();
+            } else
+                return status;
+        }
     });
 

@@ -2,7 +2,7 @@
  * Created by Francesco on 28/09/15.
  */
 
-angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart",
+angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
     "angularUtils.directives.dirPagination"])
     .constant("SERVER_URL", "")
     .factory("loadingSpinner", function () {
@@ -107,6 +107,16 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart",
             controller: "NewsDetailsCtrl"
         });
 
+        $routeProvider.when("/threshold-performance/", {
+            templateUrl: "partials/performanceTask.html",
+            controller: "PerformanceTaskCtrl"
+        });
+
+        $routeProvider.when("/threshold-performance/:id", {
+            templateUrl: "partials/performanceResults.html",
+            controller: "PerformanceResultsCtrl"
+        });
+
         $routeProvider.otherwise({
             templateUrl: "partials/home.html",
             controller: "homeCtrl"
@@ -116,6 +126,10 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart",
 
     })
     .run(function ($rootScope, $location, $cookieStore, $http) {
+
+        //Define default colours for charts
+        Chart.defaults.global.colours = ["#3366CC","#DC3912","#FF9900","#109618","#4D5360","#949FB1","#990099"];
+
         // retrieve sessionid from cookies
         $rootScope.serverSessionId = $cookieStore.get('newsApp_sessionId');
         //console.log("Retrieved from cookies "+$rootScope.serverSessionId);
@@ -133,29 +147,4 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "googlechart",
                 $location.path('/login');
             }
         });
-    })
-    .controller("homeCtrl", function ($scope, $http, SERVER_URL, loadingSpinner) {
-        loadingSpinner.begin();
-        $http.get(SERVER_URL+"/articles/stats")
-            .success(function (data) {
-                $scope.serverOnline = true;
-                $scope.stats = data;
-                $scope.articlesChart = {
-                    type: "PieChart",
-                    options: {
-                        "title": "Articles on DB",
-                        is3D: true
-                    },
-                    data: {
-                        "cols": [
-                            {id: "d", label: "Description", type: "string"},
-                            {id: "v", label: "Value", type: "number"}
-                        ], "rows": [
-                            {c: [{v: "Matched"}, {v: $scope.stats.matchedArticlesCount}]},
-                            {c: [{v: "Not Matched"}, {v: $scope.stats.notMatchedArticlesCount}]}
-                        ]
-                    }
-                };
-            }).finally(loadingSpinner.end());
-
     });

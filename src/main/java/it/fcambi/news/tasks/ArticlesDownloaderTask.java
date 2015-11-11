@@ -32,7 +32,7 @@ public class ArticlesDownloaderTask extends Task {
 
     @Override
     public void executeTask() {
-        progress = 0;
+        progress.set(0);
         EntityManager em = Application.getEntityManager();
 
         //Crawl articles
@@ -61,7 +61,7 @@ public class ArticlesDownloaderTask extends Task {
                     } catch (IOException | CrawlerCannotReadArticleException e) {
                         log.log(Level.WARNING, "Skipped article", e);
                     } finally {
-                        progress += statusArticleUnit;
+                        progress.add(statusArticleUnit);
                     }
                 }
 
@@ -109,13 +109,13 @@ public class ArticlesDownloaderTask extends Task {
             em.persist(page);
 
             //Update progress
-            progress += statusPageUnit;
+            progress.add(statusPageUnit);
         }
 
         em.getTransaction().commit();
         em.close();
 
-        progress = 100;
+        progress.set(100);
 
         log.info("Articles download completed");
     }

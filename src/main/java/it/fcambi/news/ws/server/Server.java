@@ -49,7 +49,9 @@ public class Server {
 
         SSLEngineConfigurator sslConf = new SSLEngineConfigurator(sslContext, false, false, false);
         server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc, true, sslConf);
-        server.getServerConfiguration().addHttpHandler(new StaticHttpHandler(props.getProp("GUI_APP_PATH")), "/gui");
+        StaticHttpHandler staticHttpHandler = new StaticHttpHandler(props.getProp("GUI_APP_PATH"));
+        staticHttpHandler.setFileCacheEnabled(false);
+        server.getServerConfiguration().addHttpHandler(staticHttpHandler, "/gui");
 
         log.info("Web Services initialization completed.");
 

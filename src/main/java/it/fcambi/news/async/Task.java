@@ -17,7 +17,7 @@ public abstract class Task implements Runnable {
     private static Logger log = Logging.registerLogger("it.fcambi.news.Tasks");
 
     protected TaskStatus status;
-    protected double progress = 0.0;
+    protected Progress progress = new Progress();
     protected Date creationTime;
     protected Date startTime;
     protected Date endTime;
@@ -67,7 +67,7 @@ public abstract class Task implements Runnable {
     }
 
     public double getProgress() {
-        return progress;
+        return progress.get();
     }
 
     public Date getStartTime() {

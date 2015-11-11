@@ -1,6 +1,6 @@
 <!--<h1>Home View, Welcome!</h1>-->
 
-<div class="col-md-12">
+<div class="col-md-6">
     <div ng-show="serverOnline">
         <h2>
             <span class="glyphicon glyphicon-ok text-success"></span>
@@ -13,9 +13,6 @@
             Server is offline
         </h2>
     </div>
-</div>
-
-<div class="col-md-6">
     <table class="table table-bordered" ng-show="serverOnline">
         <tbody>
         <tr><td>Total Articles</td><td>{{ stats.articlesCount }}</td></tr>
@@ -27,5 +24,6 @@
 </div>
 
 <div class="col-md-6" ng-show="serverOnline">
-    <div google-chart chart="articlesChart"></div>
+    <canvas id="pie" class="chart chart-pie" chart-data="pieData"
+            chart-labels="pieLabels" chart-legend="true" height="110"></canvas>
 </div>

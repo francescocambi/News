@@ -1,0 +1,14 @@
+<h1>Performance Results for Task #{{ taskId }}</h1>
+
+<pre>
+<b>MatchMap generation time</b>: {{ result.matchMapGenerationTime }} (ms)
+              <b>Item count</b>: {{ result.itemCount }}
+          <b>Best threshold</b>: {{ result.bestThreshold | number : 4 }}
+               <b>Best % OK</b>: {{ result.bestOkPercent | number : 2 }} %
+</pre>
+
+<div class="col-md-12">
+    <canvas id="line" class="chart chart-line" chart-data="chartData"
+        chart-labels="chartLabels" chart-series="chartSeries" chartLegend="true"
+            height="90"></canvas>
+</div>

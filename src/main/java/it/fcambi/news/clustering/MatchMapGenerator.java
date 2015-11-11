@@ -1,5 +1,6 @@
 package it.fcambi.news.clustering;
 
+import it.fcambi.news.async.Progress;
 import it.fcambi.news.model.MatchingArticle;
 import it.fcambi.news.data.Text;
 import it.fcambi.news.data.WordVector;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MatchMapGenerator {
@@ -18,8 +20,12 @@ public class MatchMapGenerator {
 
     private MatchMapGeneratorConfiguration config;
 
+    private AtomicInteger progress;
+    private int toMatchArticlesSize;
+
     public MatchMapGenerator(MatchMapGeneratorConfiguration config) {
         this.config = config;
+        progress = new AtomicInteger();
     }
 
     /**
@@ -28,6 +34,8 @@ public class MatchMapGenerator {
      * @return Map that bind each article with a list of possible matchings
      */
     public Map<Article, List<MatchingArticle>> generateMap(Collection<Article> articlesToMatch, Collection<Article> knownArticles) {
+        progress.set(0);
+        toMatchArticlesSize = articlesToMatch.size();
 
         // Source Article -> Similarities with all articles
         Map<Article, List<MatchingArticle>> matchMap = new Hashtable<Article, List<MatchingArticle>>(articlesToMatch.size());
@@ -73,6 +81,7 @@ public class MatchMapGenerator {
             }).collect(Collectors.toList());
 
             matchMap.put(article, matchingArticles);
+            progress.incrementAndGet();
 
         });
 
@@ -83,5 +92,9 @@ public class MatchMapGenerator {
         Text t = config.getStringToTextFn().apply(s);
         config.getTextFilters().forEach(t::applyFilter);
         return t;
+    }
+
+    public double getProgress() {
+        return (double)this.progress.get()/toMatchArticlesSize;
     }
 }

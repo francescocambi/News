@@ -39,7 +39,7 @@ public class IncrementalClusteringTask extends Task {
 
     @Override
     protected void executeTask() throws Exception {
-        progress = 0;
+        progress.set(0);
 
         EntityManager em = Application.getEntityManager();
 
@@ -68,7 +68,7 @@ public class IncrementalClusteringTask extends Task {
             }
             classifiedArticles.add(article);
 
-            progress += progressIncrementA;
+            progress.add(progressIncrementA);
 
         }
 
@@ -78,11 +78,11 @@ public class IncrementalClusteringTask extends Task {
         em.getTransaction().begin();
         articlesToBeClustered.forEach(article -> {
             em.merge(article);
-            progress += progressIncrementB;
+            progress.add(progressIncrementB);
         });
         em.getTransaction().commit();
 
-        progress = 100;
+        progress.set(100);
 
         em.close();
     }
