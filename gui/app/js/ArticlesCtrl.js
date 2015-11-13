@@ -9,17 +9,9 @@ angular.module("NewsApp")
             $scope.onlyNotMatched = $rootScope.articleFilterOnlyNotMatched;
 
             loadingSpinner.begin();
-            $http.get(SERVER_URL+"/articles/")
+            $http.get(SERVER_URL+"/articles/?clustering=manual")
                 .then(function (response) {
-                    $scope.articles = [];
-                    response.data.forEach(function (article) {
-                        $scope.articles.push({
-                            id: article[0],
-                            title: article[1],
-                            source: article[2],
-                            news: article[3]
-                        });
-                    });
+                    $scope.articles = response.data;
                 })
                 .finally(function () { loadingSpinner.end() });
         } else if ($location.path().indexOf("/articles/match/details/") == 0) {
@@ -105,7 +97,7 @@ angular.module("NewsApp")
         }
 
         $scope.onlyNotMatchedFilter = function (article) {
-            return (!$scope.onlyNotMatched || article.news == null);
+            return (!$scope.onlyNotMatched || article.news.manual == undefined);
         }
 
         $scope.onlyNotMatchedFilterChanged = function () {

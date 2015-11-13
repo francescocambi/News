@@ -11,14 +11,14 @@ import it.fcambi.news.metrics.Metric;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.persistence.NoResultException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 18/10/15.
@@ -29,10 +29,24 @@ public class NewsService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<News> getNews() {
+    public Response getNews(@QueryParam("clustering") String clusteringName) {
         EntityManager em = Application.getEntityManager();
-        List<News> news = em.createQuery("select n from News n", News.class).getResultList();
-        return news;
+
+        Clustering clustering;
+        try {
+            clustering = em.find(Clustering.class, clusteringName);
+            if (clustering == null)
+                throw new IllegalArgumentException("Cannot find clustering");
+        } catch (IllegalArgumentException e) {
+            return Response.status(400).entity(e.getMessage()).build();
+        }
+
+        List<News> clusters = em.createQuery("select n from News n where n.clustering=:clustering", News.class)
+                .setParameter("clustering", clustering)
+                .getResultList();
+        em.close();
+
+        return Response.status(200).entity(clusters).build();
     }
 
     @GET
@@ -85,6 +99,38 @@ public class NewsService {
             return clusterMap.get(sourceArticle).subList(0, 50);
         else
             return clusterMap.get(sourceArticle);
+    }
+
+    @GET
+    @Path("/merge")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response mergeClusters(@QueryParam("news") List<Long> newsIds) {
+
+        if (newsIds.size() < 2)
+            return Response.status(400).entity("Cannot merge less than 2 news.").build();
+
+        EntityManager em = Application.getEntityManager();
+
+        List<News> newsToMerge = newsIds.stream().map(id -> em.find(News.class, id))
+                .filter(x -> x != null).collect(Collectors.toList());
+
+        if (newsToMerge.size() != newsIds.size())
+            return Response.status(400).entity("Invalid news ids.").build();
+
+        em.getTransaction().begin();
+        //Extract master news
+        News master = newsToMerge.remove(0);
+        //Merge all articles to master news
+        newsToMerge.stream().flatMap(n -> n.getArticles().stream()).forEach(article -> {
+            article.setNews(master.getClustering(), master);
+        });
+        //Remove all merged news
+        newsToMerge.forEach(em::remove);
+
+        em.getTransaction().commit();
+        em.close();
+
+        return Response.status(201).build();
     }
 
 }

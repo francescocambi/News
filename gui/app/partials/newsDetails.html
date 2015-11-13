@@ -16,11 +16,11 @@
     </thead>
     <tbody>
     <tr ng-repeat="a in articles">
-        <td>{{a[0]}}</td>
-        <td>{{a[1] | limitTo: 200}}</td>
-        <td>{{a[2] | NewspaperName}}</td>
+        <td>{{a.id}}</td>
+        <td>{{a.title | limitTo: 200}}</td>
+        <td>{{a.source | NewspaperName}}</td>
         <td>@</td>
-        <td>{{a[4] | date : "dd-MM-yyyy HH:mm:ss"}}</td>
+        <td>{{a.created | date : "dd-MM-yyyy HH:mm:ss"}}</td>
         <td><a href="#/articles/{{a[0]}}">Details</a></td>
     </tr>
     </tbody>

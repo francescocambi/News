@@ -133,6 +133,14 @@ public class Article {
         this.news.put(c.getName(), news);
     }
 
+    public void removeNews(Clustering c) {
+        this.news.remove(c.getName());
+    }
+
+    public Map<String, News> getNewsMap() {
+        return news;
+    }
+
     public List<FrontPage> getFrontPages() {
         return frontPages;
     }

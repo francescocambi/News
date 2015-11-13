@@ -1,6 +1,7 @@
 package it.fcambi.news.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -72,9 +73,19 @@ public class News {
         return n.getId() == this.id;
     }
 
+    @JsonIgnore
+    public Clustering getClustering() {
+        return clustering;
+    }
+
     @JsonProperty
     public int size() {
         return this.getArticles().size();
+    }
+
+    @JsonProperty
+    public String clusteringName() {
+        return this.clustering.getName();
     }
 
 }

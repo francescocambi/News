@@ -2,41 +2,52 @@ package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
 import it.fcambi.news.model.Article;
+import it.fcambi.news.ws.resources.dto.ArticleListDTO;
 import it.fcambi.news.ws.resources.dto.StatsDTO;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 05/10/15.
  */
 @Path("/articles")
-@RolesAllowed({"user", "admin"})
+//@RolesAllowed({"user", "admin"})
 public class ArticlesService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List getArticles(@QueryParam("clustering") String clusteringName,
-                            @QueryParam("newsId") Long newsId) {
-        if (clusteringName == null) clusteringName = "manual";
+    public Response getArticles(@QueryParam("newsId") Long newsId) {
+
         EntityManager em = Application.getEntityManager();
-        String select = "select a.id, a.title, a.source, n.id, a.created from Article a left join a.news n " +
-                "on n.clustering.name = :clusteringName";
-        if (newsId != null) select += " where n.id=:newsid";
-        select += " order by a.id";
-        Query o = em.createQuery(select);
-        o.setParameter("clusteringName", clusteringName);
-        if (newsId != null) o.setParameter("newsid", newsId);
-        List articles = o.getResultList();
+
+        TypedQuery<Article> select;
+        if (newsId != null) {
+            //Validate
+            if (newsId < 1)
+                return Response.status(400).entity("Invalid news id.").build();
+
+            select = em.createQuery("select a from Article a join a.news n where n.id=:newsId", Article.class)
+                    .setParameter("newsId", newsId);
+        } else {
+            select = em.createQuery("select a from Article a", Article.class);
+        }
+
+        List<ArticleListDTO> articleDTOs = select.getResultList().stream()
+                .map(ArticleListDTO::createFrom)
+                .collect(Collectors.toList());
+
         em.close();
 
-        return articles;
+        return Response.status(200).entity(articleDTOs).build();
     }
 
     @GET

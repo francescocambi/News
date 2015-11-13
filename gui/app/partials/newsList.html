@@ -1,10 +1,26 @@
 <div class="col-xs-5">
     <h1>News</h1>
 </div>
-<dir-pagination-controls class="pagination-right"></dir-pagination-controls>
+
+<div class="col-xs-12" style="border-bottom: solid 1px #dbdbdb;">
+    <label>Clustering:
+        <select ng-model="selectedClustering" ng-change="clusteringChange()"
+                ng-options="c.name as c.name for c in clusterings">
+        </select>
+    </label>
+
+    &nbsp;&nbsp;&nbsp;
+
+    <button type="button" ng-click="mergeNews()" class="btn btn-default">Merge News</button>
+
+    <dir-pagination-controls class="pagination-right"></dir-pagination-controls>
+
+</div>
+
 <table class="table table-striped">
     <thead>
     <tr>
+        <td></td>
         <td>Id</td>
         <td>Description</td>
         <td>Articles</td>
@@ -13,6 +29,9 @@
     </thead>
     <tbody>
     <tr dir-paginate="n in news | itemsPerPage: 100">
+        <td>
+            <input type="checkbox" ng-model="n.selected">
+        </td>
         <td>{{n.id}}</td>
         <td>{{n.description | limitTo: 200}}</td>
         <td>{{n.size}}</td>
