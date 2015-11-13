@@ -1,13 +1,15 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
+import it.fcambi.news.Logging;
 import it.fcambi.news.async.Task;
 import it.fcambi.news.async.TaskStatus;
-import it.fcambi.news.tasks.ComputeThresholdPerformanceTask;
 import it.fcambi.news.ws.resources.dto.TaskDTO;
-import jdk.nashorn.internal.runtime.Logging;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Hashtable;
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public abstract class TaskService<T extends Task> {
 
-    private static Logger log = Logging.getLogger(TaskService.class.getName());
+    private static Logger log = Logging.registerLogger(TaskService.class.getName());
 
     private Map<Integer, T> tasks;
     private AtomicInteger nextId;

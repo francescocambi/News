@@ -1,6 +1,5 @@
 package it.fcambi.news;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.*;
