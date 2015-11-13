@@ -32,54 +32,59 @@ public class IncrementalClustering {
         PersistenceManager persistenceManager = new PersistenceManager("it.fcambi.news.jpa.local");
         EntityManager em = persistenceManager.createEntityManager();
 
-        Clustering clustering = new Clustering();
+//        Clustering clustering = new Clustering();
+//
+//        List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'",
+//                Article.class)
+//                .getResultList();
+//
+//        List<Article> classifiedArticles = new ArrayList<>();
+//
+//        Metric metric = new CosineSimilarity();
+//        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
+//
+//        MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
+//                .addMetric(metric)
+//                .addTextFilter(new NoiseWordsTextFilter())
+//                .addTextFilter(new StemmerTextFilter())
+//                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
+//        MatchMapGenerator generator = new MatchMapGenerator(conf);
+//
+//        NumberFormat percent = NumberFormat.getPercentInstance();
+//        percent.setMaximumFractionDigits(2);
+//
+//        for (int i=0; i<articles.size()-1; i++) {
+//
+//            Map<Article, List<MatchingArticle>> map = generator.generateMap(articles.subList(i, i+1), classifiedArticles);
+//
+//            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, 0.47, clustering);
+//            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(map);
+//
+//            bestMatch.keySet().forEach(article -> {
+//                if (bestMatch.get(article) != null) {
+//                    article.setNews(clustering, bestMatch.get(article).getNews());
+//                } else {
+//                    article.setNews(clustering, new News(clustering));
+//                    article.getNews(clustering).setDescription(article.getTitle());
+//                    article.getNews(clustering).setArticles(new ArrayList<>());
+//                }
+//                article.getNews(clustering).getArticles().add(article);
+//                classifiedArticles.add(article);
+//            });
+//
+//            System.out.println("Clustering status "+percent.format((double)i/(articles.size()-1)));
+//
+//        }
+//
+//        Set<News> generatedClusters = new HashSet<>();
+//        classifiedArticles.forEach(article -> generatedClusters.add(article.getNews(clustering)));
 
-        List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'",
-                Article.class)
-                .getResultList();
-
-        List<Article> classifiedArticles = new ArrayList<>();
-
-        Metric metric = new CosineSimilarity();
-        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
-
-        MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
-                .addMetric(metric)
-                .addTextFilter(new NoiseWordsTextFilter())
-                .addTextFilter(new StemmerTextFilter())
-                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
-        MatchMapGenerator generator = new MatchMapGenerator(conf);
-
-        NumberFormat percent = NumberFormat.getPercentInstance();
-        percent.setMaximumFractionDigits(2);
-
-        for (int i=0; i<articles.size()-1; i++) {
-
-            Map<Article, List<MatchingArticle>> map = generator.generateMap(articles.subList(i, i+1), classifiedArticles);
-
-            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, 0.47, clustering);
-            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(map);
-
-            bestMatch.keySet().forEach(article -> {
-                if (bestMatch.get(article) != null) {
-                    article.setNews(clustering, bestMatch.get(article).getNews());
-                } else {
-                    article.setNews(clustering, new News(clustering));
-                    article.getNews(clustering).setDescription(article.getTitle());
-                    article.getNews(clustering).setArticles(new ArrayList<>());
-                }
-                article.getNews(clustering).getArticles().add(article);
-                classifiedArticles.add(article);
-            });
-
-            System.out.println("Clustering status "+percent.format((double)i/(articles.size()-1)));
-
-        }
-
-        Set<News> generatedClusters = new HashSet<>();
-        classifiedArticles.forEach(article -> generatedClusters.add(article.getNews(clustering)));
+        List<News> generatedClusters = em.createQuery("select n from News n where n.clustering.name='auto_test'", News.class).getResultList();
 
         List<News> expectedClusters = em.createQuery("select n from News n where n.clustering.name = 'manual'", News.class).getResultList();
+
+        if (generatedClusters.size() == 0)
+            throw new IllegalStateException("Empty generatedClusters collection");
 
         Collection<News> rows;
         Collection<News> cols;

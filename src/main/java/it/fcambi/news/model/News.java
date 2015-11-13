@@ -22,7 +22,7 @@ public class News {
     @Column(columnDefinition = "TEXT")
     protected String description;
 
-    @ManyToOne(targetEntity = Clustering.class)
+    @ManyToOne
     @JsonManagedReference
     @NotNull
     protected Clustering clustering;

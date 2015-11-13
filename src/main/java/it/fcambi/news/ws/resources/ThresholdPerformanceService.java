@@ -27,16 +27,7 @@ import java.util.stream.Collectors;
  */
 @Path("/threshold-performance")
 @Singleton
-public class ThresholdPerformanceService {
-
-    private Map<Integer, ComputeThresholdPerformanceTask> tasks;
-    private AtomicInteger nextId;
-
-    public ThresholdPerformanceService() {
-        this.nextId = new AtomicInteger();
-        this.nextId.set(1);
-        this.tasks = new Hashtable<>();
-    }
+public class ThresholdPerformanceService extends TaskService<ComputeThresholdPerformanceTask> {
 
     @GET
     @Path("/start")
@@ -50,89 +41,26 @@ public class ThresholdPerformanceService {
                               @QueryParam("tfidf") boolean tfidf,
                               @QueryParam("keywordExtraction") String keywordExtraction) {
 
-        if (metricName == null)
-            return Response.status(400).build();
-
-        MatchMapGeneratorConfiguration config = new MatchMapGeneratorConfiguration();
-        if (noiseWordsFilter) config.addTextFilter(new NoiseWordsTextFilter());
-        if (stemming) config.addTextFilter(new StemmerTextFilter());
-        if (tfidf) {
-            EntityManager em = Application.getEntityManager();
-            TFDictionary dict = em.find(TFDictionary.class, "italian_stemmed");
-            config.setWordVectorFactory(new TFIDFWordVectorFactory(dict));
-            em.close();
-        }
-        Metric metric;
-        switch (metricName) {
-            case "cosine":
-                metric = new CosineSimilarity();
-                break;
-            case "jaccard":
-                metric = new JaccardSimilarity();
-                break;
-            case "combined":
-                metric = new MyMetric();
-                break;
-            case "tanimoto":
-                metric = new TanimotoSimilarity();
-                break;
-            default:
-                metric = new CosineSimilarity();
-                break;
-        }
-        config.addMetric(metric);
-
-        switch (keywordExtraction) {
-            case "headline":
-                config.setKeywordSelectionFunction(MatchMapGeneratorConfiguration.headlineKeywords);
-                break;
-            default:
-                config.setKeywordSelectionFunction(MatchMapGeneratorConfiguration.headlineAndCapitalsKeywords);
+        MatchMapGeneratorConfigurationParser parser = new MatchMapGeneratorConfigurationParser();
+        try {
+            parser.parse(metricName, noiseWordsFilter, stemming, tfidf, keywordExtraction);
+        } catch (IllegalArgumentException e) {
+            return Response.status(400).entity(e.getMessage()).build();
         }
 
         ComputeThresholdPerformanceTask task;
         if (start >= 0 && step > 0 && limit > 0)
-            task = new ComputeThresholdPerformanceTask(config, metric, start, step, limit);
+            task = new ComputeThresholdPerformanceTask(parser.getConfig(), parser.getMetric(), start, step, limit);
         else
-            task = new ComputeThresholdPerformanceTask(config, metric);
+            return Response.status(400).entity("Invalid threshold range parameters.").build();
 
-        int id = this.nextId.getAndIncrement();
+        int id = super.nextId();
 
-        this.tasks.put(id, task);
+        super.putTask(id, task);
 
         Application.getScheduler().schedule(task);
 
         return Response.status(201).entity(id).build();
-    }
-
-    @GET
-    @Path("/progress/{taskId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getProgressForTask(@PathParam("taskId") int taskId) {
-        if (tasks.get(taskId) == null)
-            return Response.status(404).build();
-        return Response.status(200).entity(tasks.get(taskId).getProgress()).build();
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<TaskDTO> getAllTasks() {
-        return tasks.entrySet().stream().map(entry -> new TaskDTO(entry.getKey(), entry.getValue().getCreationTime(),
-                    entry.getValue().getProgress(), entry.getValue().getStatus())
-        ).collect(Collectors.toList());
-    }
-
-    @GET
-    @Path("/results/{taskId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getResult(@PathParam("taskId") int taskId) {
-        if (tasks.get(taskId) == null)
-            return Response.status(404).build();
-
-        if (tasks.get(taskId).getStatus() != TaskStatus.COMPLETED)
-            return Response.status(400).build();
-
-        return Response.status(200).entity(tasks.get(taskId).getResults()).build();
     }
 
 }

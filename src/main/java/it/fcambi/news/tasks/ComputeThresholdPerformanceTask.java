@@ -66,7 +66,6 @@ public class ComputeThresholdPerformanceTask extends Task {
         EntityManager em = Application.getEntityManager();
 
         Clustering manualClustering = em.find(Clustering.class, "manual");
-        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
 
         List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'", Article.class)
                 .getResultList();
@@ -112,13 +111,14 @@ public class ComputeThresholdPerformanceTask extends Task {
 
     @Override
     public double getProgress() {
-        double p = (0.2*progress.get());
+        double p = (0.05*progress.get());
         if (matchMapGenerator != null)
-            p += (0.8*matchMapGenerator.getProgress());
+            p += (0.95*matchMapGenerator.getProgress());
         if (p > 99.9) return 100;
         else return p;
     }
 
+    @Override
     public ThresholdPerformanceResult getResults() {
         return results;
     }

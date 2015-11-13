@@ -56,9 +56,9 @@ public class Article {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JsonManagedReference
-    private Map<Clustering, News> news;
+    private Map<String, News> news;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
@@ -126,11 +126,11 @@ public class Article {
     }
 
     public News getNews(Clustering c) {
-        return news.get(c);
+        return news.get(c.getName());
     }
 
     public void setNews(Clustering c, News news) {
-        this.news.put(c, news);
+        this.news.put(c.getName(), news);
     }
 
     public List<FrontPage> getFrontPages() {

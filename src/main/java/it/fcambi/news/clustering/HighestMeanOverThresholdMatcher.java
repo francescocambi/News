@@ -4,6 +4,7 @@ import it.fcambi.news.model.*;
 import it.fcambi.news.metrics.Metric;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -43,15 +44,19 @@ public class HighestMeanOverThresholdMatcher implements Matcher {
                                 m.getArticle().getNews(clustering).equals(news.getNews())).collect(Collectors.toList())
                 );
                 results.put(entry.getKey(), news);
-            } else
+            } else {
                 results.put(entry.getKey(), null);
+            }
         });
 
         return results;
     }
 
     private News getNews(MatchingArticle m) {
-        return m.getArticle().getNews(clustering);
+        if (m.getArticle().getNews(clustering) == null)
+            throw new IllegalArgumentException(m.getArticle().getId()+" does not have matched news from this clustering");
+        else
+            return m.getArticle().getNews(clustering);
     }
 
     @Override

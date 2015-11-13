@@ -117,6 +117,11 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
             controller: "PerformanceResultsCtrl"
         });
 
+        $routeProvider.when("/clustering", {
+            templateUrl: "partials/clusteringTask.html",
+            controller: "ClusteringTaskCtrl"
+        });
+
         $routeProvider.otherwise({
             templateUrl: "partials/home.html",
             controller: "homeCtrl"

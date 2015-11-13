@@ -37,7 +37,9 @@ public class PastTask {
         p.creationTime = t.getCreationTime();
         p.startTime = t.getStartTime();
         p.endTime = t.getEndTime();
-        if (t.getStatus() == TaskStatus.COMPLETED)
+        if (t.getStatus() == TaskStatus.COMPLETED && t.getFuture().isCancelled())
+            p.result = "INTERRUPTED";
+        else if (t.getStatus() == TaskStatus.COMPLETED)
             p.result = "COMPLETED";
         else if (t.getStatus() == TaskStatus.ERROR) {
             p.result = "FAILED";

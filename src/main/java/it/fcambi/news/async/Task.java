@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -51,6 +52,7 @@ public abstract class Task implements Runnable {
             this.executeTask();
         } catch (Exception e) {
             this.exception = e;
+            log.log(Level.WARNING, "Task "+getName()+" finished with exception.", e);
         }
         log.info("Completed "+getName());
 
@@ -144,5 +146,9 @@ public abstract class Task implements Runnable {
 
     public Exception getException() {
         return exception;
+    }
+
+    public Object getResults() {
+        return null;
     }
 }

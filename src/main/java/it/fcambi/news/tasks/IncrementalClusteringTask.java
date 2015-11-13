@@ -1,10 +1,14 @@
-package it.fcambi.news.clustering;
+package it.fcambi.news.tasks;
 
 import it.fcambi.news.Application;
 import it.fcambi.news.async.Task;
+import it.fcambi.news.clustering.MatchMapGenerator;
+import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
+import it.fcambi.news.clustering.Matcher;
 import it.fcambi.news.model.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,55 +38,88 @@ public class IncrementalClusteringTask extends Task {
 
     @Override
     public String getDescription() {
-        return "Groups article that talks about the same event.";
+        return "Groups articles about the same event.";
     }
 
     @Override
     protected void executeTask() throws Exception {
         progress.set(0);
 
-        EntityManager em = Application.getEntityManager();
+        if (Thread.interrupted()) return;
 
+        EntityManager em = Application.getEntityManager();
+        em.getTransaction().begin();
+        em.merge(clustering);
+
+        articlesToBeClustered = articlesToBeClustered.stream().map(em::merge).collect(Collectors.toList());
+
+        //Configure match map generator
         MatchMapGenerator matchMapGenerator = new MatchMapGenerator(matchMapConfiguration);
 
-        Set<Article> classifiedArticles = clustering.getClusters().parallelStream()
-                .map(News::getArticles).flatMap(List::stream).collect(Collectors.toSet());
+        //Prepare set with all articles from existing clusters
+        String select = "select a from Article a where key(a.news)=:clusteringName";
+        List<Article> classifiedArticles;
+        try {
+            classifiedArticles = em.createQuery(select, Article.class)
+                    .setParameter("clusteringName", clustering.getName())
+                    .getResultList();
+        } catch (NoResultException e) {
+            classifiedArticles = new Vector<>();
+        }
 
-        final double progressIncrementA = 85/articlesToBeClustered.size();
+        final double progressIncrementA = 0.85/articlesToBeClustered.size();
 
-        for (int i=1; i<articlesToBeClustered.size(); i++) {
+        //TODO Remove
+        classifiedArticles.forEach(a -> {
+            assert a.getNews(clustering) != null;
+        });
 
+        Set<News> newsToMerge = new HashSet<>();
+
+        //Find a fitting cluster for each article one by one
+        // updating classifiedArticles each iteration
+        for (int i=1; i<articlesToBeClustered.size() && !Thread.currentThread().isInterrupted(); i++) {
+
+            //Match map generation
             Map<Article, List<MatchingArticle>> matchMap = matchMapGenerator.generateMap(
                     articlesToBeClustered.subList(i-1, i), classifiedArticles);
 
+            //Find best match
             Map<Article, MatchingNews> bestMatchMap = matcher.findBestMatch(matchMap);
 
             Article article = articlesToBeClustered.get(i-1);
             MatchingNews bestMatchingNews = bestMatchMap.get(article);
             if (bestMatchingNews != null) {
+                // Cluster found, add article to cluster
                 article.setNews(clustering, bestMatchingNews.getNews());
                 article.getNews(clustering).addArticle(article);
             } else {
+                // New cluster for this article
                 News newCluster = News.createForArticle(article, clustering);
+                newCluster = em.merge(newCluster);
                 article.setNews(clustering, newCluster);
             }
+            newsToMerge.add(article.getNews(clustering));
+
+            //Updates classifiedArticle
             classifiedArticles.add(article);
 
             progress.add(progressIncrementA);
 
         }
 
-        //TODO Merge all articles
-        final double progressIncrementB = 15/articlesToBeClustered.size();
+        final double progressIncrementB = 0.05/articlesToBeClustered.size();
 
-        em.getTransaction().begin();
-        articlesToBeClustered.forEach(article -> {
-            em.merge(article);
-            progress.add(progressIncrementB);
-        });
-        em.getTransaction().commit();
 
-        progress.set(100);
+        System.out.println("# of clusters obtained "+newsToMerge.size());
+
+
+        if (!Thread.currentThread().isInterrupted()) {
+            em.getTransaction().commit();
+            progress.set(1);
+        } else {
+            em.getTransaction().rollback();
+        }
 
         em.close();
     }

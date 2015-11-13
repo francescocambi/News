@@ -1,0 +1,108 @@
+<h1>New Threshold Performance Evaluation Task</h1>
+<div class="col-md-12 panel">
+    <div class="col-md-3">
+        <legend>Metric</legend>
+        <div class="radio">
+            <label><input type="radio" name="metric" ng-model="taskConfig.metricName" value="cosine"> Cosine</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="metric" ng-model="taskConfig.metricName" value="jaccard"> Jaccard</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="metric" ng-model="taskConfig.metricName" value="combined"> Combined</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="metric" ng-model="taskConfig.metricName" value="tanimoto"> Tanimoto</label>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <legend>Matcher</legend>
+        <div class="input-group">
+            <span class="input-group-addon">Start</span>
+            <input type="text" class="form-control" ng-model="taskConfig.threshold" ng-pattern="/0.[0-9]+/" required="true">
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean"> Highest Mean</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean_over_threshold"> Highest Mean Over Threshold</label>
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon">Clustering Name</span>
+            <input type="text" class="form-control" ng-model="taskConfig.clusteringName" required="true" maxlength="100">
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <legend>Options</legend>
+        <div class="checkbox">
+            <label><input type="checkbox" ng-model="taskConfig.tfidf" ng-change="taskConfig.stemming = true"> Use TF-IDF</label>
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" ng-model="taskConfig.stemming" ng-change="(taskConfig.tfidf) ? taskConfig.tfidf=false : null"> Use Stemmer</label>
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" ng-model="taskConfig.noiseWordsFilter"> Remove Stop Words</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="keywordExtraction" ng-model="taskConfig.keywordExtraction" value="headline"> Headline</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="keywordExtraction" ng-model="taskConfig.keywordExtraction" value="capitals"> Headline and Capitals</label>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <legend>Articles Dataset</legend>
+        <div class="input-group">
+            <span class="input-group-addon">From Date</span>
+            <input type="datetime-local" class="form-control" ng-model="taskConfig.articlesFrom"
+                   placeholder="YYYY-MM-DDTHH:MM:SS">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon">To Date</span>
+            <input type="datetime-local" class="form-control" ng-model="taskConfig.articlesTo"
+                   placeholder="YYYY-MM-DDTHH:MM:SS">
+        </div>
+    </div>
+
+    <div class="col-md-12" style="text-align: right;">
+        <button type="button" class="btn btn-primary" ng-click="createAndStartTask(taskConfig)">Create and Start</button>
+    </div>
+</div>
+
+<div class="panel col-md-12">
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Creation time</th>
+            <th style="width: 60%">Progress</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="task in taskList">
+            <td>{{ task.taskId }}</td>
+            <td>{{ task.created | date : "dd-MM-yyyy HH:mm:ss" }}</td>
+            <td>
+                <div class="progress" style="margin-bottom: 0px;" ng-if="task.active">
+                    <div class="progress-bar progress-bar-striped active"
+                         role="progressbar" aria-valuenow="{{task.progress*100}}"
+                         aria-valuemin="0" aria-valuemax="100" ng-style="{'width': (task.progress*100)+'%'}">
+                        {{task.progress*100 | number : 0 }}%
+                    </div>
+                </div>
+            </td>
+            <td>{{ task.status | taskStatus }}</td>
+            <td style="font-size: 20px;">
+                <a ng-click="cancelTask(task)">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
