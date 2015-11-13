@@ -49,7 +49,20 @@ public class ArticlesDownloaderTask extends Task {
         for (Crawler crawler : crawlers) {
             try {
                 // Retrieve articles on the home page
-                List<String> urls = crawler.retrieveArticleUrlsFromHomePage();
+                List<String> urls = null;
+                int attempts = 10;
+                while (attempts > 0) {
+                    try {
+                        urls = crawler.retrieveArticleUrlsFromHomePage();
+                        attempts = 0;
+                    } catch (Exception e) {
+                        if (attempts > 0) {
+                            attempts--;
+                            Thread.sleep(10000);
+                        } else
+                            throw e;
+                    }
+                }
                 List<Article> articles = new LinkedList<>();
 
                 float statusArticleUnit = (75F/crawlers.length)/urls.size();
