@@ -96,7 +96,8 @@ public class LaRepubblicaCrawler implements Crawler {
         Document d = Jsoup.connect("http://repubblica.it").get();
 
         //Select only main column
-        Elements articles = d.select(".main-content[role=main] > .article h1 a:first-of-type");
+        Elements articles = d.select("#container > .article h1 a:first-of-type");
+        articles.addAll(d.select(".main-content[role=main] > .article h1 a:first-of-type"));
         articles.addAll(d.select(".sub-content-1 .article h1 a:first-of-type"));
 
         Vector<String> urls = new Vector<String>();

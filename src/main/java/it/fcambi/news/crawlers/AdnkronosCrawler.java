@@ -59,9 +59,9 @@ public class AdnkronosCrawler implements Crawler {
 
         Document d = Jsoup.connect("http://www.adnkronos.com").get();
 
-        Elements articles = d.select("#leftCol .inner > .previewGroup article .title a:first-of-type");
         //Top news
-        articles.addAll(d.select("#bigEvent .title > a:first-of-type"));
+        Elements articles = d.select("#bigEvent .title > a:first-of-type");
+        articles.addAll(d.select("#leftCol .inner > .previewGroup article .title a:first-of-type"));
         articles.addAll(d.select("#innerLeft article .title a:first-of-type"));
 
         articles.forEach(a -> urls.add(a.attr("href")));
