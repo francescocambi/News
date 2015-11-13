@@ -5,7 +5,6 @@ import it.fcambi.news.async.Scheduler;
 import it.fcambi.news.async.Task;
 import it.fcambi.news.async.TaskStatus;
 import it.fcambi.news.tasks.ArticlesDownloaderTask;
-import it.fcambi.news.ProgressHolder;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
