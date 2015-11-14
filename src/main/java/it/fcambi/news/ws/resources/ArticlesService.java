@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Created by Francesco on 05/10/15.
  */
 @Path("/articles")
-//@RolesAllowed({"user", "admin"})
+@RolesAllowed({"user", "admin"})
 public class ArticlesService {
 
     @GET

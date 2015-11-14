@@ -34,3 +34,7 @@ body {
     display: inline-block;
     float: right;
 }
+
+.border-bottom {
+    border-bottom: solid 1px #dbdbdb;
+}

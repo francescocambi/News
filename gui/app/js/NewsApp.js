@@ -64,12 +64,12 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
 
         $routeProvider.when("/articles/list", {
             templateUrl: "partials/articlesList.html",
-            controller: "articlesCtrl"
+            controller: "ArticlesListCtrl"
         });
 
         $routeProvider.when("/articles/:id", {
             templateUrl: "partials/articleDetails.html",
-            controller: "articlesCtrl"
+            controller: "ArticleDetailsCtrl"
         });
 
         $routeProvider.when("/articles/match/:id", {
@@ -79,7 +79,7 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
 
         $routeProvider.when("/articles/match/details/:id-:matchid", {
             templateUrl: "partials/articlesMatchDetails.html",
-            controller: "articlesCtrl"
+            controller: "ArticleMatchDetailsCtrl"
         });
 
         $routeProvider.when("/front-pages", {

@@ -112,6 +112,48 @@ public class IncrementalClustering {
 
         }).toArray();
 
+        //Compute precision recall
+
+        class IRStats {
+            public double precision;
+            public double recall;
+
+            public IRStats(double precision, double recall) {
+                this.precision = precision;
+                this.recall = recall;
+            }
+
+            public double getPrecision() {
+                return precision;
+            }
+
+            public double getRecall() {
+                return recall;
+            }
+        }
+
+        List<IRStats> irstats = expectedClusters.stream().map(exp -> {
+
+            return generatedClusters.stream().map(gen -> {
+
+                long intersection = exp.getArticles().stream().filter(a -> gen.getArticles().contains(a)).collect(Collectors.counting());
+                return new IRStats((double)intersection/gen.size(), (double)intersection/exp.size());
+
+            }).max((a, b) -> Double.compare(a.recall, b.recall)).get();
+
+        }).collect(Collectors.toList());
+
+        DoubleSummaryStatistics precisionStats = irstats.stream().mapToDouble(IRStats::getPrecision).summaryStatistics();
+        DoubleSummaryStatistics recallStats = irstats.stream().mapToDouble(IRStats::getRecall).summaryStatistics();
+
+        double fmeasure = (2.0*(precisionStats.getAverage()*recallStats.getAverage()))/(precisionStats.getAverage()+recallStats.getAverage());
+
+        //TODO Compute prec rec std dev
+
+        System.out.println("Precision >> AVG: "+precisionStats.getAverage()+" ["+precisionStats.getMin()+" ; "+precisionStats.getMax()+"]");
+        System.out.println("Recall >> AVG: "+recallStats.getAverage()+" ["+recallStats.getMin()+" ; "+recallStats.getMax()+"]");
+        System.out.println("F-MEASURE >> "+fmeasure);
+
 //        Path filePath = Paths.get("jaccardDistribution.csv");
 //        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
 //            writer.write(Arrays.stream(distribution).sorted()
