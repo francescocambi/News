@@ -3,6 +3,7 @@ package it.fcambi.news.ws.resources;
 import it.fcambi.news.Application;
 import it.fcambi.news.model.Clustering;
 
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.ws.rs.GET;
@@ -15,6 +16,7 @@ import java.util.List;
  * Created by Francesco on 13/11/15.
  */
 @Path("/clusterings")
+@RolesAllowed({"user", "admin"})
 public class ClusteringsService {
 
     @GET

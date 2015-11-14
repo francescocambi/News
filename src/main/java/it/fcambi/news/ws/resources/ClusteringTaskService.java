@@ -8,6 +8,7 @@ import it.fcambi.news.model.Article;
 import it.fcambi.news.model.Clustering;
 import it.fcambi.news.tasks.IncrementalClusteringTask;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -28,6 +29,7 @@ import java.util.List;
  */
 @Path("/clustering")
 @Singleton
+@RolesAllowed({"user", "admin"})
 public class ClusteringTaskService extends TaskService<IncrementalClusteringTask> {
 
     @GET

@@ -13,6 +13,7 @@ import it.fcambi.news.tasks.ThresholdPerformanceResult;
 import it.fcambi.news.ws.resources.dto.ProgressUpdateDTO;
 import it.fcambi.news.ws.resources.dto.TaskDTO;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.*;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  */
 @Path("/threshold-performance")
 @Singleton
+@RolesAllowed({"user", "admin"})
 public class ThresholdPerformanceService extends TaskService<ComputeThresholdPerformanceTask> {
 
     @GET
