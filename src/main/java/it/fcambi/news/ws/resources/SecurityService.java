@@ -9,7 +9,6 @@ import it.fcambi.news.ws.resources.dto.LoginRequestDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -31,7 +30,7 @@ public class SecurityService {
     public Response authenticateUser(LoginRequestDTO loginRequest) {
 
         User u;
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         try {
             u = em.createQuery("select u from User u where u.username=?1 and u.password=?2", User.class)
                 .setParameter(1, loginRequest.getUsername())
@@ -45,6 +44,7 @@ public class SecurityService {
         em.getTransaction().begin();
         em.persist(s);
         em.getTransaction().commit();
+        em.close();
 
         AuthenticationDTO dto = new AuthenticationDTO();
         dto.setSessionId(""+s.getId());
@@ -64,7 +64,7 @@ public class SecurityService {
         }
 
         Session s;
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         try {
             s = em.find(Session.class, Long.parseLong(session.getSessionId()));
         } catch (NoResultException e) {
@@ -74,6 +74,7 @@ public class SecurityService {
         em.getTransaction().begin();
         em.merge(s);
         em.getTransaction().commit();
+        em.close();
 
         log.info("Logged out "+s.getUser().getName()+" with session ID "+s.getId());
 

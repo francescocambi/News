@@ -26,7 +26,7 @@ public class FrontPagesService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List getAll() {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         List pages = em.createQuery("select p.id, p.timestamp, p.newspaper from FrontPage p")
                 .getResultList();
         em.close();
@@ -37,7 +37,7 @@ public class FrontPagesService {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public FrontPage getById(@PathParam("id") long id) {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         FrontPage page = em.find(FrontPage.class, id);
         em.close();
         return page;
@@ -47,7 +47,7 @@ public class FrontPagesService {
     @Path("/stats/changes-time")
     @Produces(MediaType.APPLICATION_JSON)
     public Map<Newspaper, Double> getChangesOnTime() {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         List<FrontPage> pages = em.createQuery("select p from FrontPage p", FrontPage.class).getResultList();
 
         //Separates front pages for each newspaper
@@ -87,7 +87,7 @@ public class FrontPagesService {
 
         Map<Newspaper, Map<Date, Double>> stats = new HashMap<>();
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         List<FrontPage> pages = em.createQuery("select p from FrontPage p", FrontPage.class).getResultList();
 
         // Create Newspaper - FrontPage map
@@ -108,6 +108,8 @@ public class FrontPagesService {
             }
 
         });
+
+        em.close();
 
         return stats;
 

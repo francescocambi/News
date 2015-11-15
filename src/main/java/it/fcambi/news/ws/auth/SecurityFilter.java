@@ -44,7 +44,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
         //Retrieve session
         try {
-            EntityManager em = Application.getEntityManager();
+            EntityManager em = Application.createEntityManager();
             Session s = em.find(Session.class, Long.parseLong(authorization));
             em.close();
             if (s.isValid())

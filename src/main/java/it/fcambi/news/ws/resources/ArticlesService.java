@@ -7,7 +7,6 @@ import it.fcambi.news.ws.resources.dto.StatsDTO;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -27,7 +26,7 @@ public class ArticlesService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getArticles(@QueryParam("newsId") Long newsId) {
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         TypedQuery<Article> select;
         if (newsId != null) {
@@ -54,7 +53,7 @@ public class ArticlesService {
     @Path("/stats")
     @Produces(MediaType.APPLICATION_JSON)
     public StatsDTO getStatistics() {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         Long articlesCount = em.createQuery("select count(a) from Article a", Long.class).getSingleResult();
         Long matchedArtCount = em.createQuery("select count(a) from Article a where key(a.news) = 'manual'", Long.class).getSingleResult();
@@ -76,7 +75,7 @@ public class ArticlesService {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Article getArticle(@PathParam("id") long articleId) {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         Article a = em.find(Article.class, articleId);
         em.close();
         return a;
@@ -85,7 +84,7 @@ public class ArticlesService {
     @DELETE
     @Path("/{id}")
     public Response deleteArticle(@PathParam("id") long articleId) {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         Article a = em.find(Article.class, articleId);
         if (!em.isOpen())
             return Response.status(500).build();

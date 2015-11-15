@@ -17,7 +17,7 @@ public class PastTaskTracer implements TaskCompletedObserver {
 
     @Override
     public void taskCompleted(Task t) {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         PastTask p = PastTask.createFrom(t);
 

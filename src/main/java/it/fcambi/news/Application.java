@@ -120,7 +120,7 @@ public class Application {
         return props.getProp(name);
     }
 
-    public static EntityManager getEntityManager() {
+    public static EntityManager createEntityManager() {
         return persistenceManager.createEntityManager();
     }
 

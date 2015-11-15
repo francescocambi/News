@@ -31,7 +31,7 @@ public class MatchingArticlesService {
     @Produces("application/json")
     public MatchingArticle getMatchingArticle(@PathParam("id") long articleId, @PathParam("matchId") long matchId) {
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         //TODO Surround not found article exception
         Article source = em.find(Article.class, articleId);
@@ -63,7 +63,7 @@ public class MatchingArticlesService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response matchArticles(MatchArticlesRequestDTO m) {
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         Article article = em.find(Article.class, m.getArticleId());
         Clustering clustering = em.find(Clustering.class, "manual");

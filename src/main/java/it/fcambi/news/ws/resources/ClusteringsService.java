@@ -23,7 +23,7 @@ public class ClusteringsService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Clustering> getClusterings() {
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         List<Clustering> clusterings;
 
         try {

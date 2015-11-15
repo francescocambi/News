@@ -33,7 +33,7 @@ public class ArticlesDownloaderTask extends Task {
     @Override
     public void executeTask() {
         progress.set(0);
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         //Crawl articles
         log.info("Article downloader process started.");

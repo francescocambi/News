@@ -1,7 +1,6 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
-import it.fcambi.news.clustering.MatchMapGenerator;
 import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
 import it.fcambi.news.data.TFIDFWordVectorFactory;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
@@ -34,7 +33,7 @@ public class MatchMapGeneratorConfigurationParser {
         if (noiseWordsFilter) config.addTextFilter(new NoiseWordsTextFilter());
         if (stemming) config.addTextFilter(new StemmerTextFilter());
         if (tfidf) {
-            EntityManager em = Application.getEntityManager();
+            EntityManager em = Application.createEntityManager();
             TFDictionary dict = em.find(TFDictionary.class, "italian_stemmed");
             config.setWordVectorFactory(new TFIDFWordVectorFactory(dict));
             em.close();

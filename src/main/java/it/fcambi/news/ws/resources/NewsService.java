@@ -11,7 +11,6 @@ import it.fcambi.news.metrics.Metric;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -30,7 +29,7 @@ public class NewsService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getNews(@QueryParam("clustering") String clusteringName) {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         Clustering clustering;
         try {
@@ -53,7 +52,7 @@ public class NewsService {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public News getNewsById(@PathParam("id") long newsId) {
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         News n = em.find(News.class, newsId);
         n.size();
         em.close();
@@ -66,7 +65,7 @@ public class NewsService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<MatchingNews> getMatchingNewsFor(@PathParam("id") long articleId) {
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         //TODO Surround NoResult exception
 
@@ -109,7 +108,7 @@ public class NewsService {
         if (newsIds.size() < 2)
             return Response.status(400).entity("Cannot merge less than 2 news.").build();
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         List<News> newsToMerge = newsIds.stream().map(id -> em.find(News.class, id))
                 .filter(x -> x != null).collect(Collectors.toList());

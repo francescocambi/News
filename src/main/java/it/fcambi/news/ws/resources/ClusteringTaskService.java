@@ -65,7 +65,7 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
         // Checks clustering existence. If not exists, create it.
         Clustering clustering;
         if (clusteringName != null && clusteringName.length() > 0) {
-            em = Application.getEntityManager();
+            em = Application.createEntityManager();
             try {
                 clustering = em.find(Clustering.class, clusteringName);
                 if (clustering == null) throw new Exception();
@@ -118,7 +118,7 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
         if (from != null && to != null && from.before(to))
             select += " and a.created between :from and :to";
 
-        if (em == null) em = Application.getEntityManager();
+        if (em == null) em = Application.createEntityManager();
         Query q = em.createQuery(select, Article.class);
 //        q.setParameter("source", source);
 

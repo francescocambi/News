@@ -63,7 +63,7 @@ public class ComputeThresholdPerformanceTask extends Task {
     protected void executeTask() throws Exception {
         progress.set(0);
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
 
         Clustering manualClustering = em.find(Clustering.class, "manual");
 

@@ -47,7 +47,7 @@ public class IncrementalClusteringTask extends Task {
 
         if (Thread.interrupted()) return;
 
-        EntityManager em = Application.getEntityManager();
+        EntityManager em = Application.createEntityManager();
         em.getTransaction().begin();
         em.merge(clustering);
 
