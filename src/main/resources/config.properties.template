@@ -2,6 +2,7 @@
 BIND_URI=https://localhost:8000
 GUI_APP_PATH=/path/to/gui
 WS_FINE_LOGGING=true
+DISABLE_FILE_CACHE=false
 
 # Persistence Unit Properties
 PERSISTENCE_UNIT=it.fcambi.news.jpa.some...

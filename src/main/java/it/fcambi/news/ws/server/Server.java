@@ -50,7 +50,10 @@ public class Server {
         SSLEngineConfigurator sslConf = new SSLEngineConfigurator(sslContext, false, false, false);
         server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc, true, sslConf);
         StaticHttpHandler staticHttpHandler = new StaticHttpHandler(props.getProp("GUI_APP_PATH"));
-        staticHttpHandler.setFileCacheEnabled(false);
+
+        if (Boolean.parseBoolean(props.getProp("DISABLE_FILE_CACHE")))
+            staticHttpHandler.setFileCacheEnabled(false);
+
         server.getServerConfiguration().addHttpHandler(staticHttpHandler, "/gui");
 
         log.info("Web Services initialization completed.");
