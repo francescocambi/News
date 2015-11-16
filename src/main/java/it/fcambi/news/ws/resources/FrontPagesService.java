@@ -3,6 +3,8 @@ package it.fcambi.news.ws.resources;
 import it.fcambi.news.Application;
 import it.fcambi.news.data.NewsVector;
 import it.fcambi.news.metrics.permutations.BasicDistance;
+import it.fcambi.news.metrics.permutations.KendallTau;
+import it.fcambi.news.metrics.permutations.PermutationsMetric;
 import it.fcambi.news.model.Clustering;
 import it.fcambi.news.model.FrontPage;
 import it.fcambi.news.model.Newspaper;
@@ -114,7 +116,7 @@ public class FrontPagesService {
                 Clustering clustering = em.find(Clustering.class, clusteringName);
 
                 //Compute distance between pages at each timestamp gap
-                BasicDistance d = new BasicDistance();
+                PermutationsMetric d = new KendallTau();
                 for (int i=1; i<l.size(); i++) {
                     double distance = d.compute(
                             new NewsVector(l.get(i-1), clustering).getNewsIds(),
