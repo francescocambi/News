@@ -87,14 +87,14 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
             controller: "FrontPagesListCtrl"
         });
 
+        $routeProvider.when("/front-pages/variability", {
+            templateUrl: "partials/frontPagesVariability.html",
+            controller: "FrontPagesVariabilityCtrl"
+        });
+
         $routeProvider.when("/front-pages/:id", {
             templateUrl: "partials/frontPageDetails.html",
             controller: "FrontPageDetailsCtrl"
-        });
-
-        $routeProvider.when("/test", {
-            templateUrl: "partials/test.html",
-            controller: "TestCtrl"
         });
 
         $routeProvider.when("/news", {

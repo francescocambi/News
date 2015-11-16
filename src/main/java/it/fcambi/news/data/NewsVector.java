@@ -1,5 +1,6 @@
 package it.fcambi.news.data;
 
+import it.fcambi.news.model.Clustering;
 import it.fcambi.news.model.FrontPage;
 
 /**
@@ -9,12 +10,12 @@ public class NewsVector {
 
     long[] newsIds;
 
-    public NewsVector(FrontPage page) {
+    public NewsVector(FrontPage page, Clustering c) {
 
-//        newsIds = page.getArticles().stream()
-//                .filter(a -> a.getNews() != null)
-//                .mapToLong(a -> a.getNews().getId())
-//                .toArray();
+        newsIds = page.getArticles().stream()
+                .filter(a -> a.getNews(c) != null)
+                .mapToLong(a -> a.getNews(c).getId())
+                .toArray();
 
     }
 

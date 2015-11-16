@@ -28,7 +28,7 @@ public class MatchingArticlesService {
 
     @GET
     @Path("/matching/{id}-{matchId}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public MatchingArticle getMatchingArticle(@PathParam("id") long articleId, @PathParam("matchId") long matchId) {
 
         EntityManager em = Application.createEntityManager();

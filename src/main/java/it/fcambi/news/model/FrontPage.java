@@ -58,4 +58,8 @@ public class FrontPage {
     public void setArticles(List<Article> articles) {
         this.articles = articles;
     }
+
+    public int orderOf(Article a) {
+        return this.articles.indexOf(a);
+    }
 }

@@ -3,15 +3,13 @@ package it.fcambi.news.ws.resources;
 import it.fcambi.news.Application;
 import it.fcambi.news.data.NewsVector;
 import it.fcambi.news.metrics.permutations.BasicDistance;
+import it.fcambi.news.model.Clustering;
 import it.fcambi.news.model.FrontPage;
 import it.fcambi.news.model.Newspaper;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +18,7 @@ import java.util.stream.Collectors;
  * Created by Francesco on 12/10/15.
  */
 @Path("/front-pages")
-@RolesAllowed({"user", "admin"})
+//@RolesAllowed({"user", "admin"})
 public class FrontPagesService {
 
     @GET
@@ -48,7 +46,10 @@ public class FrontPagesService {
     @Produces(MediaType.APPLICATION_JSON)
     public Map<Newspaper, Double> getChangesOnTime() {
         EntityManager em = Application.createEntityManager();
-        List<FrontPage> pages = em.createQuery("select p from FrontPage p", FrontPage.class).getResultList();
+        List<FrontPage> pages = em.createQuery("select p from FrontPage p join p.articles a where key(a.news)='manual'", FrontPage.class)
+                .getResultList();
+
+        Clustering manual = em.find(Clustering.class, "manual");
 
         //Separates front pages for each newspaper
         Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream().collect(Collectors.groupingBy(FrontPage::getNewspaper));
@@ -61,7 +62,7 @@ public class FrontPagesService {
             ps.sort(Comparator.comparing(FrontPage::getTimestamp));
 
             //Count changes between each scan
-            List<NewsVector> newsVectors = ps.stream().map(NewsVector::new).collect(Collectors.toList());
+            List<NewsVector> newsVectors = ps.stream().map(fp -> new NewsVector(fp, manual)).collect(Collectors.toList());
             BasicDistance d = new BasicDistance();
             double changes = 0;
             for (int i=1; i<newsVectors.size(); i++) {
@@ -83,28 +84,44 @@ public class FrontPagesService {
     @GET
     @Path("/test")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Newspaper, Map<Date, Double>> someMethodName() {
+    public Map<Newspaper, Map<String, List>> someMethodName() {
 
-        Map<Newspaper, Map<Date, Double>> stats = new HashMap<>();
+        Map<Newspaper, Map<String, List>> stats = new HashMap<>();
 
         EntityManager em = Application.createEntityManager();
-        List<FrontPage> pages = em.createQuery("select p from FrontPage p", FrontPage.class).getResultList();
+
+        List<FrontPage> pages = em.createQuery("select p from FrontPage p where p.timestamp <= '2015-10-17T09:02'", FrontPage.class)
+                .getResultList();
 
         // Create Newspaper - FrontPage map
         Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream().collect(Collectors.groupingBy(FrontPage::getNewspaper));
 
         // Iterates over frontpages list of each newspaper
+        String[] clusterings = { "manual", "auto_test" };
         pagesByNewspaper.entrySet().stream().forEach(e -> {
             stats.put(e.getKey(), new HashMap<>());
+            stats.get(e.getKey()).put("dates", new Vector<>());
 
-            //Compute distance between pages at each timestamp gap
-            BasicDistance d = new BasicDistance();
             List<FrontPage> l = e.getValue();
-            for (int i=1; i<l.size(); i++) {
-                double distance = d.compute(
-                        new NewsVector(l.get(i-1)).getNewsIds(),
-                        new NewsVector(l.get(i)).getNewsIds());
-                stats.get(e.getKey()).put(l.get(i).getTimestamp(), distance);
+
+            for (int i = 1; i<l.size(); i++ ) {
+                stats.get(e.getKey()).get("dates").add(l.get(i).getTimestamp());
+            }
+
+            for (String clusteringName : clusterings) {
+                stats.get(e.getKey()).put(clusteringName, new Vector<>());
+
+                Clustering clustering = em.find(Clustering.class, clusteringName);
+
+                //Compute distance between pages at each timestamp gap
+                BasicDistance d = new BasicDistance();
+                for (int i=1; i<l.size(); i++) {
+                    double distance = d.compute(
+                            new NewsVector(l.get(i-1), clustering).getNewsIds(),
+                            new NewsVector(l.get(i), clustering).getNewsIds());
+                    stats.get(e.getKey()).get(clusteringName).add(distance);
+                }
+
             }
 
         });

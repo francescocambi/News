@@ -1,0 +1,8 @@
+<h1>Front Pages time Variability</h1>
+<hr>
+<div class="col-xs-12" ng-repeat="(name, data) in newspapers" ng-init="prepare(data)">
+    <h3>{{ name | NewspaperName }}</h3>
+    <canvas id="line{{$index}}" class="chart chart-line" chart-data="data.chartData"
+            chart-labels="data.labels" chart-series="chartSeries" chart-legend="true"
+            chart-options="chartOptions" height="30"></canvas>
+</div>

@@ -1,8 +1,8 @@
 package it.fcambi.news;
 
+import it.fcambi.news.clustering.HighestMeanOverThresholdMatcher;
 import it.fcambi.news.clustering.MatchMapGenerator;
 import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
-import it.fcambi.news.clustering.HighestMeanOverThresholdMatcher;
 import it.fcambi.news.clustering.Matcher;
 import it.fcambi.news.data.TFIDFWordVectorFactory;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
@@ -12,11 +12,6 @@ import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.*;
 
 import javax.persistence.EntityManager;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,56 +27,81 @@ public class IncrementalClustering {
         PersistenceManager persistenceManager = new PersistenceManager("it.fcambi.news.jpa.local");
         EntityManager em = persistenceManager.createEntityManager();
 
-//        Clustering clustering = new Clustering();
-//
-//        List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'",
-//                Article.class)
-//                .getResultList();
-//
-//        List<Article> classifiedArticles = new ArrayList<>();
-//
-//        Metric metric = new CosineSimilarity();
-//        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
-//
-//        MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
-//                .addMetric(metric)
-//                .addTextFilter(new NoiseWordsTextFilter())
-//                .addTextFilter(new StemmerTextFilter())
-//                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
-//        MatchMapGenerator generator = new MatchMapGenerator(conf);
-//
-//        NumberFormat percent = NumberFormat.getPercentInstance();
-//        percent.setMaximumFractionDigits(2);
-//
-//        for (int i=0; i<articles.size()-1; i++) {
-//
-//            Map<Article, List<MatchingArticle>> map = generator.generateMap(articles.subList(i, i+1), classifiedArticles);
-//
-//            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, 0.47, clustering);
-//            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(map);
-//
-//            bestMatch.keySet().forEach(article -> {
-//                if (bestMatch.get(article) != null) {
-//                    article.setNews(clustering, bestMatch.get(article).getNews());
-//                } else {
-//                    article.setNews(clustering, new News(clustering));
-//                    article.getNews(clustering).setDescription(article.getTitle());
-//                    article.getNews(clustering).setArticles(new ArrayList<>());
-//                }
-//                article.getNews(clustering).getArticles().add(article);
-//                classifiedArticles.add(article);
-//            });
-//
-//            System.out.println("Clustering status "+percent.format((double)i/(articles.size()-1)));
-//
-//        }
-//
-//        Set<News> generatedClusters = new HashSet<>();
-//        classifiedArticles.forEach(article -> generatedClusters.add(article.getNews(clustering)));
+        Clustering clustering = new Clustering();
 
-        List<News> generatedClusters = em.createQuery("select n from News n where n.clustering.name='auto_test'", News.class).getResultList();
+        List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'",
+                Article.class)
+                .getResultList();
 
-        List<News> expectedClusters = em.createQuery("select n from News n where n.clustering.name = 'manual'", News.class).getResultList();
+        List<Article> classifiedArticles = new ArrayList<>();
+
+        Metric metric = new CosineSimilarity();
+        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
+
+        MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
+                .addMetric(metric)
+                .addTextFilter(new NoiseWordsTextFilter())
+                .addTextFilter(new StemmerTextFilter())
+                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary))
+                .setStringToTextFunction(MatchMapGeneratorConfiguration.onlyAlphanumericSpaceSeparated);
+        MatchMapGenerator generator = new MatchMapGenerator(conf);
+
+        NumberFormat percent = NumberFormat.getPercentInstance();
+        percent.setMaximumFractionDigits(2);
+
+        for (int i=0; i<articles.size()-1; i++) {
+
+            Map<Article, List<MatchingArticle>> map = generator.generateMap(articles.subList(i, i+1), classifiedArticles);
+
+            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, 0.10, clustering);
+            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(map);
+
+            bestMatch.keySet().forEach(article -> {
+                if (bestMatch.get(article) != null) {
+                    article.setNews(clustering, bestMatch.get(article).getNews());
+                } else {
+                    article.setNews(clustering, new News(clustering));
+                    article.getNews(clustering).setDescription(article.getTitle());
+                    article.getNews(clustering).setArticles(new ArrayList<>());
+                }
+                article.getNews(clustering).getArticles().add(article);
+                classifiedArticles.add(article);
+            });
+
+            System.out.println("Clustering status "+percent.format((double)i/(articles.size()-1)));
+
+        }
+
+        Set<News> generatedClustersRes = new HashSet<>();
+        classifiedArticles.forEach(article -> generatedClustersRes.add(article.getNews(clustering)));
+
+//        List<News> generatedClustersRes = em.createQuery("select n from News n where n.clustering.name='auto_test'", News.class).getResultList();
+
+        List<News> expectedClustersRes = em.createQuery("select n from News n where n.clustering.name = 'manual'", News.class).getResultList();
+
+        System.out.println("Pre-filter generated # "+generatedClustersRes.size());
+        System.out.println("Pre-filter expected  # "+expectedClustersRes.size());
+
+        //Exclude articles not in front page top 5
+        List<News> generatedClusters = generatedClustersRes.stream().map(news -> {
+            List<Article> as = news.getArticles().stream().filter(article -> {
+                //Filter all articles with order >= 5
+                return article.getFrontPages().stream().filter(fp -> fp.orderOf(article) < 11).collect(Collectors.counting()) >0;
+            }).collect(Collectors.toList());
+            news.setArticles(as);
+
+            return news;
+        }).filter(news -> news.size() > 0).collect(Collectors.toList());
+
+        List<News> expectedClusters = expectedClustersRes.stream().map(news -> {
+            List<Article> as = news.getArticles().stream().filter(article -> {
+                return article.getFrontPages().stream().filter(fp -> fp.orderOf(article) < 11).collect(Collectors.counting()) >0;
+            }).collect(Collectors.toList());
+            news.setArticles(as);
+
+            return news;
+        }).filter(news -> news.size() > 0).collect(Collectors.toList());
+
 
         if (generatedClusters.size() == 0)
             throw new IllegalStateException("Empty generatedClusters collection");

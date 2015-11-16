@@ -7,7 +7,6 @@ import it.fcambi.news.filters.TextFilter;
 import it.fcambi.news.metrics.CosineSimilarity;
 import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.Article;
-import it.fcambi.news.model.News;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -40,7 +39,9 @@ public class MatchMapGeneratorConfiguration {
     public static BiFunction<Article, Text, String> headlineKeywords = (article, body) ->
             article.getTitle()+" "+article.getDescription();
 
-    public static Function<String, Text> onlyAlphaSpaceSepared = s -> new Text(s.replaceAll("[^\\p{Alpha}\\p{Space}]", " "), "\\p{Space}+");
+    public static Function<String, Text> onlyAlphaSpaceSeparated = s -> new Text(s.replaceAll("[^\\p{Alpha}\\p{Space}]", " "), "\\p{Space}+");
+
+    public static Function<String, Text> onlyAlphanumericSpaceSeparated = s -> new Text(s.replaceAll("[^\\p{Alnum}\\p{Space}]", " "), "\\p{Space}+");
 
     public static BiPredicate<Article, Article> ignoreReflectiveMatch = (a,b) -> a.equals(b);
 
@@ -94,7 +95,7 @@ public class MatchMapGeneratorConfiguration {
 
     public Function<String, Text> getStringToTextFn() {
         if (stringToTextFn == null)
-            stringToTextFn = MatchMapGeneratorConfiguration.onlyAlphaSpaceSepared;
+            stringToTextFn = MatchMapGeneratorConfiguration.onlyAlphaSpaceSeparated;
         return stringToTextFn;
     }
 

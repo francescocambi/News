@@ -1,22 +1,21 @@
 package it.fcambi.news.clustering;
 
-import it.fcambi.news.async.Progress;
-import it.fcambi.news.model.MatchingArticle;
 import it.fcambi.news.data.Text;
 import it.fcambi.news.data.WordVector;
 import it.fcambi.news.model.Article;
+import it.fcambi.news.model.MatchingArticle;
 
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MatchMapGenerator {
 
-    private Map<Article, Text> headlineCache = new Hashtable<>();
-    private Map<Article, Text> bodyCache = new Hashtable<>();
+    private Map<Article, Text> headlineCache = new ConcurrentHashMap<>();
+    private Map<Article, Text> bodyCache = new ConcurrentHashMap<>();
 
     private MatchMapGeneratorConfiguration config;
 
@@ -38,7 +37,7 @@ public class MatchMapGenerator {
         toMatchArticlesSize = articlesToMatch.size();
 
         // Source Article -> Similarities with all articles
-        Map<Article, List<MatchingArticle>> matchMap = new Hashtable<Article, List<MatchingArticle>>(articlesToMatch.size());
+        Map<Article, List<MatchingArticle>> matchMap = new ConcurrentHashMap<>(articlesToMatch.size());
 
         articlesToMatch.parallelStream().forEach(article -> {
 

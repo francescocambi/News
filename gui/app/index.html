@@ -31,7 +31,7 @@
     <script src="js/ArticlesDownloadCtrl.js"></script>
     <script src="js/ArticleDetailsCtrl.js"></script>
     <script src="js/FrontPagesCtrl.js"></script>
-    <script src="js/TestCtrl.js"></script>
+    <script src="js/FrontPagesVariabilityCtrl.js"></script>
     <script src="js/NewsMatchListCtrl.js"></script>
     <script src="js/NewsListCtrl.js"></script>
     <script src="js/NewsDetailsCtrl.js"></script>
@@ -53,6 +53,7 @@
         <div class="collapse navbar-collapse" id="mynavbar-content">
             <ul class="nav navbar-nav">
                 <li><a href="#/home"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown">
                         <span class="glyphicon glyphicon-duplicate"></span> Articles <b class="caret"></b></a>
@@ -61,11 +62,18 @@
                         <li><a href="#/articles/download">Download</a></li>
                     </ul>
                 </li>
+
                 <li><a href="#/news">
                     <span class="glyphicon glyphicon-folder-close"></span> News
                 </a></li>
-                <li><a href="#/front-pages">
-                    <span class="glyphicon glyphicon-th-list"></span> Front Pages</a>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-th-list"></span> Front Pages <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/front-pages">List</a></li>
+                        <li><a href="#/front-pages/variability">Variability</a></li>
+                    </ul>
                 </li>
 
                 <li><a href="#/threshold-performance/">
