@@ -78,16 +78,17 @@ public class IncrementalClusteringTask extends Task {
 
         //Find a fitting cluster for each article one by one
         // updating classifiedArticles each iteration
-        for (int i=1; i<articlesToBeClustered.size() && !Thread.currentThread().isInterrupted(); i++) {
+        for (int i=0; i<articlesToBeClustered.size() && !Thread.currentThread().isInterrupted(); i++) {
+            Article article = articlesToBeClustered.get(i);
 
             //Match map generation
+            List<Article> articleToCluster = new LinkedList<>();
+            articleToCluster.add(article);
             Map<Article, List<MatchingArticle>> matchMap = matchMapGenerator.generateMap(
-                    articlesToBeClustered.subList(i-1, i), classifiedArticles);
+                    articleToCluster, classifiedArticles);
 
             //Find best match
             Map<Article, MatchingNews> bestMatchMap = matcher.findBestMatch(matchMap);
-
-            Article article = articlesToBeClustered.get(i-1);
             MatchingNews bestMatchingNews = bestMatchMap.get(article);
             if (bestMatchingNews != null) {
                 // Cluster found, add article to cluster
