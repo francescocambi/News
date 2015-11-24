@@ -93,22 +93,78 @@ public class FrontPagesService {
 
 
     @GET
-    @Path("/test")
+    @Path("/variability")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Newspaper, Map<String, List>> someMethodName() {
+    public Response getFrontPagesVariability(@QueryParam("clusteringA") String clusteringAName,
+                                                                      @QueryParam("clusteringB") String clusteringBName,
+                                                                      @QueryParam("pagesFrom") String pagesFromString,
+                                                                      @QueryParam("pagesTo") String pagesToString) {
+
+        EntityManager em = Application.createEntityManager();
+        Clustering[] clusterings = new Clustering[2];
+        Date pagesFrom = null, pagesTo = null;
+
+        //PARAMETERS VALIDATION
+        try {
+
+            if (clusteringAName == null) {
+                throw new IllegalArgumentException("Must provide at least one clustering.");
+            } else {
+                clusterings[0] = em.find(Clustering.class, clusteringAName);
+                if (clusterings[0] == null)
+                    throw new IllegalArgumentException("Clustering A is not valid.");
+            }
+
+            if (clusteringBName != null) {
+                clusterings[1] = em.find(Clustering.class, clusteringBName);
+                if (clusterings[1] == null) {
+                    throw new IllegalArgumentException("Clustering B is not valid.");
+                }
+            }
+
+            SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss");
+
+            if (pagesFromString != null)
+                pagesFrom = format.parse(pagesFromString);
+            if (pagesToString != null)
+                pagesTo = format.parse(pagesToString);
+            if (pagesFrom != null && pagesTo != null && !pagesFrom.before(pagesTo))
+                throw new IllegalArgumentException("From date cannot be after to date.");
+
+        } catch (IllegalArgumentException e) {
+            return Response.status(400).entity("\""+e.getMessage()+"\"").build();
+        } catch (ParseException e) {
+            return Response.status(400).entity("\"Date string not valid.\"").build();
+        }
 
         Map<Newspaper, Map<String, List>> stats = new HashMap<>();
 
-        EntityManager em = Application.createEntityManager();
+        //Compose query
+        String query = "select p from FrontPage p where p.articles.size > 0 and (select count(a) from p.articles a where key(a.news) = :clusteringA";
+        if (clusterings[1] != null)
+            query += " and key(a.news) = :clusteringB";
+        query += ") = p.articles.size";
+        if (pagesFrom != null)
+            query += " and p.timestamp >= :pagesFrom";
+        if (pagesTo != null)
+            query += " and p.timestamp <= :pagesTo";
+        query += " order by p.timestamp";
 
-        List<FrontPage> pages = em.createQuery("select distinct p from FrontPage p join p.articles a where key(a.news) = 'mdstest'", FrontPage.class)
-                .getResultList();
+        TypedQuery<FrontPage> pagesQuery = em.createQuery(query, FrontPage.class)
+                .setParameter("clusteringA", clusterings[0].getName());
+        if (clusterings[1] != null)
+            pagesQuery.setParameter("clusteringB", clusterings[1].getName());
+        if (pagesFrom != null)
+            pagesQuery.setParameter("pagesFrom", pagesFrom);
+        if (pagesTo != null)
+            pagesQuery.setParameter("pagesTo", pagesTo);
+
+        List<FrontPage> pages = pagesQuery.getResultList();
 
         // Create Newspaper - FrontPage map
         Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream().collect(Collectors.groupingBy(FrontPage::getNewspaper));
 
         // Iterates over frontpages list of each newspaper
-        String[] clusterings = { "manual", "auto_test" };
         pagesByNewspaper.entrySet().stream().forEach(e -> {
             stats.put(e.getKey(), new HashMap<>());
             stats.get(e.getKey()).put("dates", new Vector<>());
@@ -119,27 +175,27 @@ public class FrontPagesService {
                 stats.get(e.getKey()).get("dates").add(l.get(i).getTimestamp());
             }
 
-            for (String clusteringName : clusterings) {
-                stats.get(e.getKey()).put(clusteringName, new Vector<>());
+            for (Clustering clustering : clusterings) {
+                if (clustering != null) {
+                    stats.get(e.getKey()).put(clustering.getName(), new Vector<>());
 
-                Clustering clustering = em.find(Clustering.class, clusteringName);
-
-                //Compute distance between pages at each timestamp gap
-                PermutationsMetric d = new KendallTau();
-                for (int i=1; i<l.size(); i++) {
-                    double distance = d.compute(
-                            new NewsVector(l.get(i-1), clustering).getNewsIds(),
-                            new NewsVector(l.get(i), clustering).getNewsIds());
-                    stats.get(e.getKey()).get(clusteringName).add(distance);
+                    //Compute distance between pages at each timestamp gap
+                    PermutationsMetric d = new KendallTau();
+                    for (int i = 1; i < l.size(); i++) {
+                        double distance = d.compute(
+                                new NewsVector(l.get(i - 1), clustering).getNewsIds(),
+                                new NewsVector(l.get(i), clustering).getNewsIds());
+                        stats.get(e.getKey()).get(clustering.getName()).add(distance);
+                    }
                 }
-
             }
 
         });
 
         em.close();
 
-        return stats;
+        //Map<Newspaper, Map<String, List>>
+        return Response.status(200).entity(stats).build();
 
     }
 

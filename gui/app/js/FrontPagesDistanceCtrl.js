@@ -62,7 +62,8 @@ angular.module("NewsApp")
             var url = SERVER_URL+"/front-pages/newspapers-distance?";
 
             angular.forEach(params, function (value, key) {
-                url += key+"="+value+"&"
+                if (value && value != "")
+                    url += key+"="+value+"&"
             });
 
             loadingSpinner.begin();

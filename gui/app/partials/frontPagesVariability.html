@@ -1,6 +1,46 @@
 <h1>Front Pages time Variability</h1>
 <hr>
-<div class="col-xs-12" ng-repeat="(name, data) in newspapers" ng-init="prepare(data)">
+<div class="col-md-6">
+    <legend>Clustering</legend>
+    <div class="input-group">
+        <span class="input-group-addon">Clustering A</span>
+        <select class="form-control" ng-model="params.clusteringA"
+                ng-options="c.name as c.name for c in clusterings"
+                style="width: 222px;">
+        </select>
+    </div>
+    <div class="input-group">
+        <p>Clustering B is designed for comparation purposes.
+            <br>
+            Leave it blank if you don't have to compare clusterings.</p>
+    </div>
+    <div class="input-group">
+    <span class="input-group-addon">Clustering B</span>
+    <select class="form-control" ng-model="params.clusteringB"
+            ng-options="c.name as c.name for c in clusterings"
+            style="width: 222px;">
+    </select>
+</div>
+</div>
+<div class="col-md-6">
+    <legend>Front Pages Dataset</legend>
+    <div class="input-group">
+        <span class="input-group-addon" style="width: 100px;">From Date</span>
+        <input type="datetime-local" class="form-control" ng-model="params.pagesFrom"
+               placeholder="YYYY-MM-DDTHH:MM:SS">
+    </div>
+    <div class="input-group">
+        <span class="input-group-addon" style="width: 100px;">To Date</span>
+        <input type="datetime-local" class="form-control" ng-model="params.pagesTo"
+               placeholder="YYYY-MM-DDTHH:MM:SS">
+    </div>
+</div>
+
+<div class="col-xs-12" style="text-align: right;">
+    <button type="button" class="btn btn-primary" ng-click="generateChart(params)">Generate Charts</button>
+</div>
+
+<div class="col-xs-12" ng-repeat="(name, data) in charts" ng-init="prepare(data)">
     <h3>{{ name | NewspaperName }}</h3>
     <canvas id="line{{$index}}" class="chart chart-line" chart-data="data.chartData"
             chart-labels="data.labels" chart-series="chartSeries" chart-legend="true"

@@ -2,9 +2,8 @@
  * Created by Francesco on 14/10/15.
  */
 angular.module("NewsApp")
-.controller("FrontPagesVariabilityCtrl", function ($scope, SERVER_URL, $http, loadingSpinner) {
+    .controller("FrontPagesVariabilityCtrl", function ($scope, SERVER_URL, $http, loadingSpinner) {
 
-        $scope.chartSeries = ['Manual', 'Automatic'];
         $scope.chartOptions = {
             scaleShowGridLines: false,
             pointDot: false,
@@ -14,20 +13,44 @@ angular.module("NewsApp")
             scaleFontSize: 0
         };
 
-        loadingSpinner.begin();
-        $http.get(SERVER_URL+"/front-pages/test")
-            .then(function (response) {
-                $scope.newspapers = response.data;
-                console.log($scope.newspapers);
-            }).finally(function () { loadingSpinner.end(); });
+        $scope.params = {};
 
-        $scope.prepare = function (newspaper) {
-            newspaper.chartData = [newspaper.manual, newspaper.auto_test];
-            newspaper.labels = [];
-            angular.forEach(newspaper.dates, function (value) {
-                newspaper.labels.push(new Date(value));
+        loadingSpinner.begin();
+        $http.get(SERVER_URL+"/clusterings")
+            .then(function (response) {
+                $scope.clusterings = response.data;
+            }).finally(function () {loadingSpinner.end();});
+
+        $scope.generateChart = function (params) {
+
+            var url = SERVER_URL+"/front-pages/variability?";
+
+            angular.forEach(params, function (value, key) {
+                if (value && value != "")
+                    url += key+"="+value+"&";
             });
-            return newspaper;
+
+            $scope.clusteringA = params.clusteringA;
+            $scope.clusteringB = params.clusteringB;
+
+            loadingSpinner.begin();
+            $http.get(url)
+                .then(function (response) {
+                    // 1 chart for each newspaper
+                    $scope.charts = response.data;
+                }).finally(function () {loadingSpinner.end();});
+
+
+        };
+
+        $scope.prepare = function (chart) {
+            $scope.chartSeries = [$scope.clusteringA, $scope.clusteringB];
+            chart.chartData = [chart[$scope.clusteringA], chart[$scope.clusteringB]];
+            chart.labels = [];
+            angular.forEach(chart.dates, function (value) {
+                chart.labels.push(new Date(value));
+            });
+            return chart;
         }
 
     });

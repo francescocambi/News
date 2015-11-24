@@ -61,4 +61,8 @@ public class FrontPage {
     public int orderOf(Article a) {
         return this.articles.indexOf(a);
     }
+
+    public boolean equals(FrontPage fp) {
+        return this.id == fp.getId();
+    }
 }
