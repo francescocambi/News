@@ -1,6 +1,8 @@
 package it.fcambi.news.ws.server;
 
-import it.fcambi.news.*;
+import it.fcambi.news.Application;
+import it.fcambi.news.Logging;
+import it.fcambi.news.PropertyConfig;
 import it.fcambi.news.ws.auth.SecurityFilter;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -11,9 +13,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import javax.ws.rs.core.UriBuilder;
-import java.io.IOException;
 import java.net.URI;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Francesco on 03/10/15.

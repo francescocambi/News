@@ -93,7 +93,9 @@ public class CorriereDellaSeraCrawler implements Crawler {
                 else
                     bodyParagraphs.get(0); //Causes exception
             }
-        } catch (IndexOutOfBoundsException e) {
+            if (body.replace("\\p{Space}", "").length() == 0)
+                throw new IllegalStateException();
+        } catch (IndexOutOfBoundsException | IllegalStateException e) {
             throw new CrawlerCannotReadArticleException("Can't find article body on "+url);
         }
 

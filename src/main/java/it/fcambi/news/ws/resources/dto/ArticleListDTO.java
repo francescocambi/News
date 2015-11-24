@@ -1,7 +1,6 @@
 package it.fcambi.news.ws.resources.dto;
 
 import it.fcambi.news.model.Article;
-import it.fcambi.news.model.News;
 import it.fcambi.news.model.Newspaper;
 
 import java.util.Date;

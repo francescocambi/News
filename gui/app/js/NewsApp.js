@@ -27,7 +27,7 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
         return {
             'responseError': function (errorResponse) {
                 if (errorResponse.status == 403) {
-                    console.log("403 - Session Expired");
+                    //console.log("403 - Session Expired");
                     $rootScope.sessionErrorMessage = "Session expired or you can't access this area.";
                     $location.path("/login");
                 }
@@ -35,11 +35,23 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
             }
         };
     })
-    .filter("to_trusted", ['$sce', function ($sce) {
-        return function (text) {
-            return $sce.trustAsHtml(text);
-        };
-    }])
+    .factory("serverErrorsHandler", function ($q, $rootScope) {
+        return {
+            'request': function (request) {
+                $rootScope.httpErrorMessage = undefined;
+                return request;
+            },
+            'responseError': function (errorResponse) {
+                if (errorResponse.status && errorResponse.data)
+                    $rootScope.httpErrorMessage = errorResponse.status+" - "+errorResponse.data;
+                else {
+                    $rootScope.httpErrorMessage = "Something went wrong during data request.";
+                    console.log(errorResponse);
+                }
+                return $q.reject(errorResponse);
+            }
+        }
+    })
     .config(function ($httpProvider, $routeProvider) {
 
         $routeProvider.when("/login", {
@@ -92,6 +104,11 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
             controller: "FrontPagesVariabilityCtrl"
         });
 
+        $routeProvider.when("/front-pages/distance", {
+            templateUrl: "partials/frontPagesDistance.html",
+            controller: "FrontPagesDistanceCtrl"
+        });
+
         $routeProvider.when("/front-pages/:id", {
             templateUrl: "partials/frontPageDetails.html",
             controller: "FrontPageDetailsCtrl"
@@ -128,6 +145,7 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
         });
 
         $httpProvider.interceptors.push('forbiddenRequestsObserver');
+        $httpProvider.interceptors.push('serverErrorsHandler');
 
     })
     .run(function ($rootScope, $location, $cookieStore, $http) {

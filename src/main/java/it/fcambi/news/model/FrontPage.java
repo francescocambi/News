@@ -1,10 +1,9 @@
 package it.fcambi.news.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ public class FrontPage {
     private long id;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    private Calendar timestamp;
 
     private Newspaper newspaper;
 
@@ -28,18 +27,18 @@ public class FrontPage {
     private List<Article> articles;
 
     public FrontPage() {
-        this.timestamp = new Date();
+        this.timestamp = Calendar.getInstance();
     }
 
     public long getId() {
         return id;
     }
 
-    public Date getTimestamp() {
+    public Calendar getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(Calendar timestamp) {
         this.timestamp = timestamp;
     }
 

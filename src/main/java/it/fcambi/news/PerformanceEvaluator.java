@@ -1,18 +1,20 @@
 package it.fcambi.news;
 
+import it.fcambi.news.clustering.HighestMeanOverThresholdMatcher;
 import it.fcambi.news.clustering.MatchMapGenerator;
 import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
-import it.fcambi.news.clustering.HighestMeanOverThresholdMatcher;
 import it.fcambi.news.clustering.Matcher;
 import it.fcambi.news.data.TFIDFWordVectorFactory;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
 import it.fcambi.news.filters.StemmerTextFilter;
-import it.fcambi.news.metrics.*;
+import it.fcambi.news.metrics.CosineSimilarity;
+import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.*;
 
 import javax.persistence.EntityManager;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 

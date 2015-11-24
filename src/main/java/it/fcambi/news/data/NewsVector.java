@@ -13,7 +13,7 @@ public class NewsVector {
     public NewsVector(FrontPage page, Clustering c) {
 
         newsIds = page.getArticles().stream()
-                .filter(a -> a.getNews(c) != null)
+//                .filter(a -> a.getNews(c) != null)
                 .mapToLong(a -> a.getNews(c).getId())
                 .toArray();
 

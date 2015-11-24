@@ -1,0 +1,46 @@
+<h1>Front Pages Scatter</h1>
+<div class="col-md-12 panel">
+    <div class="col-md-6">
+        <legend>Clustering</legend>
+        <div class="input-group">
+            <span class="input-group-addon">Clustering </span>
+            <select class="form-control" ng-model="params.clustering"
+                    ng-options="c.name as c.name for c in clusterings"
+                    style="width: 222px;">
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <legend>Front Pages Dataset</legend>
+        <p>Consider that articles in the first front pages may have been created before "From Date".</p>
+        <div class="input-group">
+            <span class="input-group-addon" style="width: 100px;">From Date</span>
+            <input type="datetime-local" class="form-control" ng-model="params.pagesFrom"
+                   placeholder="YYYY-MM-DDTHH:MM:SS">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width: 100px;">To Date</span>
+            <input type="datetime-local" class="form-control" ng-model="params.pagesTo"
+                   placeholder="YYYY-MM-DDTHH:MM:SS">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width: 100px;">Step</span>
+            <input type="text" class="form-control" ng-model="params.timeStep" style="width: 82px; display: inline-block; border-right: none;">
+            <select class="form-control" ng-model="params.timeStepUm" style="width: 140px; display: inline-block; border-left: none;">
+                <option value="m">Month(s)</option>
+                <option value="d">Day(s)</option>
+                <option value="h">Hour(s)</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-12" style="text-align: right;">
+        <button type="button" class="btn btn-primary" ng-click="generateChart(params)">Generate Chart</button>
+    </div>
+</div>
+
+<div class="col-md-10">
+    <canvas id="scatter"></canvas>
+</div>
+
+<div class="col-md-2 chart-legend" id="legend">
+</div>

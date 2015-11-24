@@ -1,13 +1,16 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
-import it.fcambi.news.clustering.*;
-import it.fcambi.news.model.*;
+import it.fcambi.news.clustering.HighestMeanMatcher;
+import it.fcambi.news.clustering.MatchMapGenerator;
+import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
+import it.fcambi.news.clustering.Matcher;
 import it.fcambi.news.data.TFIDFWordVectorFactory;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
 import it.fcambi.news.filters.StemmerTextFilter;
 import it.fcambi.news.metrics.CosineSimilarity;
 import it.fcambi.news.metrics.Metric;
+import it.fcambi.news.model.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;

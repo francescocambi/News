@@ -45,9 +45,6 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
                               @QueryParam("threshold") double threshold,
                               @QueryParam("articlesFrom") String fromString,
                               @QueryParam("articlesTo") String toString) {
-//                              @QueryParam("articleSource") String source) {
-
-//        System.out.println(fromString+"\n"+toString);
 
         EntityManager em;
 
@@ -102,7 +99,6 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
             try {
                 from = format.parse(fromString);
                 to = format.parse(toString);
-//                System.out.println(String.format("%Tc %n %Tc", from, to));
                 if (to.before(from))
                     throw new IllegalArgumentException("FROM date is after TO date.");
             } catch (ParseException | IllegalArgumentException e) {
@@ -110,17 +106,12 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
             }
         }
 
-//        // Detect and add source filter
-//        if (source != null && Newspaper.valueOf(source) != null)
-//            select += " and a.source=:source";
-
         //Detect and add from to filters
         if (from != null && to != null && from.before(to))
             select += " and a.created between :from and :to";
 
         if (em == null) em = Application.createEntityManager();
         Query q = em.createQuery(select, Article.class);
-//        q.setParameter("source", source);
 
 
         if (from != null && to != null && from.before(to)) {

@@ -7,6 +7,8 @@ package it.fcambi.news.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -57,6 +59,7 @@ public class Article {
     private Date created;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+    @Fetch(FetchMode.JOIN)
     @JsonManagedReference
     private Map<String, News> news;
 

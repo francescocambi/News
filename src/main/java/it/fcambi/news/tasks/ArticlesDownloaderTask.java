@@ -7,9 +7,10 @@ import it.fcambi.news.crawlers.*;
 import it.fcambi.news.model.Article;
 import it.fcambi.news.model.FrontPage;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
 import java.io.IOException;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,12 +66,14 @@ public class ArticlesDownloaderTask extends Task {
                 }
                 List<Article> articles = new LinkedList<>();
 
-                float statusArticleUnit = (75F/crawlers.length)/urls.size();
+                float statusArticleUnit = (95F/crawlers.length)/urls.size();
 
                 // Download each article previously retrieved
                 for (String url : urls) {
                     try {
-                        articles.add(crawler.getArticle(url));
+                        Article article = crawler.getArticle(url);
+                        if (article.getBody().length() > 0)
+                            articles.add(article);
                     } catch (IOException | CrawlerCannotReadArticleException e) {
                         log.log(Level.WARNING, "Skipped article", e);
                     } finally {
@@ -92,7 +95,7 @@ public class ArticlesDownloaderTask extends Task {
         log.info("Articles download completed. Persisting articles...");
 
         //Persist articles on db
-        float statusPageUnit = 25F/frontPages.size();
+        float statusPageUnit = 5F/frontPages.size();
         em.getTransaction().begin();
 
         for (FrontPage page : frontPages) {
@@ -119,7 +122,10 @@ public class ArticlesDownloaderTask extends Task {
             }
 
             //Persisting front page
-            em.persist(page);
+            if (page.getArticles().size() > 0)
+                em.persist(page);
+            else
+                log.warning("Front Page from "+page.getNewspaper().toString()+" has no articles. (Skipped)");
 
             //Update progress
             progress.add(statusPageUnit);

@@ -1,84 +1,83 @@
 package it.fcambi.news.mds;
 
-import it.fcambi.news.model.MatchingArticle;
-import it.fcambi.news.PersistenceManager;
-import it.fcambi.news.clustering.MatchMapGenerator;
-import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
-import it.fcambi.news.metrics.EuclideanDistance;
-import it.fcambi.news.model.Article;
-
-import javax.persistence.EntityManager;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import org.apache.commons.math3.linear.EigenDecomposition;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
 
 /**
- * Created by Francesco on 22/10/15.
+ * Created by Francesco on 17/11/15.
  */
 public class MultidimensionalScaling {
 
-    public static void main(String[] args) {
+    /**
+     *
+     * @param distances between each point
+     * @return points Matrix with n rows (one for each point)
+     *         and 2 columns (one for dimension) where points[i] = (x,y)
+     */
+    public static double[][] exec(double[][] distances) {
 
-        PersistenceManager persistenceManager = new PersistenceManager("it.fcambi.news.jpa.local");
-        EntityManager em = persistenceManager.createEntityManager();
-        List<Article> articles = em.createQuery("select a from Article a where a.news.articles.size > 2", Article.class).getResultList();
+        //nxn matrix
+        RealMatrix D = MatrixUtils.createRealMatrix(distances);
 
-        MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
-                .addMetric(new EuclideanDistance());
+        if (!D.isSquare())
+            throw new IllegalArgumentException("Invalid (non-square) input matrix.");
+        int n = D.getRowDimension();
 
-        Map<Article, List<MatchingArticle>> matchMap = new MatchMapGenerator(conf).generateMap(articles, articles);
+        //Compute D squared
+        for (int i=0; i < n; i++)
+            for (int j=0; j < n; j++)
+                D.multiplyEntry(i, j, D.getEntry(i, j));
 
-        Path distanceFilePath = Paths.get("distanceMatrix.csv");
-        Path labelsFilePath = Paths.get("labelsVector.csv");
-        try (BufferedWriter distanceFileWriter = Files.newBufferedWriter(distanceFilePath);
-             BufferedWriter labelsFileWriter = Files.newBufferedWriter(labelsFilePath)) {
+        //Double centering
+        //J = I-n^-1 1 1'
+        RealMatrix id = MatrixUtils.createRealIdentityMatrix(n);
+        RealMatrix ones = MatrixUtils.createRealMatrix(n, n).scalarAdd(1.0/n);
+        RealMatrix J = id.subtract(ones);
 
-            List<Article> arts = new ArrayList<>();
-            arts.addAll(matchMap.keySet());
-            arts.sort((a, b) -> {
-                if (a.getId() < b.getId()) return -1;
-                if (a.getId() > b.getId()) return 1;
-                else return 0;
-            });
+        //B = -1/2 J D^2 J
+        RealMatrix B = J.multiply(D).multiply(J).scalarMultiply(-0.5);
 
-            String labels = arts.stream()
-                            .map(a -> a.getId() + "")
-                            .collect(Collectors.joining(","));
+        //Compute eigenvalues and eigenvectors of B
+        EigenDecomposition eig = new EigenDecomposition(B);
+        //Choose higher eigenvalues and associated eigenvectors
+        double eig_a = -1.0;
+        int eig_a_idx = -1;
+        double eig_b = -1.0;
+        int eig_b_idx = -1;
 
-            labelsFileWriter.write(labels);
-//            distanceFileWriter.write(labels);
-
-            distanceFileWriter.write(
-                    arts.stream().map(article -> {
-
-                        matchMap.get(article).sort((a, b) -> {
-                            if (a.getArticle().getId() < b.getArticle().getId()) return -1;
-                            if (a.getArticle().getId() > b.getArticle().getId()) return 1;
-                            else return 0;
-                        });
-                        return matchMap.get(article).stream()
-                                .map(matchingArticle -> (matchingArticle.getSimilarity("euclidean")) + "")
-                                .collect(Collectors.joining(","));
-
-                    }).collect(Collectors.joining("\n"))
-            );
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int i=0; i < n; i++) {
+            double l = eig.getD().getEntry(i, i);
+            if (l >= 0) {
+                if (l > eig_a) {
+                    eig_a = l;
+                    eig_a_idx = i;
+                } else if (l > eig_b) {
+                    eig_b = l;
+                    eig_b_idx = i;
+                }
+            }
         }
 
-        em.close();
-        persistenceManager.close();
+        RealMatrix Em = MatrixUtils.createRealMatrix(n, 2);
+        Em.setColumnVector(0, eig.getV().getColumnVector(eig_a_idx));
+        Em.setColumnVector(1, eig.getV().getColumnVector(eig_b_idx));
 
-        System.out.println("Export Finished!");
+        double[] eigenvalues = {Math.sqrt(eig_a), Math.sqrt(eig_b)};
+        RealMatrix Lm = MatrixUtils.createRealDiagonalMatrix(eigenvalues);
+
+        RealMatrix points = Em.multiply(Lm);
+
+        return points.getData();
 
     }
+
+//    public static void printMatrix(RealMatrix a) {
+//        for (int i=0; i < a.getRowDimension(); i++) {
+//            for (int j = 0; j < a.getColumnDimension(); j++)
+//                System.out.print(a.getEntry(i, j)+"\t");
+//            System.out.print("\n");
+//        }
+//    }
 
 }

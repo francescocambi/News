@@ -1,11 +1,9 @@
 package it.fcambi.news.clustering;
 
-import it.fcambi.news.model.*;
 import it.fcambi.news.metrics.Metric;
+import it.fcambi.news.model.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**

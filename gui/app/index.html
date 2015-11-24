@@ -20,9 +20,11 @@
     <!--<script src="../bower_components/angular-cookies/angular-cookies.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
     <script src="../bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
+    <script src="js/chart/Chart.Scatter.min.js"></script>
     <script src="../bower_components/angularUtils-pagination/dirPagination.js"></script>
     <script src="js/NewsApp.js"></script>
     <script src="js/filters.js"></script>
+    <script src="js/IndexCtrl.js"></script>
     <script src="js/LoginCtrl.js"></script>
     <script src="js/LogoutCtrl.js"></script>
     <script src="js/HomeCtrl.js"></script>
@@ -38,6 +40,7 @@
     <script src="js/PerformanceTaskCtrl.js"></script>
     <script src="js/PerformanceResultsCtrl.js"></script>
     <script src="js/ClusteringTaskCtrl.js"></script>
+    <script src="js/FrontPagesDistanceCtrl.js"></script>
 
 </head>
 <body ng-app="NewsApp">
@@ -73,6 +76,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="#/front-pages">List</a></li>
                         <li><a href="#/front-pages/variability">Variability</a></li>
+                        <li><a href="#/front-pages/distance">Distances</a></li>
                     </ul>
                 </li>
 
@@ -94,12 +98,10 @@
     </div>
 </div>
 
-
-<!--<ol class="breadcrumb">-->
-    <!--<li><a href="#">Home</a></li>-->
-    <!--<li><a href="#">About</a></li>-->
-    <!--<li class="active">Author</li>-->
-<!--</ol>-->
+<div ng-controller="IndexCtrl" ng-show="displayMessage"
+     class="alert alert-danger alert-dismissible" role="alert">
+    {{ message }}
+</div>
 
 <!-- Partial Views -->
 <div ng-view></div>

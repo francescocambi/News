@@ -20,6 +20,11 @@ angular.module("NewsApp")
             }
         }
     })
+    .filter("to_trusted", ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        };
+    }])
     .filter("taskStatus", function () {
         return function (status) {
             if (status) {

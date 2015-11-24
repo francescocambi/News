@@ -42,8 +42,8 @@ public class IncrementalClustering {
                 .addMetric(metric)
                 .addTextFilter(new NoiseWordsTextFilter())
                 .addTextFilter(new StemmerTextFilter())
-                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary))
-                .setStringToTextFunction(MatchMapGeneratorConfiguration.onlyAlphanumericSpaceSeparated);
+                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
+//                .setStringToTextFunction(MatchMapGeneratorConfiguration.onlyAlphanumericSpaceSeparated);
         MatchMapGenerator generator = new MatchMapGenerator(conf);
 
         NumberFormat percent = NumberFormat.getPercentInstance();
@@ -53,7 +53,7 @@ public class IncrementalClustering {
 
             Map<Article, List<MatchingArticle>> map = generator.generateMap(articles.subList(i, i+1), classifiedArticles);
 
-            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, 0.10, clustering);
+            Matcher matcher = new HighestMeanOverThresholdMatcher(metric, 0.47, clustering);
             Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(map);
 
             bestMatch.keySet().forEach(article -> {

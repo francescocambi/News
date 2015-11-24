@@ -1,27 +1,16 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
-import it.fcambi.news.async.TaskStatus;
-import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
-import it.fcambi.news.data.TFIDFWordVectorFactory;
-import it.fcambi.news.filters.NoiseWordsTextFilter;
-import it.fcambi.news.filters.StemmerTextFilter;
-import it.fcambi.news.metrics.*;
-import it.fcambi.news.model.TFDictionary;
 import it.fcambi.news.tasks.ComputeThresholdPerformanceTask;
-import it.fcambi.news.tasks.ThresholdPerformanceResult;
-import it.fcambi.news.ws.resources.dto.ProgressUpdateDTO;
-import it.fcambi.news.ws.resources.dto.TaskDTO;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 09/11/15.

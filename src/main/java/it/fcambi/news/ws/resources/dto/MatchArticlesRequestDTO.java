@@ -1,8 +1,5 @@
 package it.fcambi.news.ws.resources.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * Created by Francesco on 03/10/15.
  */

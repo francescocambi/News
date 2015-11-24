@@ -7,7 +7,10 @@ import it.fcambi.news.clustering.MatchMapGenerator;
 import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
 import it.fcambi.news.clustering.Matcher;
 import it.fcambi.news.metrics.Metric;
-import it.fcambi.news.model.*;
+import it.fcambi.news.model.Article;
+import it.fcambi.news.model.Clustering;
+import it.fcambi.news.model.MatchingArticle;
+import it.fcambi.news.model.MatchingNews;
 
 import javax.persistence.EntityManager;
 import java.util.List;

@@ -6,7 +6,6 @@ import it.fcambi.news.tasks.ArticlesDownloaderTask;
 import it.fcambi.news.ws.server.Server;
 
 import javax.persistence.EntityManager;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;

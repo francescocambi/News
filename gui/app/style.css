@@ -38,3 +38,7 @@ body {
 .border-bottom {
     border-bottom: solid 1px #dbdbdb;
 }
+
+.input-group {
+    margin-bottom: 3px;
+}

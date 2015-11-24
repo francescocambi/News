@@ -1,13 +1,9 @@
 package it.fcambi.news.model;
 
-import it.fcambi.news.model.News;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 18/10/15.

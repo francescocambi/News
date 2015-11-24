@@ -11,6 +11,15 @@ import java.util.stream.Stream;
  */
 public class KendallTau implements PermutationsMetric {
 
+    private int k = -1;
+
+    public KendallTau() {
+    }
+
+    public KendallTau(int k) {
+        this.k = k;
+    }
+
     @Override
     public double compute(long[] a, long[] b) {
         double kendall = 0;
@@ -18,9 +27,14 @@ public class KendallTau implements PermutationsMetric {
         List<Long> x = Arrays.stream(a).distinct().boxed().collect(Collectors.toList());
         List<Long> y = Arrays.stream(b).distinct().boxed().collect(Collectors.toList());
 
-//        int k = (x.size() <= y.size()) ? x.size() : y.size();
-//        x = x.subList(0, k);
-//        y = y.subList(0, k);
+//        if (k == -1)
+//            k = (x.size() <= y.size()) ? x.size() : y.size();
+        if (k < -1) {
+            if (x.size() < k) k = x.size();
+            if (y.size() < k) k = y.size();
+            x = x.subList(0, k);
+            y = y.subList(0, k);
+        }
 
         // Create domain vector
         Vector<Long> items = new Vector<>();
