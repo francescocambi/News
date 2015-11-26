@@ -1,4 +1,4 @@
-<h1>Front Pages time Variability</h1>
+<h1>Front Pages Time Variability</h1>
 <hr>
 <div class="col-md-6">
     <legend>Clustering</legend>
@@ -16,9 +16,9 @@
     </div>
     <div class="input-group">
     <span class="input-group-addon">Clustering B</span>
-    <select class="form-control" ng-model="params.clusteringB"
-            ng-options="c.name as c.name for c in clusterings"
-            style="width: 222px;">
+    <select class="form-control" ng-model="params.clusteringB" style="width: 222px;">
+        <option></option>
+        <option ng-repeat="c in clusterings" value="{{c.name}}">{{c.name}}</option>
     </select>
 </div>
 </div>
@@ -40,7 +40,7 @@
     <button type="button" class="btn btn-primary" ng-click="generateChart(params)">Generate Charts</button>
 </div>
 
-<div class="col-xs-12" ng-repeat="(name, data) in charts" ng-init="prepare(data)">
+<div class="col-xs-12" ng-repeat="(name, data) in charts">
     <h3>{{ name | NewspaperName }}</h3>
     <canvas id="line{{$index}}" class="chart chart-line" chart-data="data.chartData"
             chart-labels="data.labels" chart-series="chartSeries" chart-legend="true"

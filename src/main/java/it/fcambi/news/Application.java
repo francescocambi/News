@@ -2,6 +2,7 @@ package it.fcambi.news;
 
 import it.fcambi.news.async.PastTaskTracer;
 import it.fcambi.news.async.Scheduler;
+import it.fcambi.news.async.Task;
 import it.fcambi.news.tasks.ArticlesDownloaderTask;
 import it.fcambi.news.ws.server.Server;
 
@@ -53,6 +54,7 @@ public class Application {
         persistenceManager = new PersistenceManager(props.getProp("PERSISTENCE_UNIT"));
 
         log.info("Setting up Scheduler");
+        Task.setLogger(Logging.registerLogger("it.fcambi.news.Tasks"));
         configureScheduler();
 
         log.info("Starting up Web Services...");

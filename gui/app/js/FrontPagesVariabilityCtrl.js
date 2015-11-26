@@ -38,14 +38,23 @@ angular.module("NewsApp")
                 .then(function (response) {
                     // 1 chart for each newspaper
                     $scope.charts = response.data;
+
+                    angular.forEach($scope.charts, function (data, name) {
+                        $scope.charts[name] = $scope.prepare(data);
+                    });
+
                 }).finally(function () {loadingSpinner.end();});
 
 
         };
 
         $scope.prepare = function (chart) {
-            $scope.chartSeries = [$scope.clusteringA, $scope.clusteringB];
-            chart.chartData = [chart[$scope.clusteringA], chart[$scope.clusteringB]];
+            $scope.chartSeries = [$scope.clusteringA];
+            if ($scope.clusteringB)
+                $scope.chartSeries.push($scope.clusteringB);
+            chart.chartData = [chart[$scope.clusteringA]];
+            if ($scope.clusteringB)
+                chart.chartData.push(chart[$scope.clusteringB]);
             chart.labels = [];
             angular.forEach(chart.dates, function (value) {
                 chart.labels.push(new Date(value));

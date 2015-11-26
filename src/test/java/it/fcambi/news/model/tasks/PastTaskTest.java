@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -19,6 +20,7 @@ public class PastTaskTest {
 
     @Before
     public void setUp() {
+        Task.setLogger(Logger.getLogger(this.getClass().getName()));
         t = new Task() {
             @Override
             public String getName() {
@@ -48,7 +50,7 @@ public class PastTaskTest {
         PastTask p = PastTask.createFrom(t);
 
         assertEquals(t.getName(), p.getName());
-        assertEquals(String.format("Scheduled @ %Tc; Task created by %s", t.getScheduleTime(), t.getCreator()), p.getDescription());
+        assertEquals(String.format("Scheduled @ %Tc;Task created by %s", t.getScheduleTime(), t.getCreator()), p.getDescription());
         assertEquals(t.getCreationTime(), p.getCreationTime());
         assertEquals(t.getStartTime(), p.getStartTime());
         assertEquals(t.getEndTime(), p.getEndTime());
@@ -62,7 +64,7 @@ public class PastTaskTest {
     public void toStringTest() {
         PastTask p = PastTask.createFrom(t);
 
-        String expected = String.format("{ id: 0, name: Test Task, description: Scheduled @ %1$Tc; Task created by %5$s," +
+        String expected = String.format("{ id: 0, name: Test Task, description: Scheduled @ %1$Tc;Task created by %5$s," +
                 " creationTime: %2$Tc, startTime: %3$Tc, endTime: %4$Tc, result: FAILED, detailedResult: Exception at" +
                 " 0.0000 %% because java.lang.Exception: Simulated fail", t.getScheduleTime(), t.getCreationTime(),
                 t.getStartTime(), t.getEndTime(), t.getCreator());
@@ -76,7 +78,7 @@ public class PastTaskTest {
 
         PastTask p = PastTask.createFrom(t);
 
-        assertEquals(String.format("Periodic task starting @ %Tc repeating every %d milliseconds; Task created by %s",
+        assertEquals(String.format("Periodic task starting @ %Tc repeating every %d milliseconds;Task created by %s",
                 t.getScheduleTime(), t.getPeriod(), t.getCreator()), p.getDescription());
     }
 

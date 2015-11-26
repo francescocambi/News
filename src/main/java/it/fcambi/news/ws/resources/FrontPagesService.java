@@ -57,13 +57,15 @@ public class FrontPagesService {
     @Produces(MediaType.APPLICATION_JSON)
     public Map<Newspaper, Double> getChangesOnTime() {
         EntityManager em = Application.createEntityManager();
-        List<FrontPage> pages = em.createQuery("select p from FrontPage p join p.articles a where key(a.news)='manual'", FrontPage.class)
+        List<FrontPage> pages = em.createQuery("select p from FrontPage p join p.articles a " +
+                "where key(a.news)='manual'", FrontPage.class)
                 .getResultList();
 
         Clustering manual = em.find(Clustering.class, "manual");
 
         //Separates front pages for each newspaper
-        Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream().collect(Collectors.groupingBy(FrontPage::getNewspaper));
+        Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream()
+                .collect(Collectors.groupingBy(FrontPage::getNewspaper));
 
         Map<Newspaper, Double> changesByNewspaper = new HashMap<>();
         //Work on front pages lists
@@ -73,7 +75,8 @@ public class FrontPagesService {
             ps.sort(Comparator.comparing(FrontPage::getTimestamp));
 
             //Count changes between each scan
-            List<NewsVector> newsVectors = ps.stream().map(fp -> new NewsVector(fp, manual)).collect(Collectors.toList());
+            List<NewsVector> newsVectors = ps.stream().map(fp -> new NewsVector(fp, manual))
+                    .collect(Collectors.toList());
             BasicDistance d = new BasicDistance();
             double changes = 0;
             for (int i=1; i<newsVectors.size(); i++) {
@@ -96,9 +99,9 @@ public class FrontPagesService {
     @Path("/variability")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFrontPagesVariability(@QueryParam("clusteringA") String clusteringAName,
-                                                                      @QueryParam("clusteringB") String clusteringBName,
-                                                                      @QueryParam("pagesFrom") String pagesFromString,
-                                                                      @QueryParam("pagesTo") String pagesToString) {
+                                             @QueryParam("clusteringB") String clusteringBName,
+                                             @QueryParam("pagesFrom") String pagesFromString,
+                                             @QueryParam("pagesTo") String pagesToString) {
 
         EntityManager em = Application.createEntityManager();
         Clustering[] clusterings = new Clustering[2];
@@ -140,7 +143,8 @@ public class FrontPagesService {
         Map<Newspaper, Map<String, List>> stats = new HashMap<>();
 
         //Compose query
-        String query = "select p from FrontPage p where p.articles.size > 0 and (select count(a) from p.articles a where key(a.news) = :clusteringA";
+        String query = "select p from FrontPage p where p.articles.size > 0 " +
+                "and (select count(a) from p.articles a where key(a.news) = :clusteringA";
         if (clusterings[1] != null)
             query += " and key(a.news) = :clusteringB";
         query += ") = p.articles.size";
@@ -155,14 +159,15 @@ public class FrontPagesService {
         if (clusterings[1] != null)
             pagesQuery.setParameter("clusteringB", clusterings[1].getName());
         if (pagesFrom != null)
-            pagesQuery.setParameter("pagesFrom", pagesFrom);
+            pagesQuery.setParameter("pagesFrom", new Calendar.Builder().setInstant(pagesFrom).build());
         if (pagesTo != null)
-            pagesQuery.setParameter("pagesTo", pagesTo);
+            pagesQuery.setParameter("pagesTo", new Calendar.Builder().setInstant(pagesTo).build());
 
         List<FrontPage> pages = pagesQuery.getResultList();
 
         // Create Newspaper - FrontPage map
-        Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream().collect(Collectors.groupingBy(FrontPage::getNewspaper));
+        Map<Newspaper, List<FrontPage>> pagesByNewspaper = pages.stream()
+                .collect(Collectors.groupingBy(FrontPage::getNewspaper));
 
         // Iterates over frontpages list of each newspaper
         pagesByNewspaper.entrySet().stream().forEach(e -> {
@@ -235,12 +240,14 @@ public class FrontPagesService {
                 throw new IllegalArgumentException("Invalid time range.");
 
             if (timeStepUm != null) {
-                if (timeStepUm.equals("m"))
+                if (timeStepUm.equals("y"))
+                    timeUm = Calendar.YEAR;
+                else if (timeStepUm.equals("m"))
                     timeUm = Calendar.MONTH;
-                if (timeStepUm.equals("d"))
-                    timeUm = Calendar.DAY_OF_WEEK;
-                if (timeStepUm.equals("h"))
-                    timeUm = Calendar.HOUR;
+                else if (timeStepUm.equals("d"))
+                    timeUm = Calendar.DAY_OF_MONTH;
+                else if (timeStepUm.equals("h"))
+                    timeUm = Calendar.HOUR_OF_DAY;
             }
 
             if (timeStep <= 0)
@@ -252,14 +259,16 @@ public class FrontPagesService {
             return Response.status(400).entity("\"Invalid timestamp format\"").build();
         }
 
-        String query = "select p from FrontPage p where p.articles.size > 0";
+        String query = "select p from FrontPage p where p.articles.size > 0 " +
+                "and (select count(a) from p.articles a where key(a.news) = :clustering) = p.articles.size";
         if (from != null)
             query += " and p.timestamp >= :fromts";
         if (to != null)
             query += " and p.timestamp <= :tots";
         query += " order by p.timestamp";
 
-        TypedQuery<FrontPage> pagesQuery = em.createQuery(query, FrontPage.class);
+        TypedQuery<FrontPage> pagesQuery = em.createQuery(query, FrontPage.class)
+                .setParameter("clustering", clustering.getName());
         if (from != null)
             pagesQuery.setParameter("fromts", new Calendar.Builder().setInstant(from).build());
         if (to != null)
@@ -339,14 +348,15 @@ public class FrontPagesService {
                     matrixSum(sum, distancesByTimestamp.get(j).getDistances());
                     count++;
                 } else {
-                    // j is now on the 1st element of new group
-                    // Set i on last element of current group (j-1)
-                    // so next iteration (of outer cycle) will begin
-                    // on the 1st element of the new group
-                    i = j - 1;
                     j = distancesByTimestamp.size();
                 }
             }
+            // count is the # of items processed by previous cycle
+            // i + count goes on the 1st element of new group
+            // Set i on last element of current group i+(count-1)
+            // so next iteration (of outer cycle) will begin
+            // on the 1st element of the new group
+            i += count-1;
 
             //When for exits j is on the first item of next group
             // can save this group
@@ -361,7 +371,8 @@ public class FrontPagesService {
 
             double[][] points = MultidimensionalScaling.exec(group.getDistances());
 
-            pointsByTime.put(group.getTimestamp().getTime(), new NewspapersPoints(points, Newspaper.values()));
+            pointsByTime.put(group.getTimestamp().getTime(),
+                    new NewspapersPoints(points, Newspaper.values()));
 
         });
 

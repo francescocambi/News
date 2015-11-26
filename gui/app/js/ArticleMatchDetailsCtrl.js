@@ -35,12 +35,20 @@ angular.module("NewsApp")
             var splittedSource = source.split(/[\s]+/g);
             var result = "";
 
+            var stemmer = new Snowball('Italian');
+
             splittedText.forEach(function (wordA) {
                 var found = false;
                 var word = "";
                 for (var i=0; i<splittedSource.length && !found; i++) {
                     var a = wordA.toLowerCase().replace(/[^\w\d]/ig, "");
+                    stemmer.setCurrent(a);
+                    stemmer.stem();
+                    a = stemmer.getCurrent();
                     var b = splittedSource[i].toLowerCase().replace(/[^\w\d]/ig, "");
+                    stemmer.setCurrent(b);
+                    stemmer.stem();
+                    b = stemmer.getCurrent();
                     if (a.length > 0 && a == b) {
                         word += "<span class=\"" + greenClass + "\">" + wordA + "</span>";
                         found = true;

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public abstract class Task implements Runnable {
 
-    private static Logger log = Logging.registerLogger("it.fcambi.news.Tasks");
+    private static Logger log;
 
     protected TaskStatus status;
     protected Progress progress = new Progress();
@@ -34,6 +34,10 @@ public abstract class Task implements Runnable {
     protected Exception exception;
 
     protected Future future;
+
+    public static void setLogger(Logger l) {
+        log = l;
+    }
 
     public Task() {
         this.status = TaskStatus.NEW;

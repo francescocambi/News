@@ -3,11 +3,11 @@
 </div>
 
 <div class="col-xs-12 border-bottom">
-    <label>Clustering:
-        <select class="form-control" ng-model="selectedClustering" ng-change="clusteringChange()"
+    <label>Clustering:</label>
+        <select class="form-control" style="display: inline-block; width: 120px;"
+                ng-model="selectedClustering" ng-change="clusteringChange()"
                 ng-options="c.name as c.name for c in clusterings">
         </select>
-    </label>
 
     &nbsp;&nbsp;&nbsp;
 

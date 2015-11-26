@@ -1,6 +1,6 @@
 <h1>New Incremental Clustering Task</h1>
 <div class="col-md-12 panel">
-    <div class="col-md-3">
+    <div class="col-md-2">
         <legend>Metric</legend>
         <div class="radio">
             <label><input type="radio" name="metric" ng-model="taskConfig.metricName" value="cosine"> Cosine</label>
@@ -19,7 +19,7 @@
     <div class="col-md-3">
         <legend>Matcher</legend>
         <div class="input-group">
-            <span class="input-group-addon">Start</span>
+            <span class="input-group-addon" style="width: 100px;">Threshold</span>
             <input type="text" class="form-control" ng-model="taskConfig.threshold" ng-pattern="/0.[0-9]+/" required="true">
         </div>
         <div class="radio">
@@ -29,7 +29,7 @@
             <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean_over_threshold"> Highest Mean Over Threshold</label>
         </div>
         <div class="input-group">
-            <span class="input-group-addon">Clustering Name</span>
+            <span class="input-group-addon" style="width: 100px;">Clust. Name</span>
             <input type="text" class="form-control" ng-model="taskConfig.clusteringName" required="true" maxlength="100">
         </div>
     </div>
@@ -53,16 +53,18 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <legend>Articles Dataset</legend>
         <div class="input-group">
-            <span class="input-group-addon">From Date</span>
+            <span class="input-group-addon" style="width: 100px;">From Date</span>
             <input type="datetime-local" class="form-control" ng-model="taskConfig.articlesFrom"
+                   style="width: 200px;"
                    placeholder="YYYY-MM-DDTHH:MM:SS">
         </div>
         <div class="input-group">
-            <span class="input-group-addon">To Date</span>
+            <span class="input-group-addon" style="width: 100px;">To Date</span>
             <input type="datetime-local" class="form-control" ng-model="taskConfig.articlesTo"
+                   style="width: 200px;"
                    placeholder="YYYY-MM-DDTHH:MM:SS">
         </div>
     </div>
