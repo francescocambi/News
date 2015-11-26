@@ -2,7 +2,7 @@
  * Created by Francesco on 14/11/15.
  */
 angular.module("NewsApp")
-    .controller("ArticlesListCtrl", function ($scope, $rootScope, $http, SERVER_URL, loadingSpinner) {
+    .controller("ArticlesListCtrl", function ($scope, $rootScope, $http, SERVER_URL, loadingSpinner, $location) {
         $scope.onlyNotMatched = $rootScope.articleFilterOnlyNotMatched;
 
         $scope.sortingCol = 0;
@@ -23,6 +23,11 @@ angular.module("NewsApp")
 
         $scope.onlyNotMatchedFilterChanged = function () {
             $rootScope.articleFilterOnlyNotMatched = $scope.onlyNotMatched;
+        }
+
+        $scope.matchingNewsFor = function (article) {
+            $rootScope.articleList_selectedArticle = article;
+            $location.path('/articles/match/'+article.id);
         }
 
         //Loads cached articles list if present

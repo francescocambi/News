@@ -25,7 +25,7 @@
             <td>{{ a.source | NewspaperName }}</td>
             <td><a href="#/articles/{{a.id}}">Details</a></td>
             <!--<td><a href="" ng-click="deleteArticle(a)">Delete</a></td>-->
-            <td><a href="#/articles/match/{{a.id}}">Match</a></td>
+            <td><a ng-click="matchingNewsFor(a)" href="#/articles/match/{{a.id}}">Match</a></td>
         </tr>
     </tbody>
 </table>

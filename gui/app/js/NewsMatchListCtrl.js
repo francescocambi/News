@@ -2,7 +2,8 @@
  * Created by Francesco on 19/10/15.
  */
 angular.module("NewsApp")
-    .controller("NewsMatchListCtrl", function ($scope, $http, loadingSpinner, SERVER_URL, $routeParams, $location) {
+    .controller("NewsMatchListCtrl", function ($scope, $http, loadingSpinner, SERVER_URL,
+                                               $routeParams, $location, $rootScope) {
 
         loadingSpinner.begin(2);
         $http.get(SERVER_URL+"/articles/"+$routeParams['id'])
@@ -26,6 +27,17 @@ angular.module("NewsApp")
                     'Content-Type': 'application/json'
                 }
             }).then(function (response) {
+                if ($rootScope.articleList_selectedArticle)
+                    $rootScope.articleList_selectedArticle.news.manual = newsId;
+                else if ($rootScope.cachedArticlesList) {
+                    var found = false;
+                    for (var i = 0; i < $rootScope.cachedArticlesList.length && !found; i++) {
+                        if ($rootScope.cachedArticlesList[i].id == articleId) {
+                            $rootScope.cachedArticlesList[i].news.manual = response.data;
+                            found = true;
+                        }
+                    }
+                }
                 $location.path('/articles/list');
             }).finally(function () {loadingSpinner.end() });
         };

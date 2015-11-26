@@ -9,6 +9,7 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
@@ -32,6 +33,7 @@ public class Server {
 
     public HttpServer startServer() {
         final ResourceConfig rc = new ResourceConfig().packages("it.fcambi.news.ws.resources");
+        rc.register(JacksonFeature.class);
         rc.register(CORSFilter.class);
         rc.register(SecurityFilter.class);
         rc.register(RolesAllowedDynamicFeature.class);

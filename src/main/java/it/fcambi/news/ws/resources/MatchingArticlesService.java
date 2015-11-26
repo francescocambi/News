@@ -95,7 +95,7 @@ public class MatchingArticlesService {
         em.getTransaction().commit();
         em.close();
 
-        return Response.status(201).build();
+        return Response.status(201).entity(n.getId()).build();
     }
 
 }
