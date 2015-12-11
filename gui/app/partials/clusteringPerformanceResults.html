@@ -1,0 +1,28 @@
+<h1>Performance Results for Task #{{ taskId }}</h1>
+
+<table class="table table-bordered table-striped">
+
+    <thead>
+    <tr>
+        <th>Threshold</th>
+        <th>Precision</th>
+        <th>Recall</th>
+        <th>F-Measure</th>
+        <th>Jaccard</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr ng-repeat="(threshold, stats) in results">
+        <td>{{ threshold }}</td>
+        <td>{{ stats.averagePrecision | number: 2 }}
+            [{{ stats.minPrecision | number : 2}} ; {{stats.maxPrecision | number : 2}}]</td>
+        <td>{{ stats.averageRecall | number : 2 }}
+            [{{stats.minRecall | number : 2}} ; {{stats.maxRecall | number : 2}}]</td>
+        <td>{{ stats.averageFMeasure | number : 2 }}</td>
+        <td>{{ stats.averageJaccard | number : 2}}
+            [{{ stats.minJaccard | number : 2}} ; {{stats.maxJaccard | number : 2}}]</td>
+    </tr>
+    </tbody>
+
+</table>
