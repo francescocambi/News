@@ -140,12 +140,12 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
         });
 
         $routeProvider.when("/clustering-performance", {
-            templateUrl: "partials/ClusteringPerformanceTask.html",
+            templateUrl: "partials/clusteringPerformanceTask.html",
             controller: "ClusteringPerformanceTaskCtrl"
         });
 
         $routeProvider.when("/clustering-performance/:id", {
-            templateUrl: "partials/ClusteringPerformanceResults.html",
+            templateUrl: "partials/clusteringPerformanceResults.html",
             controller: "ClusteringPerformanceResultsCtrl"
         });
 
