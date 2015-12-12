@@ -5,6 +5,7 @@ import it.fcambi.news.stemmer.StemmerWrapper;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
 /**
@@ -12,7 +13,7 @@ import java.util.stream.IntStream;
  */
 public class StemmerTextFilter implements TextFilter {
 
-    private static Map<String, String> cache = new Hashtable<>();
+    private static Map<String, String> cache = new ConcurrentHashMap<>();
 
     @Override
     public List<String> filter(List<String> words) {
