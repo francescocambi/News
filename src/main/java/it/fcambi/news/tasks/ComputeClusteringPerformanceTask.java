@@ -61,8 +61,6 @@ public class ComputeClusteringPerformanceTask extends Task {
         progress.set(0);
         EntityManager em = Application.createEntityManager();
 
-        results = new ConcurrentHashMap<>();
-
         List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'", Article.class)
                 .getResultList();
 
@@ -70,8 +68,8 @@ public class ComputeClusteringPerformanceTask extends Task {
 
         MatchMapGenerator generator = new MatchMapGenerator(conf);
 
-        DoubleStream.iterate(thresholdStart, a -> a+thresholdIncrement).limit(thresholdLimit).parallel()
-                .forEach(threshold -> {
+        results = DoubleStream.iterate(thresholdStart, a -> a+thresholdIncrement).limit(thresholdLimit).parallel()
+                .mapToObj(threshold -> {
 
                     List<Article> classifiedArticles = new ArrayList<>();
 
@@ -171,7 +169,7 @@ public class ComputeClusteringPerformanceTask extends Task {
                     double squaredOffsetSum = Arrays.stream(distribution).map(x -> Math.pow(x-jaccardStats.getAverage(), 2)).sum();
                     double stdDeviation = Math.sqrt(squaredOffsetSum/jaccardStats.getCount());
 
-                    ClusteringPerformanceResults r = new ClusteringPerformanceResults();
+                    ClusteringPerformanceResults r = new ClusteringPerformanceResults(threshold);
                     r.averagePrecision = precisionStats.getAverage();
                     r.minPrecision = precisionStats.getMin();
                     r.maxPrecision = precisionStats.getMax();
@@ -187,9 +185,9 @@ public class ComputeClusteringPerformanceTask extends Task {
                     r.minJaccard = jaccardStats.getMin();
                     r.maxJaccard = jaccardStats.getMax();
 
-                    results.put(threshold, r);
+                    return r;
 
-                });
+                }).collect(Collectors.toConcurrentMap(ClusteringPerformanceResults::getThreshold, r -> r));
 
         em.close();
 

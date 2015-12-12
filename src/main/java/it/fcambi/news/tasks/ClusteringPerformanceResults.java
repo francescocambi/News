@@ -5,6 +5,8 @@ package it.fcambi.news.tasks;
  */
 public class ClusteringPerformanceResults {
 
+    double threshold;
+
     double averagePrecision;
     double minPrecision;
     double maxPrecision;
@@ -19,6 +21,14 @@ public class ClusteringPerformanceResults {
     double stdDevJaccard;
     double minJaccard;
     double maxJaccard;
+
+    public ClusteringPerformanceResults(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public double getThreshold() {
+        return threshold;
+    }
 
     public double getAveragePrecision() {
         return averagePrecision;
