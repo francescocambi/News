@@ -68,7 +68,7 @@ public class ComputeClusteringPerformanceTask extends Task {
 
         MatchMapGenerator generator = new MatchMapGenerator(conf);
 
-        results = DoubleStream.iterate(thresholdStart, a -> a+thresholdIncrement).limit(thresholdLimit).parallel()
+        results = DoubleStream.iterate(thresholdStart, a -> a+thresholdIncrement).limit(thresholdLimit)
                 .mapToObj(threshold -> {
 
                     List<Article> classifiedArticles = new ArrayList<>();
@@ -120,7 +120,7 @@ public class ComputeClusteringPerformanceTask extends Task {
                         cols = generatedClustersRes;
                     }
 
-                    double[] distribution = rows.stream().mapToDouble(row -> {
+                    List<Double> distribution = rows.stream().mapToDouble(row -> {
                         return cols.stream().map(col -> {
 
                             //Compute Jaccard
@@ -130,7 +130,7 @@ public class ComputeClusteringPerformanceTask extends Task {
                             return (double)intersection/union;
 
                         }).max(Double::compare).get();
-                    }).toArray();
+                    }).boxed().collect(Collectors.toList());
 
                     //Compute precision recall
                     class IRStats {
@@ -163,10 +163,10 @@ public class ComputeClusteringPerformanceTask extends Task {
 
                     double fmeasure = (2.0*(precisionStats.getAverage()*recallStats.getAverage()))/(precisionStats.getAverage()+recallStats.getAverage());
 
-                    DoubleSummaryStatistics jaccardStats = Arrays.stream(distribution).summaryStatistics();
+                    DoubleSummaryStatistics jaccardStats = distribution.stream().mapToDouble(x -> x).summaryStatistics();
 
                     //Compute standard deviation
-                    double squaredOffsetSum = Arrays.stream(distribution).map(x -> Math.pow(x-jaccardStats.getAverage(), 2)).sum();
+                    double squaredOffsetSum = distribution.stream().mapToDouble(x -> Math.pow(x-jaccardStats.getAverage(), 2)).sum();
                     double stdDeviation = Math.sqrt(squaredOffsetSum/jaccardStats.getCount());
 
                     ClusteringPerformanceResults r = new ClusteringPerformanceResults(threshold);

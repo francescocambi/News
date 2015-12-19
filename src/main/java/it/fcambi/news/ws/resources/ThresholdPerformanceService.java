@@ -1,16 +1,22 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
+import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
+import it.fcambi.news.data.Text;
+import it.fcambi.news.model.TFDictionary;
 import it.fcambi.news.tasks.ComputeThresholdPerformanceTask;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Francesco on 09/11/15.
@@ -39,9 +45,12 @@ public class ThresholdPerformanceService extends TaskService<ComputeThresholdPer
             return Response.status(400).entity(e.getMessage()).build();
         }
 
+        MatchMapGeneratorConfiguration conf = parser.getConfig();
+        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
+
         ComputeThresholdPerformanceTask task;
         if (start >= 0 && step > 0 && limit > 0)
-            task = new ComputeThresholdPerformanceTask(parser.getConfig(), parser.getMetric(), start, step, limit);
+            task = new ComputeThresholdPerformanceTask(conf, parser.getMetric(), start, step, limit);
         else
             return Response.status(400).entity("Invalid threshold range parameters.").build();
 

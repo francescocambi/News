@@ -132,7 +132,7 @@ public class Article {
         return news.get(c.getName());
     }
 
-    public void setNews(Clustering c, News news) {
+    public synchronized void setNews(Clustering c, News news) {
         this.news.put(c.getName(), news);
     }
 

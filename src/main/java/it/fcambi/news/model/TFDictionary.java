@@ -5,6 +5,7 @@ import it.fcambi.news.data.FrequenciesWordVector;
 import javax.persistence.*;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Francesco on 27/10/15.
@@ -20,7 +21,7 @@ public class TFDictionary {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(length = 60)
-    protected Map<String, Long> terms = new Hashtable<>();
+    protected Map<String, Integer> terms = new ConcurrentHashMap<>();
 
     public String getDescription() {
         return description;
@@ -38,17 +39,22 @@ public class TFDictionary {
         this.numOfDocuments = numOfDocuments;
     }
 
-    public Map<String, Long> getTerms() {
+    public Map<String, Integer> getTerms() {
         return terms;
     }
 
-    public synchronized long getNumOfDocumentsWithWord(String word) {
-        return terms.getOrDefault(word, 1L);
+    public long getNumOfDocumentsWithWord(String word) {
+        return terms.getOrDefault(word, 1);
     }
 
     public void addDocument(FrequenciesWordVector d) {
         // Update dictionary with words in d
-        d.getWords().forEach(word -> terms.put(word, terms.getOrDefault(word, 0L)+1L));
+        d.getWords().forEach(word -> terms.put(word, terms.getOrDefault(word, 0)+1));
         numOfDocuments++;
+    }
+
+    public void enableParallelism() {
+        if (!(terms instanceof ConcurrentHashMap))
+            terms = new ConcurrentHashMap<>(terms);
     }
 }

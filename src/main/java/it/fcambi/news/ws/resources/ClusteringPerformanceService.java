@@ -2,6 +2,7 @@ package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
 import it.fcambi.news.clustering.*;
+import it.fcambi.news.data.Text;
 import it.fcambi.news.tasks.ComputeClusteringPerformanceTask;
 
 import javax.inject.Singleton;
@@ -55,6 +56,9 @@ public class ClusteringPerformanceService extends TaskService<ComputeClusteringP
         if ( !(start >= 0 && step > 0 && limit > 0) ) {
             return Response.status(400).entity("Invalid threshold range parameters.").build();
         }
+
+        MatchMapGeneratorConfiguration conf = parser.getConfig();
+        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
 
         ComputeClusteringPerformanceTask task = new ComputeClusteringPerformanceTask(parser.getConfig(),
                 parser.getMetric(), matcherFactory, start, step, limit);

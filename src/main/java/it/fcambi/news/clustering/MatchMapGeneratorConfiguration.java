@@ -25,22 +25,21 @@ public class MatchMapGeneratorConfiguration {
     private List<TextFilter> textFilters = new ArrayList<>();
     private Collection<Metric> metrics = new HashSet<>();
     private Function<String, Text> stringToTextFn;
-    private BiFunction<Article, Text, String> keywordSelectionFn;
+    private KeywordsSelectionFunction keywordSelectionFn;
     private BiPredicate<Article, Article> ignorePairPredicate;
     private WordVectorFactory wordVectorFactory;
 
-    public static BiFunction<Article, Text, String> headlineAndCapitalsKeywords = (article, body) -> {
+    public static KeywordsSelectionFunction headlineAndCapitalsKeywords = (title, description, body) -> {
 
-        String capitals = body.words().stream()
+        Text capitals = body.words().stream()
                 .filter(w -> w.length() > 0 && Character.isUpperCase(w.charAt(0)))
-                .collect(Collectors.joining(" "));
+                .collect(Text.collector());
 
-        return article.getTitle()+" "+article.getDescription()+" "+capitals;
+        return new Text(title, description, capitals);
 
     };
 
-    public static BiFunction<Article, Text, String> headlineKeywords = (article, body) ->
-            article.getTitle()+" "+article.getDescription();
+    public static KeywordsSelectionFunction headlineKeywords = (title, description, body) -> new Text(title, description);
 
     public static Function<String, Text> onlyAlphaSpaceSeparated = s -> new Text(s.replaceAll("[^\\p{Alpha}\\p{Space}]", " "), "\\p{Space}+");
 
@@ -48,7 +47,7 @@ public class MatchMapGeneratorConfiguration {
 
     public static BiPredicate<Article, Article> ignoreReflectiveMatch = (a,b) -> a.equals(b);
 
-    public MatchMapGeneratorConfiguration setKeywordSelectionFunction(BiFunction<Article, Text, String> k) {
+    public MatchMapGeneratorConfiguration setKeywordSelectionFunction(KeywordsSelectionFunction k) {
         this.keywordSelectionFn = k;
         return this;
     }
@@ -102,7 +101,7 @@ public class MatchMapGeneratorConfiguration {
         return stringToTextFn;
     }
 
-    public BiFunction<Article, Text, String> getKeywordSelectionFn() {
+    public KeywordsSelectionFunction getKeywordSelectionFn() {
         if (keywordSelectionFn == null)
             keywordSelectionFn = MatchMapGeneratorConfiguration.headlineAndCapitalsKeywords;
         return keywordSelectionFn;

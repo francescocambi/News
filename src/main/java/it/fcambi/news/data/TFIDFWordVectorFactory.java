@@ -10,6 +10,7 @@ public class TFIDFWordVectorFactory implements WordVectorFactory {
     private TFDictionary dictionary;
 
     public TFIDFWordVectorFactory(TFDictionary dictionary) {
+        dictionary.enableParallelism();
         this.dictionary = dictionary;
     }
 

@@ -46,13 +46,6 @@ public class Application {
 
         Logging.setUp();
         log = Logging.registerLogger(Application.class.getName());
-
-        //Set up parallelism
-        int parallelismLevel = Runtime.getRuntime().availableProcessors();
-        log.info("Available parallelism level "+parallelismLevel);
-        log.info("Setting ForkJoinPool parallelism to "+(parallelismLevel-1));
-        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", ""+(parallelismLevel-1));
-
         Logging.registerLogger("");
         Logging.registerLogger("org.hibernate", Level.WARNING);
 

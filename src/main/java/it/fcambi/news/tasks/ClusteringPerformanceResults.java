@@ -26,6 +26,54 @@ public class ClusteringPerformanceResults {
         this.threshold = threshold;
     }
 
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public void setAveragePrecision(double averagePrecision) {
+        this.averagePrecision = averagePrecision;
+    }
+
+    public void setMinPrecision(double minPrecision) {
+        this.minPrecision = minPrecision;
+    }
+
+    public void setMaxPrecision(double maxPrecision) {
+        this.maxPrecision = maxPrecision;
+    }
+
+    public void setAverageRecall(double averageRecall) {
+        this.averageRecall = averageRecall;
+    }
+
+    public void setMinRecall(double minRecall) {
+        this.minRecall = minRecall;
+    }
+
+    public void setMaxRecall(double maxRecall) {
+        this.maxRecall = maxRecall;
+    }
+
+    public void setAverageFMeasure(double averageFMeasure) {
+        this.averageFMeasure = averageFMeasure;
+    }
+
+    public void setAverageJaccard(double averageJaccard) {
+        this.averageJaccard = averageJaccard;
+    }
+
+    public void setStdDevJaccard(double stdDevJaccard) {
+        this.stdDevJaccard = stdDevJaccard;
+    }
+
+    public void setMinJaccard(double minJaccard) {
+        this.minJaccard = minJaccard;
+    }
+
+    public void setMaxJaccard(double maxJaccard) {
+        this.maxJaccard = maxJaccard;
+    }
+
     public double getThreshold() {
         return threshold;
     }

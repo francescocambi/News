@@ -20,7 +20,10 @@ public class StemmerTextFilter implements TextFilter {
         StemmerWrapper stemmer = new StemmerWrapper();
         IntStream.range(0, words.size()).parallel().forEach(i -> {
             if (!cache.containsKey(words.get(i))) {
-                cache.put(words.get(i), stemmer.getStemmedWord(words.get(i)));
+                String stemmed = stemmer.getStemmedWord(words.get(i));
+                if (stemmed.length() == 0)
+                    stemmed = words.get(i);
+                cache.put(words.get(i), stemmed);
             }
             words.set(i, cache.get(words.get(i)));
         });

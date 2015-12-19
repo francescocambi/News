@@ -30,10 +30,10 @@ public class TFIDFVectorTest {
     public static void setUp() {
 
         dictionary = new TFDictionary();
-        dictionary.getTerms().put("indic", 72L);
-        dictionary.getTerms().put("indifferent", 6L);
-        dictionary.getTerms().put("indiscrezion", 17L);
-        dictionary.getTerms().put("indicizz", 3L);
+        dictionary.getTerms().put("indic", 72);
+        dictionary.getTerms().put("indifferent", 6);
+        dictionary.getTerms().put("indiscrezion", 17);
+        dictionary.getTerms().put("indicizz", 3);
         dictionary.setNumOfDocuments(90);
 
         sourceText = "a poche ore dalla sentenza indic a poche ore dalla indifferent sul indic";

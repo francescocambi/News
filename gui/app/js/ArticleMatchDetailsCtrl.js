@@ -4,6 +4,8 @@
 angular.module("NewsApp")
     .controller("ArticleMatchDetailsCtrl", function ($scope, $http, SERVER_URL, loadingSpinner, $routeParams) {
 
+        GREEN = "green";
+
         loadingSpinner.begin();
         $http.get(SERVER_URL+"/matcharticles/matching/"+$routeParams['id']+"-"+$routeParams['matchid'])
             .then(function (response) {
@@ -19,9 +21,16 @@ angular.module("NewsApp")
         $scope.prepareText = function () {
             var text = $scope.currentArticle.title+" "+$scope.currentArticle.description+" "+$scope.currentArticle.body;
 
-            $scope.highlightedTitle = $scope.highlightTextSimilarities($scope.matchingArticle.article.title, text, 'green');
-            $scope.highlightedDescription = $scope.highlightTextSimilarities($scope.matchingArticle.article.description, text, 'green');
-            $scope.highlightedBody = $scope.highlightTextSimilarities($scope.matchingArticle.article.body, text, 'green');
+            $scope.highlightedMatchTitle = $scope.highlightTextSimilarities($scope.matchingArticle.article.title, text, GREEN);
+            $scope.highlightedMatchDescription = $scope.highlightTextSimilarities($scope.matchingArticle.article.description, text, GREEN);
+            $scope.highlightedMatchBody = $scope.highlightTextSimilarities($scope.matchingArticle.article.body, text, GREEN);
+
+            text = $scope.matchingArticle.article.title+" "+$scope.matchingArticle.article.description+" "
+                +$scope.matchingArticle.article.body;
+
+            $scope.highlightedCurrentTitle = $scope.highlightTextSimilarities($scope.currentArticle.title, text, GREEN);
+            $scope.highlightedCurrentDescription = $scope.highlightTextSimilarities($scope.currentArticle.description, text, GREEN);
+            $scope.highlightedCurrentBody = $scope.highlightTextSimilarities($scope.currentArticle.body, text, GREEN);
         }
 
         /*

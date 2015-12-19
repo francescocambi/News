@@ -6,6 +6,7 @@ import it.fcambi.news.clustering.MatchMapGenerator;
 import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
 import it.fcambi.news.clustering.Matcher;
 import it.fcambi.news.data.TFIDFWordVectorFactory;
+import it.fcambi.news.data.Text;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
 import it.fcambi.news.filters.StemmerTextFilter;
 import it.fcambi.news.metrics.CosineSimilarity;
@@ -13,6 +14,7 @@ import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -20,7 +22,9 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Francesco on 18/10/15.
@@ -28,6 +32,9 @@ import java.util.stream.Collectors;
 @Path("/news")
 @RolesAllowed({"user", "admin"})
 public class NewsService {
+
+    private static Map<Long, Text> matchMapKeywordsCache = new ConcurrentHashMap<>();
+    private static Map<Long, Text> matchMapBodyCache = new ConcurrentHashMap<>();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -89,8 +96,29 @@ public class NewsService {
                 .addMetric(cosine)
                 .addTextFilter(new NoiseWordsTextFilter())
                 .addTextFilter(new StemmerTextFilter())
-                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
-        MatchMapGenerator generator = new MatchMapGenerator(conf);
+                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary))
+                .setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
+//                .setKeywordSelectionFunction((title, description, body) -> {
+
+//                    String s = ">>>>>>>>>>>>>>>>>>> ARTICLE "+article.getId()+" <<<<<<<<<<<<<<<<<<<<\n";
+//                    s += article.getTitle()+"\n";
+//                    s += "-----------------------BODY-----------------------\n";
+//                    s += body.toString()+"\n";
+//                    s += "---------------------KEYWORDS---------------------\n";
+
+//                    Stream<String> capitals = body.words().stream()
+//                            .filter(w -> w.length() > 0 && Character.isUpperCase(w.charAt(0)));
+
+//                    Stream<String> lowfreq = body.words().stream()
+//                            .filter(w -> w.length() > 0 && dictionary.getNumOfDocumentsWithWord(w.toLowerCase()) < 37);
+
+//                    return Stream.of(title.stream(), description.stream(), capitals, lowfreq).flatMap(s -> s)
+//                            .collect(Text.collector());
+
+//                    System.out.println(keywords.toString());
+
+//                });
+        MatchMapGenerator generator = new MatchMapGenerator(conf, matchMapBodyCache, matchMapKeywordsCache);
 
         Map<Article, List<MatchingArticle>> matchMap = generator.generateMap(targetArticles, articles);
 

@@ -2,6 +2,7 @@ package it.fcambi.news.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 26/10/15.
@@ -76,5 +77,10 @@ public class FrequenciesWordVector implements WordVector {
     @Override
     public double[] toArray() {
         return frequencies.stream().mapToDouble(d -> d).toArray();
+    }
+
+    @Override
+    public String toString() {
+        return "["+words.stream().collect(Collectors.joining(" "))+"]";
     }
 }

@@ -11,11 +11,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MatchMapGenerator {
 
-    private Map<Article, Text> headlineCache = new ConcurrentHashMap<>();
-    private Map<Article, Text> bodyCache = new ConcurrentHashMap<>();
+    private Map<Long, Text> keywordCache = new ConcurrentHashMap<>();
+    private Map<Long, Text> bodyCache = new ConcurrentHashMap<>();
 
     private MatchMapGeneratorConfiguration config;
 
@@ -27,6 +28,13 @@ public class MatchMapGenerator {
         progress = new AtomicInteger();
     }
 
+    public MatchMapGenerator(MatchMapGeneratorConfiguration config, Map<Long, Text> bodyCache, Map<Long, Text> keywordCache) {
+        progress = new AtomicInteger();
+        this.config = config;
+        this.bodyCache = bodyCache;
+        this.keywordCache = keywordCache;
+    }
+
     /**
      * @param articlesToMatch          Set of articles to match
      * @param knownArticles           Set of previously clustered articles
@@ -36,39 +44,49 @@ public class MatchMapGenerator {
         progress.set(0);
         toMatchArticlesSize = articlesToMatch.size();
 
+//        System.out.println(
+//                "keywordCache SIZE = "+keywordCache.size()+"\n" +
+//                        "bodyCache SIZE = "+bodyCache.size()
+//        );
+
+        /* Preprocess articles */
+        Stream.concat(articlesToMatch.stream(), knownArticles.stream()).parallel()
+                .filter(article -> !(bodyCache.containsKey(article.getId()) && keywordCache.containsKey(article.getId())))
+                .distinct()
+                .forEach(article -> {
+            Text body = getTextAndApplyFilters(article.getBody());
+            bodyCache.put(article.getId(), body);
+            Text title = getTextAndApplyFilters(article.getTitle());
+            Text description = getTextAndApplyFilters(article.getDescription());
+            keywordCache.put(article.getId(), config.getKeywordSelectionFn().apply(title, description, body));
+        });
+
+        class ArticleMatchingArticleCouple {
+            public ArticleMatchingArticleCouple(Article article, List<MatchingArticle> match) {
+                this.article = article;
+                this.match = match;
+            }
+
+            Article article;
+            List<MatchingArticle> match;
+        }
+
         // Source Article -> Similarities with all articles
-        Map<Article, List<MatchingArticle>> matchMap = new ConcurrentHashMap<>(articlesToMatch.size());
+        Map<Article, List<MatchingArticle>> matchMap;
 
-        articlesToMatch.parallelStream().forEach(article -> {
-
-            // Prepare or retrieve article
-            if (!bodyCache.containsKey(article)) {
-                bodyCache.put(article, getTextAndApplyFilters(article.getBody()));
-            }
-            if (!headlineCache.containsKey(article)) {
-                String keywords = config.getKeywordSelectionFn().apply(article, bodyCache.get(article));
-                headlineCache.put(article, getTextAndApplyFilters(keywords));
-            }
+        matchMap = articlesToMatch.parallelStream().map(article -> {
 
             List<MatchingArticle> matchingArticles = knownArticles.parallelStream()
                     .filter(match -> !config.getIgnorePairPredicate().test(article, match))
                     .map(match -> {
 
-                //Prepare or retrieve matching article
-                if (!bodyCache.containsKey(match))
-                    bodyCache.put(match, getTextAndApplyFilters(match.getBody()));
-                if (!headlineCache.containsKey(match)) {
-                    String keywords = config.getKeywordSelectionFn().apply(match, bodyCache.get(match));
-                    headlineCache.put(match, getTextAndApplyFilters(keywords));
-                }
-
                 WordVector w = config.getWordVectorFactory().createNewVector();
-                w.setWordsFrom(headlineCache.get(article), headlineCache.get(match));
-                w.setValuesFrom(bodyCache.get(article));
+                w.setWordsFrom(keywordCache.get(article.getId()), keywordCache.get(match.getId()));
+                w.setValuesFrom(bodyCache.get(article.getId()));
 
                 WordVector v = config.getWordVectorFactory().createNewVector();
                 v.setWords(w.getWords());
-                v.setValuesFrom(bodyCache.get(match));
+                v.setValuesFrom(bodyCache.get(match.getId()));
 
                 MatchingArticle a = new MatchingArticle();
                 a.setArticle(match);
@@ -79,15 +97,16 @@ public class MatchMapGenerator {
                 return a;
             }).collect(Collectors.toList());
 
-            matchMap.put(article, matchingArticles);
             progress.incrementAndGet();
+            return new ArticleMatchingArticleCouple(article, matchingArticles);
 
-        });
+        }).collect(Collectors.toConcurrentMap(a -> a.article, a -> a.match));
 
         return matchMap;
     }
 
     private Text getTextAndApplyFilters(String s) {
+        if (s == null) return new Text();
         Text t = config.getStringToTextFn().apply(s);
         config.getTextFilters().forEach(t::applyFilter);
         return t;
@@ -95,5 +114,13 @@ public class MatchMapGenerator {
 
     public double getProgress() {
         return (double)this.progress.get()/toMatchArticlesSize;
+    }
+
+    public Map<Long, Text> getKeywordCache() {
+        return keywordCache;
+    }
+
+    public Map<Long, Text> getBodyCache() {
+        return bodyCache;
     }
 }
