@@ -13,7 +13,23 @@
     </thead>
 
     <tbody>
-    <tr ng-repeat="(threshold, stats) in results">
+    <tr>
+        <td colspan="5"> <b>Training Set</b> </td>
+    </tr>
+    <tr ng-repeat="(threshold, stats) in results.trainingSet">
+        <td>{{ threshold }}</td>
+        <td>{{ stats.averagePrecision | number: 2 }}
+            [{{ stats.minPrecision | number : 2}} ; {{stats.maxPrecision | number : 2}}]</td>
+        <td>{{ stats.averageRecall | number : 2 }}
+            [{{stats.minRecall | number : 2}} ; {{stats.maxRecall | number : 2}}]</td>
+        <td>{{ stats.averageFMeasure | number : 2 }}</td>
+        <td>{{ stats.averageJaccard | number : 2}}
+            [{{ stats.minJaccard | number : 2}} ; {{stats.maxJaccard | number : 2}}]</td>
+    </tr>
+    <tr>
+        <td colspan="5"> <b>Test Set</b> </td>
+    </tr>
+    <tr ng-repeat="(threshold, stats) in results.testSet">
         <td>{{ threshold }}</td>
         <td>{{ stats.averagePrecision | number: 2 }}
             [{{ stats.minPrecision | number : 2}} ; {{stats.maxPrecision | number : 2}}]</td>

@@ -58,9 +58,9 @@ public class ClusteringPerformanceService extends TaskService<ComputeClusteringP
         }
 
         MatchMapGeneratorConfiguration conf = parser.getConfig();
-        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
+//        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
 
-        ComputeClusteringPerformanceTask task = new ComputeClusteringPerformanceTask(parser.getConfig(),
+        ComputeClusteringPerformanceTask task = new ComputeClusteringPerformanceTask(conf,
                 parser.getMetric(), matcherFactory, start, step, limit);
         int id = super.nextId();
         super.putTask(id, task);
