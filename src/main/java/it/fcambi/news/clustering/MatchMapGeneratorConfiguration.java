@@ -41,9 +41,13 @@ public class MatchMapGeneratorConfiguration {
 
     public static KeywordsSelectionFunction headlineKeywords = (title, description, body) -> new Text(title, description);
 
-    public static Function<String, Text> onlyAlphaSpaceSeparated = s -> new Text(s.replaceAll("[^\\p{Alpha}\\p{Space}]", " "), "\\p{Space}+");
-
-    public static Function<String, Text> onlyAlphanumericSpaceSeparated = s -> new Text(s.replaceAll("[^\\p{Alnum}\\p{Space}]", " "), "\\p{Space}+");
+    public static Function<String, Text> onlyAlphaSpaceSeparated = s -> new Text(s
+//            .replaceAll("[à]+", "a")
+//            .replaceAll("[èé]+", "e")
+//            .replaceAll("[ì]", "i")
+//            .replaceAll("[ò]", "o")
+//            .replaceAll("[ù]", "u")
+            .replaceAll("[^\\p{Alpha}\\p{Space}àéèìòù]", " "), "\\p{Space}+");
 
     public static BiPredicate<Article, Article> ignoreReflectiveMatch = (a,b) -> a.equals(b);
 

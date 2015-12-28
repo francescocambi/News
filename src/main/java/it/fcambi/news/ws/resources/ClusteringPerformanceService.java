@@ -3,6 +3,7 @@ package it.fcambi.news.ws.resources;
 import it.fcambi.news.Application;
 import it.fcambi.news.clustering.*;
 import it.fcambi.news.data.Text;
+import it.fcambi.news.tasks.ClusteringPerformanceTaskTwo;
 import it.fcambi.news.tasks.ComputeClusteringPerformanceTask;
 
 import javax.inject.Singleton;
@@ -18,7 +19,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/clustering-performance")
 @Singleton
-public class ClusteringPerformanceService extends TaskService<ComputeClusteringPerformanceTask> {
+public class ClusteringPerformanceService extends TaskService<ClusteringPerformanceTaskTwo> {
 
     @GET
     @Path("/start")
@@ -60,7 +61,7 @@ public class ClusteringPerformanceService extends TaskService<ComputeClusteringP
         MatchMapGeneratorConfiguration conf = parser.getConfig();
 //        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
 
-        ComputeClusteringPerformanceTask task = new ComputeClusteringPerformanceTask(conf,
+        ClusteringPerformanceTaskTwo task = new ClusteringPerformanceTaskTwo(conf,
                 parser.getMetric(), matcherFactory, start, step, limit);
         int id = super.nextId();
         super.putTask(id, task);

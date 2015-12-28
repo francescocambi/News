@@ -46,7 +46,7 @@ public class ThresholdPerformanceService extends TaskService<ComputeThresholdPer
         }
 
         MatchMapGeneratorConfiguration conf = parser.getConfig();
-        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
+//        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
 
         ComputeThresholdPerformanceTask task;
         if (start >= 0 && step > 0 && limit > 0)

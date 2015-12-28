@@ -96,8 +96,8 @@ public class NewsService {
                 .addMetric(cosine)
                 .addTextFilter(new NoiseWordsTextFilter())
                 .addTextFilter(new StemmerTextFilter())
-                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary))
-                .setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
+                .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
+//                .setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
 //                .setKeywordSelectionFunction((title, description, body) -> {
 
 //                    String s = ">>>>>>>>>>>>>>>>>>> ARTICLE "+article.getId()+" <<<<<<<<<<<<<<<<<<<<\n";

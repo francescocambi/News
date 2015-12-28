@@ -1,6 +1,6 @@
 <h1>New Clustering Performance Task</h1>
 <div class="col-md-12 panel">
-    <div class="col-md-3">
+    <div class="col-md-2">
         <legend>Metric</legend>
         <div class="radio">
             <label><input type="radio" name="metric" ng-model="taskConfig.metricName" value="cosine"> Cosine</label>
@@ -35,16 +35,6 @@
     </div>
 
     <div class="col-md-3">
-        <legend>Matcher</legend>
-        <div class="radio">
-            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean"> Highest Mean</label>
-        </div>
-        <div class="radio">
-            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean_over_threshold"> Highest Mean Over Threshold</label>
-        </div>
-    </div>
-
-    <div class="col-md-3">
         <legend>Options</legend>
         <div class="checkbox">
             <label><input type="checkbox" ng-model="taskConfig.tfidf" ng-change="taskConfig.stemming = true"> Use TF-IDF</label>
@@ -60,6 +50,16 @@
         </div>
         <div class="radio">
             <label><input type="radio" name="keywordExtraction" ng-model="taskConfig.keywordExtraction" value="capitals"> Headline and Capitals</label>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <legend>Matcher</legend>
+        <div class="radio">
+            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean"> Highest Mean</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean_over_threshold"> Highest Mean Over Threshold</label>
         </div>
     </div>
 

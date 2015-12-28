@@ -32,5 +32,21 @@ angular.module("NewsApp")
             } else
                 return status;
         }
+    })
+    .filter('duration', function() {
+        return function(millseconds) {
+            var seconds = Math.round(millseconds / 1000);
+            var days = Math.round(seconds / 86400);
+            var hours = Math.round((seconds % 86400) / 3600);
+            var minutes = Math.round(((seconds % 86400) % 3600) / 60);
+            if (minutes == 60) {
+                minutes = 0; hours++;
+            }
+            var timeString = '';
+            if(days > 0) timeString += (days > 1) ? (days + " days ") : (days + " day ");
+            if(hours > 0) timeString += (hours > 1) ? (hours + " hours ") : (hours + " hour ");
+            if(minutes > 0) timeString += (minutes > 1) ? (minutes + " minutes ") : (minutes + " minute ");
+            return timeString;
+        }
     });
 

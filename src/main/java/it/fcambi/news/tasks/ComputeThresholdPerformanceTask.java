@@ -101,6 +101,28 @@ public class ComputeThresholdPerformanceTask extends Task {
                     return 0;
             }).sum();
 
+            long trueNegative = pairs.entrySet().stream()
+                    .filter(entry -> entry.getValue() == null && entry.getKey().getNews(manualClustering).size() == 1)
+                    .count();
+
+            long truePositive = pairs.entrySet().stream()
+                    .filter(entry -> entry.getValue() != null && entry.getKey().getNews(manualClustering).equals(entry.getValue().getNews()))
+                    .count();
+
+            long falsePositive = pairs.entrySet().stream()
+                    .filter(entry -> entry.getValue() != null && !entry.getKey().getNews(manualClustering).equals(entry.getValue().getNews()))
+                    .count();
+
+            long falseNegative = pairs.entrySet().stream()
+                    .filter(entry -> entry.getValue() == null && entry.getKey().getNews(manualClustering).size() > 1)
+                    .count();
+
+            System.out.print(
+                    "------------------------------------------------------------------\n" +
+                    "THRESHOLD >> "+threshold+"\n" +
+                    "  TP: "+truePositive+"   FP: "+falsePositive+"   TN: "+trueNegative+"   FN: "+falseNegative+"\n"+
+                    "  okCount: "+okCount+" on "+pairs.size()+" pairs\n");
+
             results.addThresholdResult(threshold, okCount);
             progress.add(progressUnit);
 

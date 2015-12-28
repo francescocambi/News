@@ -14,6 +14,7 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represent an Article from a newspaper
@@ -61,7 +62,7 @@ public class Article {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @Fetch(FetchMode.JOIN)
     @JsonManagedReference
-    private Map<String, News> news;
+    private Map<String, News> news = new ConcurrentHashMap<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
