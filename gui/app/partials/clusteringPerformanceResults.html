@@ -1,10 +1,22 @@
 <h1>Performance Results for Task #{{ taskId }}</h1>
 
-<table class="table table-bordered table-striped">
+<style>
+    .left {
+        text-align: left;
+    }
+    .center {
+        text-align: center;
+    }
+    .bold {
+        font-weight: bold;
+    }
+</style>
+
+<table class="table table-bordered table-striped center">
 
     <thead>
     <tr>
-        <th>Threshold</th>
+        <th colspan="2">Threshold</th>
         <th>Precision</th>
         <th>Recall</th>
         <th>F-Measure</th>
@@ -14,30 +26,48 @@
 
     <tbody>
     <tr>
-        <td colspan="5"> <b>Training Set</b> </td>
-    </tr>
-    <tr ng-repeat="(threshold, stats) in results.trainingSet">
-        <td>{{ threshold }}</td>
-        <td>{{ stats.averagePrecision | number: 2 }}
-            [{{ stats.minPrecision | number : 2}} ; {{stats.maxPrecision | number : 2}}]</td>
-        <td>{{ stats.averageRecall | number : 2 }}
-            [{{stats.minRecall | number : 2}} ; {{stats.maxRecall | number : 2}}]</td>
-        <td>{{ stats.averageFMeasure | number : 2 }}</td>
-        <td>{{ stats.averageJaccard | number : 2}}
-            [{{ stats.minJaccard | number : 2}} ; {{stats.maxJaccard | number : 2}}]</td>
+        <td colspan="6" class="left"> <b>Training Set</b> </td>
     </tr>
     <tr>
-        <td colspan="5"> <b>Test Set</b> </td>
+        <td colspan="2">{{ trs.threshold | number : 2 }} (Weighted)</td>
+        <td>{{ trs.averagePrecisionWeighted | number : 4 }}</td>
+        <td>{{ trs.averageRecallWeighted | number : 4 }}</td>
+        <td class="bold">{{ trs.averageFMeasureWeighted | number : 4 }}</td>
+        <td class="bold">{{ trs.averageJaccardWeighted | number : 4 }}</td>
     </tr>
-    <tr ng-repeat="(threshold, stats) in results.testSet">
-        <td>{{ threshold }}</td>
-        <td>{{ stats.averagePrecision | number: 2 }}
-            [{{ stats.minPrecision | number : 2}} ; {{stats.maxPrecision | number : 2}}]</td>
-        <td>{{ stats.averageRecall | number : 2 }}
-            [{{stats.minRecall | number : 2}} ; {{stats.maxRecall | number : 2}}]</td>
-        <td>{{ stats.averageFMeasure | number : 2 }}</td>
-        <td>{{ stats.averageJaccard | number : 2}}
-            [{{ stats.minJaccard | number : 2}} ; {{stats.maxJaccard | number : 2}}]</td>
+    <tr>
+        <td colspan="2">{{ trs.threshold | number : 2 }}</td>
+        <td>{{ trs.averagePrecision | number:4 }}</td>
+        <td>{{ trs.averageRecall | number:4 }}</td>
+        <td>{{ trs.averageFMeasure | number : 4 }}</td>
+        <td>{{ trs.averageJaccard | number:4 }}</td>
+    </tr>
+    <tr>
+        <td colspan="2">{{ trs.numGeneratedClusters }} generated clusters</td>
+        <td colspan="2">{{ trs.numExpectedClusters }} expected clusters</td>
+        <td colspan="2">on {{trs.numOfArticles}} articles</td>
+    </tr>
+    <tr ng-if="tss">
+        <td colspan="6" class="left"> <b>Test Set</b> </td>
+    </tr>
+    <tr ng-if="tss">
+        <td colspan="2">{{ tss.threshold | number : 2 }} (Weighted)</td>
+        <td>{{ tss.averagePrecisionWeighted | number : 4 }}</td>
+        <td>{{ tss.averageRecallWeighted | number : 4 }}</td>
+        <td class="bold">{{ tss.averageFMeasureWeighted | number : 4 }}</td>
+        <td class="bold">{{ tss.averageJaccardWeighted | number : 4 }}</td>
+    </tr>
+    <tr ng-if="tss">
+        <td colspan="2">{{ tss.threshold | number : 2 }}</td>
+        <td>{{ tss.averagePrecision | number:4 }}</td>
+        <td>{{ tss.averageRecall | number:4 }}</td>
+        <td>{{ tss.averageFMeasure | number : 4 }}</td>
+        <td>{{ tss.averageJaccard | number:4 }}</td>
+    </tr>
+    <tr ng-if="tss">
+        <td colspan="2">{{ tss.numGeneratedClusters }} generated clusters</td>
+        <td colspan="2">{{ tss.numExpectedClusters }} expected clusters</td>
+        <td colspan="2">on {{tss.numOfArticles}} articles</td>
     </tr>
     </tbody>
 

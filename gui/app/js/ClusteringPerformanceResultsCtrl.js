@@ -12,7 +12,8 @@ angular.module("NewsApp")
         $http.get(SERVER_URL+"/clustering-performance/results/"+$routeParams['id'])
             .then(function (response) {
 
-                $scope.results = response.data;
+                $scope.trs = response.data.trainingSet;
+                $scope.tss = response.data.testSet;
 
             }).finally(function () {loadingSpinner.end();});
 

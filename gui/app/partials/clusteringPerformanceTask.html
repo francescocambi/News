@@ -1,6 +1,6 @@
 <h1>New Clustering Performance Task</h1>
 <div class="col-md-12 panel">
-    <div class="col-md-2">
+    <div class="col-md-3">
         <legend>Metric</legend>
         <div class="radio">
             <label><input type="radio" name="metric" ng-model="taskConfig.metricName" value="cosine"> Cosine</label>
@@ -19,18 +19,17 @@
     <div class="col-md-3">
         <legend>Threshold</legend>
         <div class="input-group">
-            <span class="input-group-addon">Start</span>
-            <input type="text" class="form-control" ng-model="taskConfig.start" ng-pattern="/0.[0-9]+/" required="true">
+            <span class="input-group-addon">Value</span>
+            <input type="text" class="form-control" ng-model="taskConfig.threshold" ng-pattern="/0.[0-9]+/" required="true">
         </div>
-
-        <div class="input-group">
-            <span class="input-group-addon">Step</span>
-            <input type="text" class="form-control" ng-model="taskConfig.step" ng-pattern="/0.[0-9]+/" required="true">
+        <br>
+        <br>
+        <legend>Matcher</legend>
+        <div class="radio">
+            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean"> Highest Mean</label>
         </div>
-
-        <div class="input-group">
-            <span class="input-group-addon">Limit</span>
-            <input type="text" class="form-control" ng-model="taskConfig.limit" ng-pattern="/[0-9]+/" required="true">
+        <div class="radio">
+            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean_over_threshold"> Highest Mean Over Threshold</label>
         </div>
     </div>
 
@@ -54,12 +53,10 @@
     </div>
 
     <div class="col-md-3">
-        <legend>Matcher</legend>
-        <div class="radio">
-            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean"> Highest Mean</label>
-        </div>
-        <div class="radio">
-            <label><input type="radio" name="matcher" ng-model="taskConfig.matcherName" value="highest_mean_over_threshold"> Highest Mean Over Threshold</label>
+        <legend>Test Set</legend>
+        <div class="input-group">
+            <span class="input-group-addon">Fraction</span>
+            <input type="text" class="form-control" ng-model="taskConfig.testSet" ng-pattern="/0.[0-9]+/" required="true">
         </div>
     </div>
 

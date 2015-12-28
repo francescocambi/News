@@ -1,10 +1,11 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
-import it.fcambi.news.clustering.*;
-import it.fcambi.news.data.Text;
-import it.fcambi.news.tasks.ClusteringPerformanceTaskTwo;
-import it.fcambi.news.tasks.ComputeClusteringPerformanceTask;
+import it.fcambi.news.clustering.HighestMeanMatcherFactory;
+import it.fcambi.news.clustering.HighestMeanOverThresholdMatcherFactory;
+import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
+import it.fcambi.news.clustering.MatcherFactory;
+import it.fcambi.news.tasks.ClusteringPerformanceTask;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -19,14 +20,13 @@ import javax.ws.rs.core.Response;
  */
 @Path("/clustering-performance")
 @Singleton
-public class ClusteringPerformanceService extends TaskService<ClusteringPerformanceTaskTwo> {
+public class ClusteringPerformanceService extends TaskService<ClusteringPerformanceTask> {
 
     @GET
     @Path("/start")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createNew(@QueryParam("start") double start,
-                              @QueryParam("step") double step,
-                              @QueryParam("limit") int limit,
+    public Response createNew(@QueryParam("threshold") double threshold,
+                              @QueryParam("testSet") float testSetFraction,
                               @QueryParam("metricName") String metricName,
                               @QueryParam("noiseWordsFilter") boolean noiseWordsFilter,
                               @QueryParam("stemming") boolean stemming,
@@ -54,15 +54,10 @@ public class ClusteringPerformanceService extends TaskService<ClusteringPerforma
                 return Response.status(400).entity("Invalid matcher name.").build();
         }
 
-        if ( !(start >= 0 && step > 0 && limit > 0) ) {
-            return Response.status(400).entity("Invalid threshold range parameters.").build();
-        }
-
         MatchMapGeneratorConfiguration conf = parser.getConfig();
-//        conf.setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
 
-        ClusteringPerformanceTaskTwo task = new ClusteringPerformanceTaskTwo(conf,
-                parser.getMetric(), matcherFactory, start, step, limit);
+        ClusteringPerformanceTask task = new ClusteringPerformanceTask(conf, parser.getMetric(),
+                matcherFactory, threshold, testSetFraction);
         int id = super.nextId();
         super.putTask(id, task);
         Application.getScheduler().schedule(task);

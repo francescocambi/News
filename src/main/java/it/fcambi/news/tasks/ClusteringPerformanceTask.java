@@ -20,26 +20,29 @@ import java.util.stream.IntStream;
 /**
  * Created by Francesco on 23/12/15.
  */
-public class ClusteringPerformanceTaskTwo extends Task {
+public class ClusteringPerformanceTask extends Task {
 
     protected MatchMapGeneratorConfiguration conf;
     protected Metric metric;
-    protected double thresholdStart;
-    protected double thresholdIncrement;
-    protected int thresholdLimit;
+    protected double threshold;
     protected MatcherFactory matcherFactory;
 
-    protected ComputeClusteringPerformanceTaskResults results;
+    protected float testSetFraction;
 
-    public ClusteringPerformanceTaskTwo(MatchMapGeneratorConfiguration conf, Metric metric,
-                                            MatcherFactory mf, double thresholdStart,
-                                            double thresholdIncrement, int thresholdLimit) {
+    protected ClusteringPerformanceTaskResults results;
+
+    public ClusteringPerformanceTask(MatchMapGeneratorConfiguration conf, Metric metric,
+                                     MatcherFactory mf, double threshold, float testSetFraction) {
         this.conf = conf;
         this.metric = metric;
-        this.thresholdStart = thresholdStart;
-        this.thresholdIncrement = thresholdIncrement;
-        this.thresholdLimit = thresholdLimit;
         this.matcherFactory = mf;
+        this.threshold = threshold;
+        this.testSetFraction = testSetFraction;
+    }
+
+    @Override
+    public Object getResults() {
+        return this.results;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ClusteringPerformanceTaskTwo extends Task {
         progress.set(0);
         EntityManager em = Application.createEntityManager();
 
-        Clustering manual = em.find(Clustering.class, "manual");
+//        Clustering manual = em.find(Clustering.class, "manual");
 
         List<Article> trainingSet = em.createQuery("select a from Article a where key(a.news) = 'manual'", Article.class)
                 .getResultList();
@@ -66,10 +69,10 @@ public class ClusteringPerformanceTaskTwo extends Task {
         List<Article> testSet = new ArrayList<>();
 
         //Prepare training and test datasets
-        IntStream.range(0, trainingSet.size()/3).forEach((x) -> {
+        IntStream.range(0, Math.round(trainingSet.size()*testSetFraction)).forEach((x) -> {
             int i = (int) Math.round(Math.random()*(trainingSet.size()-1));
             testSet.add(trainingSet.get(i));
-//            trainingSet.remove(i);
+            trainingSet.remove(i);
         });
 
         List<News> news = em.createQuery("select n from News n where n.clustering.name = 'manual'", News.class)
@@ -80,42 +83,45 @@ public class ClusteringPerformanceTaskTwo extends Task {
 
         List<News> trainingNews = generateClustering(trainingSet, news, training);
 
-        List<News> testNews = new LinkedList<>();
-
-//        List<News> testNews = generateClustering(testSet, news, test);
+        List<News> testNews = generateClustering(testSet, news, test);
 
         MatchMapGenerator generator = new MatchMapGenerator(conf);
 
-        double progressIncrement = 0.9/trainingSet.size();
+        double progressIncrement = 0.98/(trainingSet.size()+testSet.size());
 
-        List<Article> classifiedArticles = new ArrayList<>();
-        Clustering clustering = new Clustering();
-        Matcher matcher = matcherFactory.createMatcher(metric, thresholdStart, clustering);
+        //Clustering and evaluating training set
 
-        for (int i=0; i < trainingSet.size(); i++) {
-            List<Article> articleToCluster = new LinkedList<>();
-            articleToCluster.add(trainingSet.get(i));
-            Map<Article, List<MatchingArticle>> matchMap = generator.generateMap(articleToCluster, classifiedArticles);
-            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(matchMap);
+        Clustering trainingClustering = new Clustering();
+        List<Article> classifiedArticlesTraining = clusterArticles(trainingSet, generator, progressIncrement, trainingClustering);
 
-            bestMatch.keySet().forEach(article -> {
-                if (bestMatch.get(article) != null) {
-                    article.setNews(clustering, bestMatch.get(article).getNews());
-                } else {
-                    article.setNews(clustering, new News(clustering));
-                    article.getNews(clustering).setDescription(article.getTitle());
-                }
-                article.getNews(clustering).getArticles().add(article);
-                classifiedArticles.add(article);
-            });
-            progress.add(progressIncrement);
-        }
-
-        List<News> generatedNews = classifiedArticles.parallelStream().map(a -> a.getNews(clustering))
+        List<News> generatedNewsTraining = classifiedArticlesTraining.parallelStream().map(a -> a.getNews(trainingClustering))
                 .distinct().collect(Collectors.toList());
 
-        List<News> expectedNews = trainingNews;
+        ClusteringPerformanceResults trainingResults = evaluateClustering(generatedNewsTraining, trainingNews);
 
+        //Clustering and evaluating test set
+
+        if (testSet.size() > 0) {
+
+            Clustering testClustering = new Clustering();
+            List<Article> classifiedArticlesTest = clusterArticles(testSet, generator, progressIncrement, testClustering);
+
+            List<News> generatedNewsTest = classifiedArticlesTest.parallelStream().map(a -> a.getNews(testClustering))
+                    .distinct().collect(Collectors.toList());
+
+            ClusteringPerformanceResults testResults = evaluateClustering(generatedNewsTest, testNews);
+
+            this.results = new ClusteringPerformanceTaskResults(trainingResults, testResults);
+        } else {
+            this.results = new ClusteringPerformanceTaskResults(trainingResults);
+        }
+
+        progress.set(1.0);
+        em.close();
+
+    }
+
+    private ClusteringPerformanceResults evaluateClustering(List<News> generatedNews, List<News> expectedNews) {
         class Pair {
 
             public Pair(News gen, News exp, double similarity) {
@@ -133,17 +139,11 @@ public class ClusteringPerformanceTaskTwo extends Task {
             expectedNews.parallelStream().map(exp -> {
                 //Jaccard tra x e y
                 long intersection = gen.getArticles().stream().filter(a -> exp.getArticles().contains(a)).count();
-//                long union = gen.getArticles().size() + exp.getArticles().stream().filter(a -> !gen.getArticles().contains(a)).count();
+                long union = gen.getArticles().size() + exp.getArticles().stream().filter(a -> !gen.getArticles().contains(a)).count();
 
-//                double jaccard = (double) intersection / (double) union;
-                double recall = (double)intersection/exp.size();
-                double precision = (double)intersection/gen.size();
+                double jaccard = (double) intersection / (double) union;
 
-                double fmeasure = 0.0;
-                if (recall > 0 || precision > 0)
-                    fmeasure =  2.0*((precision*recall)/(precision+recall));
-
-                return new Pair(gen, exp, fmeasure);
+                return new Pair(gen, exp, jaccard);
             }).max((a, b) -> Double.compare(a.similarity, b.similarity)).get()
         ).collect(Collectors.toList());
 
@@ -182,33 +182,49 @@ public class ClusteringPerformanceTaskTwo extends Task {
         double jaccardAvg = stats.stream().mapToDouble(s -> s.jaccard).summaryStatistics().getAverage();
         double fAvg = 2.0*((precisionAvg*recallAvg)/(precisionAvg+recallAvg));
 
-        System.out.println("" +
-                "\n------------------------------------------------------------\n" +
-                "THRESHOLD >> "+thresholdStart+"\n"+
-                "Precision W: "+precisionWeighted+"\n" +
-                "Recall W: "+recallWeighted+"\n" +
-                "Jaccard W: "+jaccardWeighted+"\n" +
-                "F-Measure W: "+fWeighted+"\n"+
-                "          --------------          \n" +
-                "Precision: "+precisionAvg+"\n" +
-                "Recall: "+recallAvg+"\n" +
-                "Jaccard: "+jaccardAvg+"\n" +
-                "F-Measure: "+fAvg+"\n");
+        int articlesCardinality = expectedNews.stream().mapToInt(News::size).sum();
 
+//        System.out.println("" +
+//                "\n------------------------------------------------------------\n" +
+//                "THRESHOLD >> "+threshold+"\n"+
+//                "Precision W: "+precisionWeighted+"\n" +
+//                "Recall W: "+recallWeighted+"\n" +
+//                "Jaccard W: "+jaccardWeighted+"\n" +
+//                "F-Measure W: "+fWeighted+"\n"+
+//                "          --------------          \n" +
+//                "Precision: "+precisionAvg+"\n" +
+//                "Recall: "+recallAvg+"\n" +
+//                "Jaccard: "+jaccardAvg+"\n" +
+//                "F-Measure: "+fAvg+"\n");
 
+        return new ClusteringPerformanceResults(threshold, precisionWeighted, recallWeighted, fWeighted, jaccardWeighted,
+                precisionAvg, recallAvg, fAvg, jaccardAvg, generatedNews.size(), expectedNews.size(), articlesCardinality);
 
-//        long okCount = classifiedArticles.stream().filter(a -> a.getNews(manual).getId() == a.getNews(clustering).getId())
-//                .count();
+    }
 
-//        System.out.print(
-//                "------------------------------------------------------------------\n" +
-//                        "THRESHOLD >> "+thresholdStart+"\n" +
-////                        "  TP: "+truePositive+"   FP: "+falsePositive+"   TN: "+trueNegative+"   FN: "+falseNegative+"\n"+
-//                        "  okCount: "+okCount+" on "+classifiedArticles.size()+" articles\n");
+    private List<Article> clusterArticles(List<Article> trainingSet, MatchMapGenerator generator, double progressIncrement, Clustering clustering) {
+        List<Article> classifiedArticles = new ArrayList<>();
+        Matcher matcher = matcherFactory.createMatcher(metric, threshold, clustering);
 
-        progress.set(1.0);
-        em.close();
+        for (int i=0; i < trainingSet.size(); i++) {
+            List<Article> articleToCluster = new LinkedList<>();
+            articleToCluster.add(trainingSet.get(i));
+            Map<Article, List<MatchingArticle>> matchMap = generator.generateMap(articleToCluster, classifiedArticles);
+            Map<Article, MatchingNews> bestMatch = matcher.findBestMatch(matchMap);
 
+            bestMatch.keySet().forEach(article -> {
+                if (bestMatch.get(article) != null) {
+                    article.setNews(clustering, bestMatch.get(article).getNews());
+                } else {
+                    article.setNews(clustering, new News(clustering));
+                    article.getNews(clustering).setDescription(article.getTitle());
+                }
+                article.getNews(clustering).getArticles().add(article);
+                classifiedArticles.add(article);
+            });
+            progress.add(progressIncrement);
+        }
+        return classifiedArticles;
     }
 
     private List<Article> getArticles(List<Article> trainingSet, double progressIncrement,
@@ -242,16 +258,15 @@ public class ClusteringPerformanceTaskTwo extends Task {
     }
 
     /*
-    Genera una lista di news clone di quelle come parametro news,
-    che però hanno come articoli sollo quelli presenti in trainingSet
-    Clustering definisce il raggruppamento descritto
+    Creates a list of news cloning news parameter,
+    but new groups have only the items in articlesSet
      */
-    private List<News> generateClustering(List<Article> trainingSet, List<News> news, Clustering training) {
+    private List<News> generateClustering(List<Article> articlesSet, List<News> news, Clustering training) {
         return news.stream().map(n -> {
             News clone = new News(training);
             clone.setId(n.getId());
             clone.setDescription(n.getDescription());
-            n.getArticles().stream().filter(trainingSet::contains)
+            n.getArticles().stream().filter(articlesSet::contains)
                     .forEach(a -> {
                         clone.addArticle(a);
                         a.setNews(training, clone);

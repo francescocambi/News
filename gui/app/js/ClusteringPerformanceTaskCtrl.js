@@ -7,14 +7,13 @@ angular.module("NewsApp")
 
         $scope.taskConfig = {
             metricName: 'cosine',
-            start: 0.47,
-            step: 0.01,
-            limit: 1,
+            threshold: 0.47,
             noiseWordsFilter: true,
             stemming: true,
             tfidf: true,
             keywordExtraction: 'capitals',
-            matcherName: 'highest_mean_over_threshold'
+            matcherName: 'highest_mean_over_threshold',
+            testSet: 0.3
         };
 
         function updateTaskList() {

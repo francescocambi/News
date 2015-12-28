@@ -7,118 +7,155 @@ public class ClusteringPerformanceResults {
 
     double threshold;
 
+    double averagePrecisionWeighted;
+    double averageRecallWeighted;
+    double averageFMeasureWeighted;
+    double averageJaccardWeighted;
+
     double averagePrecision;
-    double minPrecision;
-    double maxPrecision;
-
     double averageRecall;
-    double minRecall;
-    double maxRecall;
-
     double averageFMeasure;
-
     double averageJaccard;
-    double stdDevJaccard;
-    double minJaccard;
-    double maxJaccard;
+
+    int numGeneratedClusters;
+    int numExpectedClusters;
+
+    int numOfArticles;
 
     public ClusteringPerformanceResults(double threshold) {
         this.threshold = threshold;
     }
 
-    public void setThreshold(double threshold) {
+    public ClusteringPerformanceResults(double threshold, double averagePrecisionWeighted,
+                                        double averageRecallWeighted, double averageFMeasureWeighted,
+                                        double averageJaccardWeighted, double averagePrecision, double averageRecall,
+                                        double averageFMeasure, double averageJaccard, int numGeneratedClusters,
+                                        int numExpectedClusters, int numOfArticles) {
         this.threshold = threshold;
-    }
-
-    public void setAveragePrecision(double averagePrecision) {
+        this.averagePrecisionWeighted = averagePrecisionWeighted;
+        this.averageRecallWeighted = averageRecallWeighted;
+        this.averageFMeasureWeighted = averageFMeasureWeighted;
+        this.averageJaccardWeighted = averageJaccardWeighted;
         this.averagePrecision = averagePrecision;
-    }
-
-    public void setMinPrecision(double minPrecision) {
-        this.minPrecision = minPrecision;
-    }
-
-    public void setMaxPrecision(double maxPrecision) {
-        this.maxPrecision = maxPrecision;
-    }
-
-    public void setAverageRecall(double averageRecall) {
         this.averageRecall = averageRecall;
-    }
-
-    public void setMinRecall(double minRecall) {
-        this.minRecall = minRecall;
-    }
-
-    public void setMaxRecall(double maxRecall) {
-        this.maxRecall = maxRecall;
-    }
-
-    public void setAverageFMeasure(double averageFMeasure) {
         this.averageFMeasure = averageFMeasure;
-    }
-
-    public void setAverageJaccard(double averageJaccard) {
         this.averageJaccard = averageJaccard;
-    }
-
-    public void setStdDevJaccard(double stdDevJaccard) {
-        this.stdDevJaccard = stdDevJaccard;
-    }
-
-    public void setMinJaccard(double minJaccard) {
-        this.minJaccard = minJaccard;
-    }
-
-    public void setMaxJaccard(double maxJaccard) {
-        this.maxJaccard = maxJaccard;
+        this.numGeneratedClusters = numGeneratedClusters;
+        this.numExpectedClusters = numExpectedClusters;
+        this.numOfArticles = numOfArticles;
     }
 
     public double getThreshold() {
         return threshold;
     }
 
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public double getAveragePrecisionWeighted() {
+        return averagePrecisionWeighted;
+    }
+
+    public void setAveragePrecisionWeighted(double averagePrecisionWeighted) {
+        this.averagePrecisionWeighted = averagePrecisionWeighted;
+    }
+
+    public double getAverageRecallWeighted() {
+        return averageRecallWeighted;
+    }
+
+    public void setAverageRecallWeighted(double averageRecallWeighted) {
+        this.averageRecallWeighted = averageRecallWeighted;
+    }
+
+    public double getAverageFMeasureWeighted() {
+        return averageFMeasureWeighted;
+    }
+
+    public void setAverageFMeasureWeighted(double averageFMeasureWeighted) {
+        this.averageFMeasureWeighted = averageFMeasureWeighted;
+    }
+
+    public double getAverageJaccardWeighted() {
+        return averageJaccardWeighted;
+    }
+
+    public void setAverageJaccardWeighted(double averageJaccardWeighted) {
+        this.averageJaccardWeighted = averageJaccardWeighted;
+    }
+
     public double getAveragePrecision() {
         return averagePrecision;
     }
 
-    public double getMinPrecision() {
-        return minPrecision;
-    }
-
-    public double getMaxPrecision() {
-        return maxPrecision;
+    public void setAveragePrecision(double averagePrecision) {
+        this.averagePrecision = averagePrecision;
     }
 
     public double getAverageRecall() {
         return averageRecall;
     }
 
-    public double getMinRecall() {
-        return minRecall;
-    }
-
-    public double getMaxRecall() {
-        return maxRecall;
+    public void setAverageRecall(double averageRecall) {
+        this.averageRecall = averageRecall;
     }
 
     public double getAverageFMeasure() {
         return averageFMeasure;
     }
 
+    public void setAverageFMeasure(double averageFMeasure) {
+        this.averageFMeasure = averageFMeasure;
+    }
+
     public double getAverageJaccard() {
         return averageJaccard;
     }
 
-    public double getStdDevJaccard() {
-        return stdDevJaccard;
+    public void setAverageJaccard(double averageJaccard) {
+        this.averageJaccard = averageJaccard;
     }
 
-    public double getMinJaccard() {
-        return minJaccard;
+    public int getNumGeneratedClusters() {
+        return numGeneratedClusters;
     }
 
-    public double getMaxJaccard() {
-        return maxJaccard;
+    public void setNumGeneratedClusters(int numGeneratedClusters) {
+        this.numGeneratedClusters = numGeneratedClusters;
+    }
+
+    public int getNumExpectedClusters() {
+        return numExpectedClusters;
+    }
+
+    public void setNumExpectedClusters(int numExpectedClusters) {
+        this.numExpectedClusters = numExpectedClusters;
+    }
+
+    public int getNumOfArticles() {
+        return numOfArticles;
+    }
+
+    public void setNumOfArticles(int numOfArticles) {
+        this.numOfArticles = numOfArticles;
+    }
+
+    @Override
+    public String toString() {
+        return "ClusteringPerformanceResults{" +
+                "threshold=" + threshold +
+                ", averagePrecisionWeighted=" + averagePrecisionWeighted +
+                ", averageRecallWeighted=" + averageRecallWeighted +
+                ", averageFMeasureWeighted=" + averageFMeasureWeighted +
+                ", averageJaccardWeighted=" + averageJaccardWeighted +
+                ", averagePrecision=" + averagePrecision +
+                ", averageRecall=" + averageRecall +
+                ", averageFMeasure=" + averageFMeasure +
+                ", averageJaccard=" + averageJaccard +
+                ", numGeneratedClusters=" + numGeneratedClusters +
+                ", numExpectedClusters=" + numExpectedClusters +
+                ", numOfArticles=" + numOfArticles +
+                '}';
     }
 }
