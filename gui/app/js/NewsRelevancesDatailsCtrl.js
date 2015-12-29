@@ -14,8 +14,21 @@ angular.module("NewsApp")
         $http.get(SERVER_URL+"/news-relevances/"+$routeParams['id']+"?clustering="+$routeParams['clustering'])
             .then(function (response) {
                 $scope.news = response.data.news;
-                $scope.chartData = prepare(response.data.relevances);
+                $scope.relevances = mapToArrayOfObjects(response.data.relevances);
+                if ($scope.relevances.length > 1)
+                    $scope.chartData = prepare($scope.relevances);
             }).finally(function () { loadingSpinner.end()});
+
+        function mapToArrayOfObjects(data) {
+            var arr = [];
+            angular.forEach(data, function (value, key) {
+                arr.push({
+                    timestamp: key,
+                    relevance: value
+                });
+            });
+            return arr;
+        }
 
         function prepare(data) {
             //data is an object of this form
@@ -25,14 +38,7 @@ angular.module("NewsApp")
                 values: [ [] ],
                 series: ["Relevance"]
             };
-            var arr = [];
-            angular.forEach(data, function (value, key) {
-                arr.push({
-                    timestamp: key,
-                    relevance: value
-                });
-            });
-            var sorted = arr.sort(function (a,b) {
+            var sorted = data.sort(function (a, b) {
                 return ((a.timestamp < b.timestamp) ? -1 : ((a.timestamp == b.timestamp) ? 0 : 1));
             });
             //Fills both arrays
@@ -41,7 +47,7 @@ angular.module("NewsApp")
                 chartData.values[0].push([o.relevance]);
             });
 
-            console.log(chartData);
+            //console.log(chartData);
 
             return chartData;
         }

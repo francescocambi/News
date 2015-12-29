@@ -5,6 +5,25 @@
 
 <h3>News Relevance by Time</h3>
 
-<canvas id="relevanceChart" class="chart chart-line" chart-data="chartData.values"
+<div ng-if="chartData">
+    <canvas id="relevanceChart" class="chart chart-line" chart-data="chartData.values"
         chart-labels="chartData.labels" chart-series="chartData.series" chart-legend="true"
         chart-options="chartOptions" height="100"></canvas>
+</div>
+
+<div>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>FrontPage Timestamp</th>
+            <th>Relevance</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="r in relevances">
+            <td>{{ r.timestamp | date : "dd-MM-yyyy HH:mm:ss" }}</td>
+            <td>{{ r.relevance }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
