@@ -143,7 +143,7 @@ public class ClusteringPerformanceResults {
 
     @Override
     public String toString() {
-        return "ClusteringPerformanceResults{" +
+        return "{" +
                 "threshold=" + threshold +
                 ", averagePrecisionWeighted=" + averagePrecisionWeighted +
                 ", averageRecallWeighted=" + averageRecallWeighted +

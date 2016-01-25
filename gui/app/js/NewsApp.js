@@ -164,6 +164,11 @@ angular.module("NewsApp", ["ngRoute", "ngCookies", "chart.js",
             controller: "NewsLifetimeCtrl"
         });
 
+        $routeProvider.when("/clusterings", {
+            templateUrl: "partials/clusteringsList.html",
+            controller: "ClusteringsListCtrl"
+        });
+
         $routeProvider.otherwise({
             templateUrl: "partials/home.html",
             controller: "homeCtrl"

@@ -18,7 +18,7 @@ public class Clustering {
     protected String name;
     protected String description;
 
-    @OneToMany(mappedBy = "clustering")
+    @OneToMany(mappedBy = "clustering", cascade = {CascadeType.REMOVE})
     @JsonBackReference
     protected List<News> clusters = new ArrayList<>();
 

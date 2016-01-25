@@ -46,7 +46,7 @@ public class ClusteringPerformanceTaskResults {
 
     @Override
     public String toString() {
-        return "ClusteringPerformanceTaskResults{" +
+        return "{" +
                 "trainingSet=" + trainingSet +
                 ", testSet=" + testSet +
                 '}';
