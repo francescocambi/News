@@ -61,6 +61,7 @@ public class Article {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @Fetch(FetchMode.JOIN)
+    @MapKeyColumn(length = 100)
     @JsonManagedReference
     private Map<String, News> news = new ConcurrentHashMap<>();
 
