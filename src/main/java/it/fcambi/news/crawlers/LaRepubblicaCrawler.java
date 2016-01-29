@@ -41,7 +41,7 @@ public class LaRepubblicaCrawler implements Crawler {
 
         Article a = new Article();
         a.setSource(Newspaper.LA_REPUBBLICA);
-        a.setSourceHtml(d.html());
+//        a.setSourceHtml(d.html());
         a.setSourceUrl(url);
 
         try {

@@ -53,7 +53,7 @@ public class LaStampaCrawler implements Crawler {
         }
 
         Article a = new Article();
-        a.setSourceHtml(d.html());
+//        a.setSourceHtml(d.html());
         a.setSourceUrl(url);
 
         Elements bodyParagraphs;

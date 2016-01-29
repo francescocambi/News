@@ -28,7 +28,7 @@ public class AdnkronosCrawler implements Crawler {
         Document d = Jsoup.connect(url).get();
         Article a = new Article();
         a.setSourceUrl(url);
-        a.setSourceHtml(d.html());
+//        a.setSourceHtml(d.html());
         a.setSource(Newspaper.ADNKRONOS);
 
         //Retrieve Title

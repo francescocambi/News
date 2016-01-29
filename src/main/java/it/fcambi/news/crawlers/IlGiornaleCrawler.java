@@ -28,7 +28,7 @@ public class IlGiornaleCrawler implements Crawler {
 
         Document d = Jsoup.connect(url).get();
 
-        a.setSourceHtml(d.html());
+//        a.setSourceHtml(d.html());
         a.setSourceUrl(url);
         a.setSource(Newspaper.IL_GIORNALE);
 

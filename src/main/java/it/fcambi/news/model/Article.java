@@ -65,9 +65,9 @@ public class Article {
     @JsonManagedReference
     private Map<String, News> news = new ConcurrentHashMap<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    private ArticleHtmlSource sourceHtml;
+//    @OneToOne(mappedBy = "article", cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    private ArticleHtmlSource sourceHtml;
 
     @Column(columnDefinition = "TEXT")
     private String sourceUrl;
@@ -113,14 +113,14 @@ public class Article {
         return created;
     }
 
-    public String getSourceHtml() {
-        return sourceHtml.getHtml();
-    }
-
-    public void setSourceHtml(String sourceHtml) {
-        this.sourceHtml = new ArticleHtmlSource();
-        this.sourceHtml.setHtml(sourceHtml);
-    }
+//    public String getSourceHtml() {
+//        return sourceHtml.getHtml();
+//    }
+//
+//    public void setSourceHtml(String sourceHtml) {
+//        this.sourceHtml = new ArticleHtmlSource();
+//        this.sourceHtml.setHtml(sourceHtml);
+//    }
 
     public String getSourceUrl() {
         return sourceUrl;

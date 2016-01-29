@@ -28,7 +28,7 @@ public class AnsaCrawler implements Crawler {
         Document d = Jsoup.connect(url).get();
 
         Article a = new Article();
-        a.setSourceHtml(d.html());
+//        a.setSourceHtml(d.html());
         a.setSource(Newspaper.ANSA);
 
         //Retrieve title
