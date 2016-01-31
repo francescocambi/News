@@ -8,6 +8,7 @@ import java.util.Date;
  * Created by Francesco on 07/10/15.
  */
 @Entity
+@Table(name = "user")
 public class User implements Principal {
 
     @Id

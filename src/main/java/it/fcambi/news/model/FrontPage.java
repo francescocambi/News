@@ -10,6 +10,7 @@ import java.util.List;
  * Created by Francesco on 12/10/15.
  */
 @Entity
+@Table(name = "frontpage")
 public class FrontPage {
 
     @Id

@@ -7,6 +7,7 @@ import java.util.Date;
  * Created by Francesco on 08/10/15.
  */
 @Entity
+@Table(name = "session")
 public class Session {
 
     @Id

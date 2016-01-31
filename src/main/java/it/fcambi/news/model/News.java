@@ -14,6 +14,7 @@ import java.util.List;
  * Created by Francesco on 03/11/15.
  */
 @Entity
+@Table(name = "news")
 public class News {
 
     @Id

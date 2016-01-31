@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Francesco on 27/10/15.
  */
 @Entity
+@Table(name = "tfdictionary")
 public class TFDictionary {
 
     @Id
@@ -21,6 +22,7 @@ public class TFDictionary {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(length = 60)
+    @CollectionTable(name = "tfdictionary_terms")
     protected Map<String, Integer> terms = new ConcurrentHashMap<>();
 
     public String getDescription() {

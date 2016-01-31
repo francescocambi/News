@@ -11,6 +11,7 @@ import java.util.Date;
  * Created by Francesco on 04/11/15.
  */
 @Entity
+@Table(name = "pasttask")
 public class PastTask {
 
     @Id
