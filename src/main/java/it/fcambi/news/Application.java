@@ -72,7 +72,7 @@ public class Application {
         log.info("Startup Completed - All OK");
 
         System.out.println("\nApplication Ready\n\t- Server @ "+props.getProp("BIND_URI")+"\n\t- GUI @ "+
-                props.getProp("BIND_URI")+"/"+props.getProp("GUI_APP_PATH")+"app/\n");
+                props.getProp("BIND_URI")+"/gui/app/\n");
         System.out.println("Press CTRL+C to stop...");
 
         try {

@@ -5,7 +5,7 @@
     module.exports = factory(require('angular'), require('Chart.js'));
   }  else if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['angular', 'chart'], factory);
+    define(['../../angular/angular', 'chart'], factory);
   } else {
     // Browser globals
     factory(angular, Chart);

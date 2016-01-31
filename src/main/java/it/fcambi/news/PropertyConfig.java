@@ -2,6 +2,7 @@ package it.fcambi.news;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -13,7 +14,8 @@ public class PropertyConfig {
 
     public PropertyConfig() throws IOException {
         this.props = new Properties();
-        FileInputStream in = new FileInputStream("src/main/resources/config.properties");
+//        FileInputStream in = new FileInputStream("classpath:config.properties");
+        InputStream in = getClass().getResourceAsStream("/config.properties");
         this.props.load(in);
         in.close();
     }

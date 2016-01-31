@@ -1,5 +1,9 @@
 package it.fcambi.news;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.*;
@@ -19,6 +23,17 @@ public class Logging {
         System.setProperty("java.util.logging.SimpleFormatter.format",
                 "[%1$TF %1$TT] [%2$s] %4$s: %5$s %6$s%n");
 
+        // Checks if logs directory exists
+        if (!Files.exists(Paths.get("logs")) && !Files.isDirectory(Paths.get("logs"))) {
+            // if not creates it
+            try {
+                Files.createDirectories(Paths.get("logs/"));
+            } catch (IOException e) {
+                System.err.println("[ERROR] Cannot create logs directory");
+                e.printStackTrace(System.err);
+            }
+        }
+
         Logger root = Logger.getLogger("");
         for (Handler h : root.getHandlers())
             root.removeHandler(h);
@@ -32,7 +47,7 @@ public class Logging {
 
         Handler handler = new ConsoleHandler();
         try {
-            handler = new FileHandler("./logs/" + (logger.getName().equals("") ? "root" : logger.getName()) + ".log",
+            handler = new FileHandler("logs/" + (logger.getName().equals("") ? "root" : logger.getName()) + ".log",
                     FILE_LIMIT_BYTES, ROTATING_FILES_NUM, true);
         } catch (Exception e) {
             e.printStackTrace();
