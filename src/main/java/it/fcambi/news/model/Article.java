@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Represent an Article from a newspaper
  */
 @Entity
+@Table(name = "article")
 public class Article {
 
     /**

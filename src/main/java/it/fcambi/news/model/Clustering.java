@@ -11,6 +11,7 @@ import java.util.List;
  * Created by Francesco on 06/11/15.
  */
 @Entity
+@Table(name = "clustering")
 public class Clustering {
 
     @Id
