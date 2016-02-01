@@ -1,6 +1,8 @@
 package it.fcambi.news.filters;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,17 +14,17 @@ import java.util.stream.Collectors;
  */
 public class NoiseWordsTextFilter implements TextFilter  {
 
-    private static final String DICTIONARY_PATH = "noise_word_FULL";
+    private static final String DICTIONARY_PATH = "/noise_word_FULL";
     private static List<String> stopWords = new ArrayList<>();
 
     public NoiseWordsTextFilter() {
         if (stopWords.isEmpty()) {
-            try {
-                stopWords = Files.lines(Paths.get(DICTIONARY_PATH)).collect(Collectors.toList());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+            BufferedReader txtReader = new BufferedReader(new InputStreamReader(
+                    getClass().getResourceAsStream(DICTIONARY_PATH)
+            ));
+            stopWords = txtReader.lines().collect(Collectors.toList());
+            if (stopWords.isEmpty())
+                throw new IllegalStateException("Empty NoiseWordsTextFilter words list.");
         }
     }
 
