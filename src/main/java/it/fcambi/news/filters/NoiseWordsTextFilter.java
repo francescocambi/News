@@ -1,5 +1,11 @@
 package it.fcambi.news.filters;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import it.fcambi.news.Application;
+import it.fcambi.news.PersistenceManager;
+import it.fcambi.news.model.NoiseWordsList;
+
+import javax.persistence.EntityManager;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,18 +20,18 @@ import java.util.stream.Collectors;
  */
 public class NoiseWordsTextFilter implements TextFilter  {
 
-    private static final String DICTIONARY_PATH = "/noise_word_FULL";
-    private static List<String> stopWords = new ArrayList<>();
+    private static final String DICTIONARY_NAME = "noise_words_FULL";
+    private static List<String> stopWords;
 
-    public NoiseWordsTextFilter() {
-        if (stopWords.isEmpty()) {
-            BufferedReader txtReader = new BufferedReader(new InputStreamReader(
-                    getClass().getResourceAsStream(DICTIONARY_PATH)
-            ));
-            stopWords = txtReader.lines().collect(Collectors.toList());
-            if (stopWords.isEmpty())
-                throw new IllegalStateException("Empty NoiseWordsTextFilter words list.");
-        }
+    static {
+        EntityManager em = Application.createEntityManager();
+        NoiseWordsList list = em.createQuery("select l from NoiseWordsList l where l.description = :name", NoiseWordsList.class)
+                .setParameter("name", DICTIONARY_NAME).getSingleResult();
+        em.close();
+        if (list != null)
+            stopWords = list.getWords();
+        else
+            throw new IllegalArgumentException("Noise words dictionary "+DICTIONARY_NAME+" does not exists.");
     }
 
     public List<String> filter(List<String> words) {
