@@ -5,6 +5,7 @@ import it.fcambi.news.model.Newspaper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -31,6 +32,8 @@ public class CorriereDellaSeraCrawler implements Crawler {
             throw e;
         }
 
+        d.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
+
         Article a = new Article();
 //        a.setSourceHtml(d.html());
         a.setSourceUrl(url);
@@ -39,26 +42,31 @@ public class CorriereDellaSeraCrawler implements Crawler {
         String body = "";
         try {
             // Retrieve headline
-            Elements headline = d.select("[itemprop=name]");
-            if (headline.size() > 0) {
-                a.setTitle(headline.get(0).text());
-                //Removes corriere.it suffix
-                int i = a.getTitle().lastIndexOf("- Corriere");
-                if (i > 0) a.setTitle(a.getTitle().substring(0, i).trim());
-            }
+            Elements headline = d.select("h1.article-title");
+            if (headline.size() > 0)
+                a.setTitle(headline.get(0).ownText());
             else {
                 headline = d.select("[itemprop=headline]");
                 if (headline.size() > 0)
                     a.setTitle(headline.get(0).text());
                 else {
                     headline = d.select("[property=og:title]");
-                    a.setTitle(headline.get(0).attr("content"));
+                    if (headline.size() > 0)
+                        a.setTitle(headline.get(0).attr("content"));
+                    else {
+                        headline = d.select("[itemprop=name]");
+                        a.setTitle(headline.get(0).text());
+                    }
                 }
             }
 
         } catch (IndexOutOfBoundsException e) {
             throw new CrawlerCannotReadArticleException("Can't find headline on "+url);
         }
+
+        //Removes corriere.it suffix
+        int idx = a.getTitle().lastIndexOf("- Corriere");
+        if (idx > 0) a.setTitle(a.getTitle().substring(0, idx).trim());
 
         try {
             //Retrieve description
@@ -99,6 +107,9 @@ public class CorriereDellaSeraCrawler implements Crawler {
             throw new CrawlerCannotReadArticleException("Can't find article body on "+url);
         }
 
+        //Clean body
+        body = body.replaceAll("© RIPRODUZIONE RISERVATA", "");
+
         // Creates new article object and return
         a.setSource(Newspaper.CORRIERE_DELLA_SERA);
         a.setBody(body);
@@ -120,10 +131,11 @@ public class CorriereDellaSeraCrawler implements Crawler {
         links.addAll(d.select("#colonnaNotizie .title_art > a:first-of-type"));
 
         //Loads package1 div articles
-        Document package1 = Jsoup.connect("http://www.corriere.it/includes_methode/cache/mixedZoneMethode2014_bottom.shtml").get();
+        Document package1 = Jsoup.connect("http://www.corriere.it/includes_methode/cache/middle_load.shtml").get();
 
         // Main column articles
-        links.addAll(package1.select("article .title_art > a:first-of-type"));
+        links.addAll(package1.select("[data-vr-zone=primopianomezza] article .title_art > a:first-of-type"));
+        links.addAll(package1.select("[data-vr-zone=Primopiano] article .title_art > a:first-of-type"));
 
         links.forEach(a -> urls.add(a.attr("href")));
 
@@ -166,6 +178,12 @@ public class CorriereDellaSeraCrawler implements Crawler {
         urls = this.filterUrls(urls);
 
         return urls;
+    }
+
+    public static void main(String[] args) throws CrawlerCannotReadArticleException, IOException {
+        CorriereDellaSeraCrawler c = new CorriereDellaSeraCrawler();
+        Article a = c.getArticle("http://www.corriere.it/esteri/16_febbraio_08/mattarella-l-offerta-obama-def62d50-ce2e-11e5-8ee6-9deb6cd21d82.shtml");
+        System.out.println(a.getTitle());
     }
 
 //    public static void main(String[] args) throws IOException {
