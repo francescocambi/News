@@ -1,17 +1,9 @@
 package it.fcambi.news.filters;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import it.fcambi.news.Application;
-import it.fcambi.news.PersistenceManager;
 import it.fcambi.news.model.NoiseWordsList;
 
 import javax.persistence.EntityManager;
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
