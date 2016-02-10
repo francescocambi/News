@@ -9,6 +9,13 @@
 
     &nbsp;&nbsp;&nbsp;
 
+    <span>
+        <strong>Search: </strong>&nbsp;
+        <input type="text" class="form-control" ng-model="searchString" style="width: 20em; display: inline-block;">
+    </span>
+
+    &nbsp;&nbsp;&nbsp;
+
     <button type="button" class="btn btn-default" ng-click="refreshArticlesList()">Refresh List</button>
 
     <dir-pagination-controls class="pagination-right"></dir-pagination-controls>
@@ -19,7 +26,7 @@
         <tr><td ng-click="sortingCol = 'id'">Id</td><td ng-click="sortingCol = 'title'">Title</td><td ng-click="sortingCol = 'source'">Source</td></tr>
     </thead>
     <tbody>
-        <tr dir-paginate="a in articles | orderBy:sortingCol | filter: onlyNotMatchedFilter | itemsPerPage: 100">
+        <tr dir-paginate="a in articles | filter: searchString | orderBy:sortingCol | filter: onlyNotMatchedFilter | itemsPerPage: 250">
             <td>{{ a.id }}</td>
             <td>{{ a.title | limitTo : 200 }}</td>
             <td>{{ a.source | NewspaperName }}</td>

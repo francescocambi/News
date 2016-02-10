@@ -2,8 +2,8 @@
     <h1>News Lifetime</h1>
 </div>
 
-<div class="col-xs-12 border-bottom">
-    <label>Clustering:</label>
+<div class="col-xs-12 border-bottom" style="margin-bottom: 8px;">
+    <label style="line-height: 40px;">Clustering:</label>
     <select class="form-control" style="display: inline-block; width: 120px;"
             ng-model="selectedClustering" ng-change="clusteringChange()"
             ng-options="c.name as c.name for c in clusterings">
@@ -23,6 +23,13 @@
         chart-labels="chartData.labels" chart-series="chartData.series" chart-legend="true"
         chart-options="chartOptions" height="100"></canvas>
 
+<div class="col-xs-12" style="margin-top: 10px; margin-bottom: 20px;">
+    <span>
+        <strong>Search: </strong>&nbsp;
+        <input type="text" class="form-control" ng-model="searchString" style="width: 20em; display: inline-block;">
+    </span>
+</div>
+
 <table class="table table-bordered table-striped">
     <thead>
     <tr>
@@ -31,7 +38,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="point in data.distribution">
+    <tr ng-repeat="point in data.distribution | filter: searchString | orderBy: point.value : true">
         <td>{{ point.label | limitTo : 150 }}</td>
         <td>{{ point.value | duration }}</td>
     </tr>

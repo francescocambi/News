@@ -11,6 +11,13 @@
 
     &nbsp;&nbsp;&nbsp;
 
+    <span>
+        <strong>Search: </strong>&nbsp;
+        <input type="text" class="form-control" ng-model="searchString" style="width: 20em; display: inline-block;">
+    </span>
+
+    &nbsp;&nbsp;&nbsp;
+
     <button type="button" ng-click="mergeNews()" class="btn btn-default">Merge News</button>
 
     <dir-pagination-controls class="pagination-right"></dir-pagination-controls>
@@ -28,7 +35,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr dir-paginate="n in news | itemsPerPage: 100">
+    <tr dir-paginate="n in news | filter: searchString | itemsPerPage: 100">
         <td>
             <input type="checkbox" ng-model="n.selected">
         </td>
