@@ -49,7 +49,7 @@ public class IncrementalClusteringTask extends Task {
 
         EntityManager em = Application.createEntityManager();
         em.getTransaction().begin();
-        em.merge(clustering);
+        clustering = em.merge(clustering);
 
         articlesToBeClustered = articlesToBeClustered.stream().map(em::merge).collect(Collectors.toList());
 
@@ -67,7 +67,7 @@ public class IncrementalClusteringTask extends Task {
             classifiedArticles = new Vector<>();
         }
 
-        final double progressIncrementA = 0.85/articlesToBeClustered.size();
+        final double progressIncrementA = 0.99/articlesToBeClustered.size();
 
         //TODO Remove
         classifiedArticles.forEach(a -> {
@@ -109,7 +109,7 @@ public class IncrementalClusteringTask extends Task {
 
         }
 
-        final double progressIncrementB = 0.05/articlesToBeClustered.size();
+//        final double progressIncrementB = 0.05/articlesToBeClustered.size();
 
 
 //        System.out.println("# of clusters obtained "+newsToMerge.size());

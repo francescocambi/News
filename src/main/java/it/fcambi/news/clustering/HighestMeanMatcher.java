@@ -4,6 +4,7 @@ import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +33,7 @@ public class HighestMeanMatcher implements Matcher {
 
         matchMap.entrySet().forEach(entry -> {
             Optional<Map.Entry<News, DoubleSummaryStatistics>> maxEntry = entry.getValue().parallelStream()
+                    .filter(x -> x.getSimilarity(metric.getName()) >= 0.0)
                     .collect(Collectors.groupingByConcurrent(this::getNews, Collectors.summarizingDouble(m -> m.getSimilarity(metric.getName()))))
                     .entrySet().stream().max((a, b) -> Double.compare(a.getValue().getAverage(), b.getValue().getAverage()));
 
@@ -51,12 +53,15 @@ public class HighestMeanMatcher implements Matcher {
     }
 
     private News getNews(MatchingArticle m) {
-        return m.getArticle().getNews(clustering);
+        if (m.getArticle().getNews(clustering) == null)
+            throw new IllegalArgumentException(m.getArticle().getId()+" does not have matched news from this clustering");
+        else
+            return m.getArticle().getNews(clustering);
     }
 
     @Override
     public Map<Article, List<MatchingNews>> getRankedList(Map<Article, List<MatchingArticle>> matchMap) {
-        Map<Article, List<MatchingNews>> sortedMatchMap = new Hashtable<>();
+        Map<Article, List<MatchingNews>> sortedMatchMap = new ConcurrentHashMap<>();
 
         matchMap.entrySet().forEach(entry ->
             sortedMatchMap.put(entry.getKey(), entry.getValue().parallelStream()
