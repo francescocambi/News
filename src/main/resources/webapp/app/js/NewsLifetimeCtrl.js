@@ -31,23 +31,38 @@ angular.module("NewsApp")
             $http.get(SERVER_URL+"/news-lifetime?clustering="+$scope.selectedClustering)
                 .then(function (response) {
                     $scope.data = response.data;
-                    $scope.chartData = prepare(response.data);
+
+                    var maxValue = -1;
+                    var minValue = Number.MAX_VALUE;
+
+                    angular.forEach(response.data.distribution, function (point) {
+                        if (point.value > maxValue)
+                            maxValue = point.value;
+                        if (point.value < minValue)
+                            minValue = point.value;
+                    });
+
+                    angular.forEach(response.data.distribution, function (point) {
+                        point.normalizedValue = (point.value - minValue) / (maxValue - minValue);
+                    });
+
+                    //$scope.chartData = prepare(response.data);
                 }).finally(function () {
                 loadingSpinner.end()
             });
         };
 
-        function prepare(data) {
-            var chartData = {
-                labels: [],
-                values: [ [] ]
-            };
-            angular.forEach(data.distribution, function (point) {
-                chartData.labels.push(point.label);
-                chartData.values[0].push(point.value);
-            });
-            console.log(chartData);
-            return chartData;
-        }
+        //function prepare(data) {
+        //    var chartData = {
+        //        labels: [],
+        //        values: [ [] ]
+        //    };
+        //    angular.forEach(data.distribution, function (point) {
+        //        chartData.labels.push(point.label);
+        //        chartData.values[0].push(point.value);
+        //    });
+        //    console.log(chartData);
+        //    return chartData;
+        //}
 
     });

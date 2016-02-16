@@ -25,12 +25,13 @@
 <table class="table table-striped">
     <thead>
     <tr>
-        <td></td>
-        <td>Id</td>
-        <td>Description</td>
-        <td>Articles</td>
-        <td>Relevance</td>
-        <td></td>
+        <th></th>
+        <th>Id</th>
+        <th>Description</th>
+        <th>Articles</th>
+        <th></th>
+        <th>Relevance</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -41,7 +42,16 @@
         <td>{{n.news.id}}</td>
         <td>{{n.news.description | limitTo: 200}}</td>
         <td>{{n.news.size}}</td>
-        <td>{{n.relevanceSum}}</td>
+        <td>
+            <div class="progress" style="width: 100px;">
+                <div class="progress-bar" role="progressbar"
+                     aria-valuenow="{{ n.normalizedRelevance*100 }}"
+                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': n.normalizedRelevance*100+'%'}">
+                </div>
+            </div>
+        </td>
+        <td>{{ n.relevanceSum | number : 2 }}</td>
+        <td></td>
         <td><a href="#/news-relevances/{{selectedClustering}}/{{n.news.id}}">Details</a></td>
     </tr>
     </tbody>

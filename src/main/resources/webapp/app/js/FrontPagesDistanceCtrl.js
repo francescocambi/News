@@ -46,8 +46,8 @@ angular.module("NewsApp")
 
             $scope.scatterChart = new Chart(document.getElementById("scatter").getContext("2d")).Scatter(result, {
                 datasetStroke: false,
-                pointDotRadius: 4,
-                pointHitDetectionRadius: 4,
+                pointDotRadius: 10,
+                pointHitDetectionRadius: 10,
                 tooltipTemplate: "<%=datasetLabel%>",
                 multiTooltipTemplate: "<%=datasetLabel%>",
                 legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li style=\"width: 100%;\"><span style=\"background-color:<%=datasets[i].pointColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"

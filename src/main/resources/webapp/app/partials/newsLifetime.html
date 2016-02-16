@@ -19,9 +19,9 @@
 
 </pre>
 
-<canvas id="relevanceChart" class="chart chart-line" chart-data="chartData.values"
-        chart-labels="chartData.labels" chart-series="chartData.series" chart-legend="true"
-        chart-options="chartOptions" height="100"></canvas>
+<!--<canvas id="relevanceChart" class="chart chart-line" chart-data="chartData.values"-->
+        <!--chart-labels="chartData.labels" chart-series="chartData.series" chart-legend="true"-->
+        <!--chart-options="chartOptions" height="100"></canvas>-->
 
 <div class="col-xs-12" style="margin-top: 10px; margin-bottom: 20px;">
     <span>
@@ -34,12 +34,21 @@
     <thead>
     <tr>
         <th>News Description</th>
+        <th></th>
         <th>Lifetime</th>
     </tr>
     </thead>
     <tbody>
     <tr ng-repeat="point in data.distribution | filter: searchString | orderBy: point.value : true">
         <td>{{ point.label | limitTo : 150 }}</td>
+        <td>
+            <div class="progress" style="width: 100px;">
+                <div class="progress-bar" role="progressbar"
+                     aria-valuenow="{{ point.normalizedValue*100 }}"
+                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': point.normalizedValue*100+'%'}">
+                </div>
+            </div>
+        </td>
         <td>{{ point.value | duration }}</td>
     </tr>
     </tbody>
