@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Created by Francesco on 28/12/15.
  */
 @Path("/news-lifetime")
-//@RolesAllowed({"user", "admin"})
+@RolesAllowed({"user", "admin"})
 public class NewsLifetimeService extends NewsRelevancesManager {
 
     @GET

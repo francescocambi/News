@@ -15,8 +15,18 @@ angular.module("NewsApp")
             matcherName: "highest_mean_over_threshold",
             clusteringName: undefined,
             articlesFrom: undefined,
-            articlesTo: undefined
+            articlesTo: undefined,
+            newspapers: ["LA_REPUBBLICA", "LA_STAMPA", "CORRIERE_DELLA_SERA", "ANSA", "ADNKRONOS", "IL_GIORNALE"]
         };
+
+        $scope.toggleNewspaper = function (newspaper) {
+            var index = $scope.taskConfig.newspapers.indexOf(newspaper);
+            if (index > -1)
+                $scope.taskConfig.newspapers.splice(index, 1);
+            else
+                $scope.taskConfig.newspapers.push(newspaper);
+            console.log($scope.taskConfig.newspapers);
+        }
 
         function updateTaskList() {
             loadingSpinner.begin();

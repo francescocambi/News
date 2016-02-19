@@ -69,6 +69,16 @@
         </div>
     </div>
 
+    <div class="col-xs-12">
+        <legend>Newspapers</legend>
+        <input type="checkbox" ng-click="toggleNewspaper('LA_REPUBBLICA')" checked> La Repubblica &nbsp;&nbsp;
+        <input type="checkbox" ng-click="toggleNewspaper('LA_STAMPA')" checked> La Stampa &nbsp;&nbsp;
+        <input type="checkbox" ng-click="toggleNewspaper('CORRIERE_DELLA_SERA')" checked> Corriere della Sera &nbsp;&nbsp;
+        <input type="checkbox" ng-click="toggleNewspaper('ANSA')" checked> ANSA &nbsp;&nbsp;
+        <input type="checkbox" ng-click="toggleNewspaper('ADNKRONOS')" checked> ADN Kronos &nbsp;&nbsp;
+        <input type="checkbox" ng-click="toggleNewspaper('IL_GIORNALE')" checked> Il Giornale &nbsp;&nbsp;
+    </div>
+
     <div class="col-md-12" style="text-align: right;">
         <button type="button" class="btn btn-primary" ng-click="createAndStartTask(taskConfig)">Create and Start</button>
     </div>

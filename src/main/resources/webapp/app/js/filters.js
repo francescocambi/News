@@ -20,6 +20,34 @@ angular.module("NewsApp")
             }
         }
     })
+    .filter("NewspaperFilter", function () {
+        return function (collection, npfilter, propertyName) {
+            var filteredCollection = [];
+            angular.forEach(collection, function (item) {
+                if (npfilter.repubblica && item[propertyName] == "LA_REPUBBLICA") filteredCollection.push(item);
+                else if (npfilter.lastampa && item[propertyName] == "LA_STAMPA") filteredCollection.push(item);
+                else if (npfilter.corriere && item[propertyName] == "CORRIERE_DELLA_SERA") filteredCollection.push(item);
+                else if (npfilter.ansa && item[propertyName] == "ANSA") filteredCollection.push(item);
+                else if (npfilter.adnkronos && item[propertyName] == "ADNKRONOS") filteredCollection.push(item);
+                else if (npfilter.giornale && item[propertyName] == "IL_GIORNALE") filteredCollection.push(item);
+            });
+            return filteredCollection;
+        }
+    })
+    .filter("DateTimeFilter", function () {
+        return function (collection, filter, propertyName) {
+            var filteredCollection = [];
+            if ( !filter || !(filter.fromDate && filter.toDate))
+                return collection;
+
+            angular.forEach(collection, function (item) {
+                if (filter.fromDate <= item[propertyName] && filter.toDate >= item[propertyName])
+                    filteredCollection.push(item);
+            });
+
+            return filteredCollection;
+        }
+    })
     .filter("to_trusted", ['$sce', function ($sce) {
         return function (text) {
             return $sce.trustAsHtml(text);

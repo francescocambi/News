@@ -1,18 +1,45 @@
-<div class="col-xs-5">
+<div class="col-xs-12">
     <h1>Front Pages</h1>
 </div>
+
 <dir-pagination-controls class="pagination-right"></dir-pagination-controls>
+
+<div class="border-bottom" style="margin-top: 15px; padding-left: 30px;">
+    <strong>Filters </strong>
+
+    <div style="margin: 10px 0px;">
+        <span>From </span>
+        <input type="datetime-local" class="form-control" ng-model="filter.fromDate"
+               style="width: 200px; display: inline-block;"
+               placeholder="YYYY-MM-DDTHH:MM:SS">
+        &nbsp;&nbsp;
+        <span>To </span>
+        <input type="datetime-local" class="form-control" ng-model="filter.toDate"
+               style="width: 200px; display: inline-block;"
+               placeholder="YYYY-MM-DDTHH:MM:SS">
+    </div>
+
+    <div style="margin: 10px 0px;">
+        <input type="checkbox" ng-model="npfilter.repubblica"> La Repubblica &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.lastampa"> La Stampa &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.corriere"> Corriere della Sera &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.ansa"> ANSA &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.adnkronos"> ADN Kronos &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.giornale"> Il Giornale &nbsp;&nbsp;
+    </div>
+</div>
+
 <table class="table table-striped">
     <thead>
     <tr>
-        <td>Id</td>
-        <td>Timestamp</td>
-        <td>Newspaper</td>
-        <td></td>
+        <th>Id</th>
+        <th>Timestamp</th>
+        <th>Newspaper</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
-    <tr dir-paginate="frontpage in frontpages | itemsPerPage: 100">
+    <tr dir-paginate="frontpage in frontpages | DateTimeFilter : filter : 'timestamp' | NewspaperFilter : npfilter : 'newspaper' | itemsPerPage: 100">
         <td>{{ frontpage.id }}</td>
         <td>{{ frontpage.timestamp | date : "dd-MM-yyyy HH:mm:ss"}}</td>
         <td>{{ frontpage.newspaper | NewspaperName }}</td>

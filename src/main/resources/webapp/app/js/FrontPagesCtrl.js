@@ -4,6 +4,15 @@
 angular.module("NewsApp")
     .controller("FrontPagesListCtrl", function ($scope, $http, SERVER_URL, loadingSpinner) {
 
+        $scope.npfilter = {
+            repubblica: true,
+            lastampa: true,
+            corriere: true,
+            ansa: true,
+            adnkronos: true,
+            giornale: true
+        };
+
         loadingSpinner.begin();
         $http.get(SERVER_URL+"/front-pages/").success(function (data) {
             $scope.frontpages = [];

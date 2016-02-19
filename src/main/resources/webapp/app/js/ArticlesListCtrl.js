@@ -3,6 +3,16 @@
  */
 angular.module("NewsApp")
     .controller("ArticlesListCtrl", function ($scope, $rootScope, $http, SERVER_URL, loadingSpinner, $location) {
+
+        $scope.npfilter = {
+            repubblica: true,
+            lastampa: true,
+            corriere: true,
+            ansa: true,
+            adnkronos: true,
+            giornale: true
+        };
+
         $scope.onlyNotMatched = $rootScope.articleFilterOnlyNotMatched;
 
         $scope.sortingCol = 0;

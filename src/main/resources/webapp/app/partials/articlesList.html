@@ -1,32 +1,59 @@
-<div class="col-xs-5">
+<div class="col-xs-12">
     <h1>Articles</h1>
 </div>
 
-<div class="col-xs-12 border-bottom">
-    <span><strong>Filters: </strong>&nbsp;
+<dir-pagination-controls class="pagination-right"></dir-pagination-controls>
+
+<div class="border-bottom" style="margin-top: 15px; padding-left: 30px;">
+    <strong>Filters </strong>
+    <div>
         <input type="checkbox" ng-model="onlyNotMatched" ng-change="onlyNotMatchedFilterChanged()"> Only not matched
-    </span>
 
-    &nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;
 
-    <span>
-        <strong>Search: </strong>&nbsp;
-        <input type="text" class="form-control" ng-model="searchString" style="width: 20em; display: inline-block;">
-    </span>
+        <div style="display: inline-block;">
+            <input type="text" placeholder="Search..." class="form-control" ng-model="searchString" style="width: 20em; display: inline-block;">
+        </div>
 
-    &nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;
 
-    <button type="button" class="btn btn-default" ng-click="refreshArticlesList()">Refresh List</button>
+        <button type="button" class="btn btn-default" ng-click="refreshArticlesList()">Refresh List</button>
+    </div>
 
-    <dir-pagination-controls class="pagination-right"></dir-pagination-controls>
+    <div style="margin: 10px 0px;">
+        <span>From </span>
+        <input type="datetime-local" class="form-control" ng-model="datefilter.fromDate"
+               style="width: 200px; display: inline-block;"
+               placeholder="YYYY-MM-DDTHH:MM:SS">
+        &nbsp;&nbsp;
+        <span>To </span>
+        <input type="datetime-local" class="form-control" ng-model="datefilter.toDate"
+               style="width: 200px; display: inline-block;"
+               placeholder="YYYY-MM-DDTHH:MM:SS">
+    </div>
+
+    <div style="margin: 10px 0px;">
+        <input type="checkbox" ng-model="npfilter.repubblica"> La Repubblica &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.lastampa"> La Stampa &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.corriere"> Corriere della Sera &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.ansa"> ANSA &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.adnkronos"> ADN Kronos &nbsp;&nbsp;
+        <input type="checkbox" ng-model="npfilter.giornale"> Il Giornale &nbsp;&nbsp;
+    </div>
 </div>
 
 <table class="table table-striped">
     <thead>
-        <tr><td ng-click="sortingCol = 'id'">Id</td><td ng-click="sortingCol = 'title'">Title</td><td ng-click="sortingCol = 'source'">Source</td></tr>
+        <tr>
+            <th ng-click="sortingCol = 'id'">Id</th>
+            <th ng-click="sortingCol = 'title'">Title</th>
+            <th ng-click="sortingCol = 'source'">Source</th>
+        </tr>
     </thead>
     <tbody>
-        <tr dir-paginate="a in articles | filter: searchString | orderBy:sortingCol | filter: onlyNotMatchedFilter | itemsPerPage: 250">
+        <tr dir-paginate="a in articles | NewspaperFilter : npfilter : 'source' |
+        DateTimeFilter : datefilter : 'created' | filter: searchString | orderBy:sortingCol |
+        filter: onlyNotMatchedFilter | itemsPerPage: 250">
             <td>{{ a.id }}</td>
             <td>{{ a.title | limitTo : 200 }}</td>
             <td>{{ a.source | NewspaperName }}</td>

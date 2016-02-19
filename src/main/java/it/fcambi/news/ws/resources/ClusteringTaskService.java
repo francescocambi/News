@@ -6,6 +6,7 @@ import it.fcambi.news.clustering.HighestMeanOverThresholdMatcher;
 import it.fcambi.news.clustering.Matcher;
 import it.fcambi.news.model.Article;
 import it.fcambi.news.model.Clustering;
+import it.fcambi.news.model.Newspaper;
 import it.fcambi.news.tasks.IncrementalClusteringTask;
 
 import javax.annotation.security.RolesAllowed;
@@ -21,8 +22,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 11/11/15.
@@ -44,7 +47,8 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
                               @QueryParam("matcherName") String matcherName,
                               @QueryParam("threshold") double threshold,
                               @QueryParam("articlesFrom") String fromString,
-                              @QueryParam("articlesTo") String toString) {
+                              @QueryParam("articlesTo") String toString,
+                              @QueryParam("newspapers") List<String> newspapers) {
 
         EntityManager em;
 
@@ -75,7 +79,6 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
         } else
             return Response.status(400).entity("Invalid clustering name.").build();
 
-
         //Detect matcher
         Matcher matcher;
         switch (matcherName) {
@@ -92,6 +95,13 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
 
         //Retrieve articleToBeClustered dataset
         String select = "select a from Article a where 1=1";
+
+        //Detects excluded newspapers
+        List<Newspaper> newspapersToExclude = Arrays.stream(Newspaper.values())
+                .filter(x -> !newspapers.contains(x.toString())).collect(Collectors.toList());
+        if (newspapersToExclude.size() > 0) {
+            select += " and a.source not in :newspapersToExclude";
+        }
 
         Date from = null, to = null;
         if (fromString != null && toString != null) {
@@ -119,6 +129,10 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
             q.setParameter("to", to);
         }
 
+        if (newspapersToExclude.size() > 0) {
+            q.setParameter("newspapersToExclude", newspapersToExclude);
+        }
+
         List<Article> articlesToBeClustered;
         try {
             articlesToBeClustered = q.getResultList();
@@ -127,15 +141,20 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
             return Response.status(400).entity("Empty article dataset.").build();
         }
 
+        System.out.println("Articles to be clustered size = "+articlesToBeClustered.size());
 
-        IncrementalClusteringTask task = new IncrementalClusteringTask(
-                parser.getConfig(), matcher, articlesToBeClustered, clustering);
-
-        int id = super.executeTask(task);
-
+        //FIXME debug
         em.close();
+        return Response.status(200).build();
 
-        return Response.status(200).entity(id).build();
+//        IncrementalClusteringTask task = new IncrementalClusteringTask(
+//                parser.getConfig(), matcher, articlesToBeClustered, clustering);
+//
+//        int id = super.executeTask(task);
+//
+//        em.close();
+//
+//        return Response.status(200).entity(id).build();
 
     }
 
