@@ -11,11 +11,18 @@
 </div>
 
 <pre>
-        <b>Average:</b> {{ data.average | duration }}
-         <b>Median:</b> {{ data.median | duration }}
-            <b>Min:</b> {{ data.min | duration }}
-            <b>Max:</b> {{ data.max | duration }}
-<b>Interdecile Avg:</b> {{ data.interquartileMean | duration }}
+    <h4>Relevance Lifetime</h4>
+        <b>Average:</b> {{ data.relevanceLifetimeAvg | duration }}
+         <b>Median:</b> {{ data.relevanceLifetimeMedian | duration }}
+            <b>Min:</b> {{ data.relevanceLifetimeMin | duration }}
+            <b>Max:</b> {{ data.relevanceLifetimeMax | duration }}
+<b>Interdecile Avg:</b> {{ data.relevanceLifetimeInterdecileMean | duration }}
+    <h4>Time Range</h4>
+        <b>Average:</b> {{ data.timeRangeAvg | duration }}
+         <b>Median:</b> {{ data.timeRangeMedian | duration }}
+            <b>Min:</b> {{ data.timeRangeMin | duration }}
+            <b>Max:</b> {{ data.timeRangeMax | duration }}
+<b>Interdecile Avg:</b> {{ data.timeRangeInterdecileMean | duration }}
 
 </pre>
 
@@ -33,23 +40,30 @@
 <table class="table table-bordered table-striped">
     <thead>
     <tr>
+        <th>ID</th>
         <th>News Description</th>
+        <th>Relevance Lifetime</th>
+        <th>Time Range</th>
+        <th>Activity</th>
         <th></th>
-        <th>Lifetime</th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="point in data.distribution | filter: searchString | orderBy: point.value : true">
-        <td>{{ point.label | limitTo : 150 }}</td>
+
+    <tr ng-repeat=" lt in data.lifetimes | filter: searchString | orderBy : 'relevanceLifetime' : true">
+        <td>{{ lt.news.id }}</td>
+        <td>{{ lt.news.description | limitTo: 150 }}</td>
+        <td>{{ lt.relevanceLifetime | duration }}</td>
+        <td>{{ lt.timeRange | duration }}</td>
+        <td>{{ (lt.relevanceLifetime/lt.timeRange)*100 | number : 0 }} %</td>
         <td>
-            <div class="progress" style="width: 100px;">
+            <div class="progress" style="width: 60px;">
                 <div class="progress-bar" role="progressbar"
-                     aria-valuenow="{{ point.normalizedValue*100 }}"
-                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': point.normalizedValue*100+'%'}">
+                     aria-valuenow="{{ (lt.relevanceLifetime/lt.timeRange)*100 }}"
+                     aria-valuemin="0" aria-valuemax="100" ng-style="{'width': (lt.relevanceLifetime/lt.timeRange)*100+'%'}">
                 </div>
             </div>
         </td>
-        <td>{{ point.value | duration }}</td>
     </tr>
     </tbody>
 </table>

@@ -25,12 +25,12 @@ import java.util.stream.Stream;
  * Created by Francesco on 30/09/15.
  */
 @Path("/matcharticles")
-@RolesAllowed({"user", "admin"})
 public class MatchingArticlesService {
 
     @GET
     @Path("/matching/{id}-{matchId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public MatchingArticle getMatchingArticle(@PathParam("id") long articleId, @PathParam("matchId") long matchId) {
 
         EntityManager em = Application.createEntityManager();
@@ -63,6 +63,7 @@ public class MatchingArticlesService {
     @POST
     @Path("/match")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin"})
     public Response matchArticles(MatchArticlesRequestDTO m) {
 
         EntityManager em = Application.createEntityManager();

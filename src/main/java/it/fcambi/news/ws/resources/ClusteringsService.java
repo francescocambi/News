@@ -16,11 +16,11 @@ import java.util.List;
  * Created by Francesco on 13/11/15.
  */
 @Path("/clusterings")
-@RolesAllowed({"user", "admin"})
 public class ClusteringsService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public List<Clustering> getClusterings() {
 
         EntityManager em = Application.createEntityManager();
@@ -39,6 +39,7 @@ public class ClusteringsService {
 
     @DELETE
     @Path("/{name}")
+    @RolesAllowed({"user", "admin"})
     public Response deleteClustering(@PathParam("name") String clusteringName) {
 
         EntityManager em = Application.createEntityManager();

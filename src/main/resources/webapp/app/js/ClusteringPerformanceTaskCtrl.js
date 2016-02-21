@@ -13,8 +13,18 @@ angular.module("NewsApp")
             tfidf: true,
             keywordExtraction: 'capitals',
             matcherName: 'highest_mean_over_threshold',
-            testSet: 0.3
+            testSet: 0.3,
+            newspapers: ["LA_REPUBBLICA", "LA_STAMPA", "CORRIERE_DELLA_SERA", "ANSA", "ADNKRONOS", "IL_GIORNALE"]
         };
+
+        $scope.toggleNewspaper = function (newspaper) {
+            var index = $scope.taskConfig.newspapers.indexOf(newspaper);
+            if (index > -1)
+                $scope.taskConfig.newspapers.splice(index, 1);
+            else
+                $scope.taskConfig.newspapers.push(newspaper);
+            //console.log($scope.taskConfig.newspapers);
+        }
 
         function updateTaskList() {
             loadingSpinner.begin();

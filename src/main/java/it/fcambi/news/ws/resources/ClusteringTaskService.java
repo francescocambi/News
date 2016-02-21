@@ -48,7 +48,7 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
                               @QueryParam("threshold") double threshold,
                               @QueryParam("articlesFrom") String fromString,
                               @QueryParam("articlesTo") String toString,
-                              @QueryParam("newspapers") List<String> newspapers) {
+                              @QueryParam("newspapers") String newspapersString) {
 
         EntityManager em;
 
@@ -97,6 +97,7 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
         String select = "select a from Article a where 1=1";
 
         //Detects excluded newspapers
+        List<String> newspapers = Arrays.asList(newspapersString.split(","));
         List<Newspaper> newspapersToExclude = Arrays.stream(Newspaper.values())
                 .filter(x -> !newspapers.contains(x.toString())).collect(Collectors.toList());
         if (newspapersToExclude.size() > 0) {
@@ -136,25 +137,20 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
         List<Article> articlesToBeClustered;
         try {
             articlesToBeClustered = q.getResultList();
+
         } catch (NoResultException e) {
             em.close();
             return Response.status(400).entity("Empty article dataset.").build();
         }
 
-        System.out.println("Articles to be clustered size = "+articlesToBeClustered.size());
+        IncrementalClusteringTask task = new IncrementalClusteringTask(
+                parser.getConfig(), matcher, articlesToBeClustered, clustering);
 
-        //FIXME debug
+        int id = super.executeTask(task);
+
         em.close();
-        return Response.status(200).build();
 
-//        IncrementalClusteringTask task = new IncrementalClusteringTask(
-//                parser.getConfig(), matcher, articlesToBeClustered, clustering);
-//
-//        int id = super.executeTask(task);
-//
-//        em.close();
-//
-//        return Response.status(200).entity(id).build();
+        return Response.status(200).entity(id).build();
 
     }
 

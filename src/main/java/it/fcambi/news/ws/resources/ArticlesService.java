@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
  * Created by Francesco on 05/10/15.
  */
 @Path("/articles")
-@RolesAllowed({"user", "admin"})
 public class ArticlesService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public Response getArticles(@QueryParam("newsId") Long newsId) {
 
         EntityManager em = Application.createEntityManager();
@@ -52,6 +52,7 @@ public class ArticlesService {
     @GET
     @Path("/stats")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public StatsDTO getStatistics() {
         EntityManager em = Application.createEntityManager();
 
@@ -74,6 +75,7 @@ public class ArticlesService {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public Article getArticle(@PathParam("id") long articleId) {
         EntityManager em = Application.createEntityManager();
         Article a = em.find(Article.class, articleId);
@@ -83,6 +85,7 @@ public class ArticlesService {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({"user", "admin"})
     public Response deleteArticle(@PathParam("id") long articleId) {
         EntityManager em = Application.createEntityManager();
         Article a = em.find(Article.class, articleId);

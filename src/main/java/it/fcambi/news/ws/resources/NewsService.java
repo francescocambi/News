@@ -30,7 +30,6 @@ import java.util.stream.Stream;
  * Created by Francesco on 18/10/15.
  */
 @Path("/news")
-@RolesAllowed({"user", "admin"})
 public class NewsService {
 
     private static Map<Long, Text> matchMapKeywordsCache = new ConcurrentHashMap<>();
@@ -38,6 +37,7 @@ public class NewsService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public Response getNews(@QueryParam("clustering") String clusteringName) {
         EntityManager em = Application.createEntityManager();
 
@@ -61,6 +61,7 @@ public class NewsService {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public News getNewsById(@PathParam("id") long newsId) {
         EntityManager em = Application.createEntityManager();
         News n = em.find(News.class, newsId);
@@ -73,6 +74,7 @@ public class NewsService {
     @GET
     @Path("/match-article/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin", "guest"})
     public List<MatchingNews> getMatchingNewsFor(@PathParam("id") long articleId) {
 
         EntityManager em = Application.createEntityManager();
@@ -134,6 +136,7 @@ public class NewsService {
     @GET
     @Path("/merge")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin"})
     public Response mergeClusters(@QueryParam("news") List<Long> newsIds) {
 
         if (newsIds.size() < 2)

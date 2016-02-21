@@ -25,7 +25,7 @@ angular.module("NewsApp")
                 $scope.taskConfig.newspapers.splice(index, 1);
             else
                 $scope.taskConfig.newspapers.push(newspaper);
-            console.log($scope.taskConfig.newspapers);
+            //console.log($scope.taskConfig.newspapers);
         }
 
         function updateTaskList() {

@@ -63,10 +63,10 @@ angular.module("NewsApp")
     })
     .filter('duration', function() {
         return function(millseconds) {
-            var seconds = Math.round(millseconds / 1000);
-            var days = Math.round(seconds / 86400);
-            var hours = Math.round((seconds % 86400) / 3600);
-            var minutes = Math.round(((seconds % 86400) % 3600) / 60);
+            var seconds = millseconds / 1000;
+            var days = Math.floor(seconds / 86400);
+            var hours = Math.floor((seconds % 86400) / 3600);
+            var minutes = Math.floor(((seconds % 86400) % 3600) / 60);
             if (minutes == 60) {
                 minutes = 0; hours++;
             }

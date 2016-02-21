@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * Created by Francesco on 12/10/15.
  */
 @Path("/front-pages")
-@RolesAllowed({"user", "admin"})
+@RolesAllowed({"user", "admin", "guest"})
 public class FrontPagesService {
 
     @GET

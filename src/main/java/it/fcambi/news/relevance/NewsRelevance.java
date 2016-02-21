@@ -88,4 +88,18 @@ public class NewsRelevance {
 
         return lifetimeMilliseconds;
     }
+
+    public long getTimeRange() {
+        List<Map.Entry<Long, Double>> nonZeroRelevances = relevances.entrySet().parallelStream()
+                .filter(x -> x.getValue() > 0.0)
+                .collect(Collectors.toList());
+
+        if (nonZeroRelevances.size() < 2)
+            return 3600000L;
+
+        long min = nonZeroRelevances.parallelStream().map(x -> x.getKey()).min(Long::compare).get();
+        long max = nonZeroRelevances.parallelStream().map(x -> x.getKey()).max(Long::compare).get();
+
+        return (max-min)+3600000L;
+    }
 }

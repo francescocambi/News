@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * Created by Francesco on 27/12/15.
  */
 @Path("/news-relevances")
-@RolesAllowed({"user", "admin"})
+@RolesAllowed({"user", "admin", "guest"})
 public class NewsRelevanceService extends NewsRelevancesManager {
 
     @GET

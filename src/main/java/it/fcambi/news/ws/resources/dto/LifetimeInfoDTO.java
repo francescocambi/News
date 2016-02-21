@@ -1,65 +1,116 @@
 package it.fcambi.news.ws.resources.dto;
 
+import it.fcambi.news.model.News;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Francesco on 28/12/15.
  */
 public class LifetimeInfoDTO {
 
-    protected double average;
-    protected long max;
-    protected long min;
-    protected double median;
-    protected double interquartileMean;
-    protected List<ChartPoint<String, Long>> distribution = new ArrayList<>();
+    protected double relevanceLifetimeAvg;
+    protected long relevanceLifetimeMax;
+    protected long relevanceLifetimeMin;
+    protected double relevanceLifetimeMedian;
+    protected double relevanceLifetimeInterdecileMean;
 
-    public double getAverage() {
-        return average;
+    protected double timeRangeAvg;
+    protected double timeRangeMax;
+    protected double timeRangeMin;
+    protected double timeRangeMedian;
+    protected double timeRangeInterdecileMean;
+
+    protected List<NewsLifetimeDTO> lifetimes;
+
+    public double getRelevanceLifetimeAvg() {
+        return relevanceLifetimeAvg;
     }
 
-    public void setAverage(double average) {
-        this.average = average;
+    public void setRelevanceLifetimeAvg(double relevanceLifetimeAvg) {
+        this.relevanceLifetimeAvg = relevanceLifetimeAvg;
     }
 
-    public long getMax() {
-        return max;
+    public long getRelevanceLifetimeMax() {
+        return relevanceLifetimeMax;
     }
 
-    public void setMax(long max) {
-        this.max = max;
+    public void setRelevanceLifetimeMax(long relevanceLifetimeMax) {
+        this.relevanceLifetimeMax = relevanceLifetimeMax;
     }
 
-    public long getMin() {
-        return min;
+    public long getRelevanceLifetimeMin() {
+        return relevanceLifetimeMin;
     }
 
-    public void setMin(long min) {
-        this.min = min;
+    public void setRelevanceLifetimeMin(long relevanceLifetimeMin) {
+        this.relevanceLifetimeMin = relevanceLifetimeMin;
     }
 
-    public double getMedian() {
-        return median;
+    public double getRelevanceLifetimeMedian() {
+        return relevanceLifetimeMedian;
     }
 
-    public void setMedian(double median) {
-        this.median = median;
+    public void setRelevanceLifetimeMedian(double relevanceLifetimeMedian) {
+        this.relevanceLifetimeMedian = relevanceLifetimeMedian;
     }
 
-    public double getInterquartileMean() {
-        return interquartileMean;
+    public double getRelevanceLifetimeInterdecileMean() {
+        return relevanceLifetimeInterdecileMean;
     }
 
-    public void setInterquartileMean(double interquartileMean) {
-        this.interquartileMean = interquartileMean;
+    public void setRelevanceLifetimeInterdecileMean(double relevanceLifetimeInterdecileMean) {
+        this.relevanceLifetimeInterdecileMean = relevanceLifetimeInterdecileMean;
     }
 
-    public List<ChartPoint<String, Long>> getDistribution() {
-        return distribution;
+    public double getTimeRangeAvg() {
+        return timeRangeAvg;
     }
 
-    public void setDistribution(List<ChartPoint<String, Long>> distribution) {
-        this.distribution = distribution;
+    public void setTimeRangeAvg(double timeRangeAvg) {
+        this.timeRangeAvg = timeRangeAvg;
+    }
+
+    public double getTimeRangeMax() {
+        return timeRangeMax;
+    }
+
+    public void setTimeRangeMax(double timeRangeMax) {
+        this.timeRangeMax = timeRangeMax;
+    }
+
+    public double getTimeRangeMin() {
+        return timeRangeMin;
+    }
+
+    public void setTimeRangeMin(double timeRangeMin) {
+        this.timeRangeMin = timeRangeMin;
+    }
+
+    public double getTimeRangeMedian() {
+        return timeRangeMedian;
+    }
+
+    public void setTimeRangeMedian(double timeRangeMedian) {
+        this.timeRangeMedian = timeRangeMedian;
+    }
+
+    public double getTimeRangeInterdecileMean() {
+        return timeRangeInterdecileMean;
+    }
+
+    public void setTimeRangeInterdecileMean(double timeRangeInterdecileMean) {
+        this.timeRangeInterdecileMean = timeRangeInterdecileMean;
+    }
+
+    public List<NewsLifetimeDTO> getLifetimes() {
+        return lifetimes;
+    }
+
+    public void setLifetimes(List<NewsLifetimeDTO> lifetimes) {
+        this.lifetimes = lifetimes;
     }
 }

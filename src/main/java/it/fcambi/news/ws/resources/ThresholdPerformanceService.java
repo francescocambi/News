@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 @Path("/threshold-performance")
 @Singleton
-@RolesAllowed({"user", "admin"})
+@RolesAllowed({})
 public class ThresholdPerformanceService extends TaskService<ComputeThresholdPerformanceTask> {
 
     @GET

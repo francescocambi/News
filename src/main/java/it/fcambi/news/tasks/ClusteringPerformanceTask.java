@@ -10,6 +10,7 @@ import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,18 +27,21 @@ public class ClusteringPerformanceTask extends Task {
     protected Metric metric;
     protected double threshold;
     protected MatcherFactory matcherFactory;
+    protected List<Newspaper> newspapersToExclude;
 
     protected float testSetFraction;
 
     protected ClusteringPerformanceTaskResults results;
 
     public ClusteringPerformanceTask(MatchMapGeneratorConfiguration conf, Metric metric,
-                                     MatcherFactory mf, double threshold, float testSetFraction) {
+                                     MatcherFactory mf, double threshold, float testSetFraction,
+                                     List<Newspaper> newspapersToExclude) {
         this.conf = conf;
         this.metric = metric;
         this.matcherFactory = mf;
         this.threshold = threshold;
         this.testSetFraction = testSetFraction;
+        this.newspapersToExclude = newspapersToExclude;
     }
 
     @Override
@@ -61,10 +65,16 @@ public class ClusteringPerformanceTask extends Task {
         progress.set(0);
         EntityManager em = Application.createEntityManager();
 
-//        Clustering manual = em.find(Clustering.class, "manual");
+        String query = "select a from Article a where key(a.news) = 'manual'";
+        if (this.newspapersToExclude.size() > 0)
+            query += " and a.source not in :npToExclude";
 
-        List<Article> trainingSet = em.createQuery("select a from Article a where key(a.news) = 'manual'", Article.class)
-                .getResultList();
+        TypedQuery<Article> trainingSetQuery = em.createQuery(query, Article.class);
+
+        if (this.newspapersToExclude.size() > 0)
+            trainingSetQuery.setParameter("npToExclude", this.newspapersToExclude);
+
+        List<Article> trainingSet = trainingSetQuery.getResultList();
 
         List<Article> testSet = new ArrayList<>();
 
