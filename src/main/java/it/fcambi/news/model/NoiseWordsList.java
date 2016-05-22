@@ -1,6 +1,7 @@
 package it.fcambi.news.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,10 @@ public class NoiseWordsList {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "noise_words_list_words")
-    protected List<String> words;
+    protected List<String> words = new ArrayList<>();
+
+    @Column(unique = true)
+    protected Language language;
 
     public int getId() {
         return id;
@@ -38,5 +42,13 @@ public class NoiseWordsList {
 
     public void setWords(List<String> words) {
         this.words = words;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 }

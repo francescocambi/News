@@ -37,13 +37,27 @@
     <div class="col-md-3">
         <legend>Options</legend>
         <div class="checkbox">
-            <label><input type="checkbox" ng-model="taskConfig.tfidf" ng-change="taskConfig.stemming = true"> Use TF-IDF</label>
+            <label><input type="checkbox" ng-model="taskConfig.tfidf"> Use TF-IDF
+                &nbsp;&nbsp;
+                <select class="form-control" ng-if="taskConfig.tfidf" ng-model="taskConfig.tfidfDictionary"
+                        ng-options="d.description as d.description for d in dictionaries"
+                        style="display: inline; width: auto; height: 25px;">
+                </select>
+            </label>
         </div>
         <div class="checkbox">
-            <label><input type="checkbox" ng-model="taskConfig.stemming" ng-change="(taskConfig.tfidf) ? taskConfig.tfidf=false : null"> Use Stemmer</label>
+            <label><input type="checkbox" ng-model="taskConfig.stemming"> Use Stemmer</label>
         </div>
         <div class="checkbox">
             <label><input type="checkbox" ng-model="taskConfig.noiseWordsFilter"> Remove Stop Words</label>
+        </div>
+        <div class="checkbox">
+            <label>Language
+                <select class="form-control" ng-model="taskConfig.language"
+                        ng-options="l for l in languages"
+                        style="display: inline; width: auto; height: 25px;">
+                </select>
+            </label>
         </div>
         <div class="radio">
             <label><input type="radio" name="keywordExtraction" ng-model="taskConfig.keywordExtraction" value="headline"> Headline</label>
@@ -71,12 +85,9 @@
 
     <div class="col-xs-12">
         <legend>Newspapers</legend>
-        <input type="checkbox" ng-click="toggleNewspaper('LA_REPUBBLICA')" checked> La Repubblica &nbsp;&nbsp;
-        <input type="checkbox" ng-click="toggleNewspaper('LA_STAMPA')" checked> La Stampa &nbsp;&nbsp;
-        <input type="checkbox" ng-click="toggleNewspaper('CORRIERE_DELLA_SERA')" checked> Corriere della Sera &nbsp;&nbsp;
-        <input type="checkbox" ng-click="toggleNewspaper('ANSA')" checked> ANSA &nbsp;&nbsp;
-        <input type="checkbox" ng-click="toggleNewspaper('ADNKRONOS')" checked> ADN Kronos &nbsp;&nbsp;
-        <input type="checkbox" ng-click="toggleNewspaper('IL_GIORNALE')" checked> Il Giornale &nbsp;&nbsp;
+        <span ng-repeat="newspaper in newspapers">
+            <input type="checkbox" ng-click="toggleNewspaper(newspaper)" checked> {{newspaper | NewspaperName}} &nbsp;&nbsp;
+        </span>
     </div>
 
     <div class="col-md-12" style="text-align: right;">

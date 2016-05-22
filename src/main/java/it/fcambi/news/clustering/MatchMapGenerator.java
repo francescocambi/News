@@ -1,5 +1,6 @@
 package it.fcambi.news.clustering;
 
+import it.fcambi.news.Pair;
 import it.fcambi.news.data.Text;
 import it.fcambi.news.data.WordVector;
 import it.fcambi.news.model.Article;
@@ -15,13 +16,13 @@ import java.util.stream.Stream;
 
 public class MatchMapGenerator {
 
-    private Map<Long, Text> keywordCache = new ConcurrentHashMap<>();
-    private Map<Long, Text> bodyCache = new ConcurrentHashMap<>();
+    protected Map<Long, Text> keywordCache = new ConcurrentHashMap<>();
+    protected Map<Long, Text> bodyCache = new ConcurrentHashMap<>();
 
-    private MatchMapGeneratorConfiguration config;
+    protected MatchMapGeneratorConfiguration config;
 
-    private AtomicInteger progress;
-    private int toMatchArticlesSize;
+    protected AtomicInteger progress;
+    protected int toMatchArticlesSize;
 
     public MatchMapGenerator(MatchMapGeneratorConfiguration config) {
         this.config = config;
@@ -44,11 +45,6 @@ public class MatchMapGenerator {
         progress.set(0);
         toMatchArticlesSize = articlesToMatch.size();
 
-//        System.out.println(
-//                "keywordCache SIZE = "+keywordCache.size()+"\n" +
-//                        "bodyCache SIZE = "+bodyCache.size()
-//        );
-
         /* Preprocess articles */
         Stream.concat(articlesToMatch.stream(), knownArticles.stream()).parallel()
                 .filter(article -> !(bodyCache.containsKey(article.getId()) && keywordCache.containsKey(article.getId())))
@@ -60,16 +56,6 @@ public class MatchMapGenerator {
             Text description = getTextAndApplyFilters(article.getDescription());
             keywordCache.put(article.getId(), config.getKeywordSelectionFn().apply(title, description, body));
         });
-
-        class ArticleMatchingArticleCouple {
-            public ArticleMatchingArticleCouple(Article article, List<MatchingArticle> match) {
-                this.article = article;
-                this.match = match;
-            }
-
-            Article article;
-            List<MatchingArticle> match;
-        }
 
         // Source Article -> Similarities with all articles
         Map<Article, List<MatchingArticle>> matchMap;
@@ -98,9 +84,9 @@ public class MatchMapGenerator {
             }).collect(Collectors.toList());
 
             progress.incrementAndGet();
-            return new ArticleMatchingArticleCouple(article, matchingArticles);
+            return new Pair<>(article, matchingArticles);
 
-        }).collect(Collectors.toConcurrentMap(a -> a.article, a -> a.match));
+        }).collect(Collectors.toConcurrentMap(Pair::getKey, Pair::getValue));
 
         return matchMap;
     }

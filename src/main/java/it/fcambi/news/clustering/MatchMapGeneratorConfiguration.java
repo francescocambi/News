@@ -6,16 +6,14 @@ import it.fcambi.news.data.WordVectorFactory;
 import it.fcambi.news.filters.TextFilter;
 import it.fcambi.news.metrics.CosineSimilarity;
 import it.fcambi.news.metrics.Metric;
-import it.fcambi.news.model.Article;
+import it.fcambi.news.model.Cluster;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 30/10/15.
@@ -26,7 +24,7 @@ public class MatchMapGeneratorConfiguration {
     private Collection<Metric> metrics = new HashSet<>();
     private Function<String, Text> stringToTextFn;
     private KeywordsSelectionFunction keywordSelectionFn;
-    private BiPredicate<Article, Article> ignorePairPredicate;
+    private BiPredicate<Cluster, Cluster> ignorePairPredicate;
     private WordVectorFactory wordVectorFactory;
 
     public static KeywordsSelectionFunction headlineAndCapitalsKeywords = (title, description, body) -> {
@@ -49,7 +47,7 @@ public class MatchMapGeneratorConfiguration {
 //            .replaceAll("[ù]", "u")
             .replaceAll("[^\\p{Alpha}\\p{Space}àéèìòù]", " "), "\\p{Space}+");
 
-    public static BiPredicate<Article, Article> ignoreReflectiveMatch = (a,b) -> a.equals(b);
+    public static BiPredicate<Cluster, Cluster> ignoreReflectiveMatch = (a,b) -> a.equals(b);
 
     public MatchMapGeneratorConfiguration setKeywordSelectionFunction(KeywordsSelectionFunction k) {
         this.keywordSelectionFn = k;
@@ -79,7 +77,7 @@ public class MatchMapGeneratorConfiguration {
         this.metrics.remove(m);
     }
 
-    public MatchMapGeneratorConfiguration setIgnorePairPredicate(BiPredicate<Article, Article> p) {
+    public MatchMapGeneratorConfiguration setIgnorePairPredicate(BiPredicate<Cluster, Cluster> p) {
         this.ignorePairPredicate = p;
         return this;
     }
@@ -111,7 +109,7 @@ public class MatchMapGeneratorConfiguration {
         return keywordSelectionFn;
     }
 
-    public BiPredicate<Article, Article> getIgnorePairPredicate() {
+    public BiPredicate<Cluster, Cluster> getIgnorePairPredicate() {
         if (ignorePairPredicate == null)
             ignorePairPredicate = MatchMapGeneratorConfiguration.ignoreReflectiveMatch;
         return ignorePairPredicate;

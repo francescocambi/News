@@ -20,12 +20,9 @@
     </div>
 
     <div style="margin: 10px 0px;">
-        <input type="checkbox" ng-model="npfilter.repubblica"> La Repubblica &nbsp;&nbsp;
-        <input type="checkbox" ng-model="npfilter.lastampa"> La Stampa &nbsp;&nbsp;
-        <input type="checkbox" ng-model="npfilter.corriere"> Corriere della Sera &nbsp;&nbsp;
-        <input type="checkbox" ng-model="npfilter.ansa"> ANSA &nbsp;&nbsp;
-        <input type="checkbox" ng-model="npfilter.adnkronos"> ADN Kronos &nbsp;&nbsp;
-        <input type="checkbox" ng-model="npfilter.giornale"> Il Giornale &nbsp;&nbsp;
+        <span ng-repeat="newspaper in newspapers">
+            <input type="checkbox" ng-model="npfilter[newspaper]"> {{newspaper | NewspaperName}}&nbsp;&nbsp;
+        </span>
     </div>
 </div>
 

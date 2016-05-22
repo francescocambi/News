@@ -6,6 +6,7 @@ import it.fcambi.news.data.TFIDFWordVectorFactory;
 import it.fcambi.news.filters.NoiseWordsTextFilter;
 import it.fcambi.news.filters.StemmerTextFilter;
 import it.fcambi.news.metrics.*;
+import it.fcambi.news.model.Language;
 import it.fcambi.news.model.TFDictionary;
 
 import javax.persistence.EntityManager;
@@ -26,15 +27,20 @@ public class MatchMapGeneratorConfigurationParser {
         return metric;
     }
 
-    public void parse(String metricName, boolean noiseWordsFilter, boolean stemming,
-                       boolean tfidf, String keywordExtraction) throws IllegalArgumentException {
+    public void parse(String metricName, boolean noiseWordsFilter, boolean stemming, boolean tfidf, String tfDictionary,
+                      String languageString, String keywordExtraction) throws IllegalArgumentException {
 
         config = new MatchMapGeneratorConfiguration();
-        if (noiseWordsFilter) config.addTextFilter(new NoiseWordsTextFilter());
-        if (stemming) config.addTextFilter(new StemmerTextFilter());
+
+        Language language = Language.valueOf(languageString);
+        if (noiseWordsFilter) config.addTextFilter(new NoiseWordsTextFilter(language));
+        if (stemming) config.addTextFilter(new StemmerTextFilter(language));
         if (tfidf) {
             EntityManager em = Application.createEntityManager();
-            TFDictionary dict = em.find(TFDictionary.class, "italian_stemmed");
+            TFDictionary dict = em.find(TFDictionary.class, tfDictionary);
+            if (dict == null) {
+                throw new IllegalArgumentException("TF dictionary does not exists.");
+            }
             config.setWordVectorFactory(new TFIDFWordVectorFactory(dict));
             em.close();
         }

@@ -1,7 +1,5 @@
 package it.fcambi.news.async;
 
-import it.fcambi.news.Logging;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

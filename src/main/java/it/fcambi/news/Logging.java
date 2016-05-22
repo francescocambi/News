@@ -2,7 +2,6 @@ package it.fcambi.news;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class Logging {
             try {
                 Files.createDirectories(Paths.get("logs/"));
             } catch (IOException e) {
-                System.err.println("[ERROR] Cannot create logs directory");
+                System.err.println("[ERROR] Cannot creating logs directory");
                 e.printStackTrace(System.err);
             }
         }

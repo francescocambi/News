@@ -1,9 +1,9 @@
 package it.fcambi.news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.fcambi.news.data.FrequenciesWordVector;
 
 import javax.persistence.*;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,6 +23,7 @@ public class TFDictionary {
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(length = 60)
     @CollectionTable(name = "tfdictionary_terms")
+    @JsonIgnore
     protected Map<String, Integer> terms = new ConcurrentHashMap<>();
 
     public String getDescription() {

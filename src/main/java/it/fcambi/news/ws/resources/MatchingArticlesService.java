@@ -18,8 +18,6 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Francesco on 30/09/15.
@@ -40,12 +38,14 @@ public class MatchingArticlesService {
 
         Article match = em.find(Article.class, matchId);
 
-        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
+        TFDictionary dictionary = em.find(TFDictionary.class, Application.getProperty(Application.MANUAL_CLUSTERING_TFDICTIONARY));
+
+        Language language = Language.valueOf(Application.getProperty(Application.MANUAL_CLUSTERING_LANGUAGE).toUpperCase());
 
         MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
                 .addMetric(new CosineSimilarity())
-                .addTextFilter(new NoiseWordsTextFilter())
-                .addTextFilter(new StemmerTextFilter())
+                .addTextFilter(new NoiseWordsTextFilter(language))
+                .addTextFilter(new StemmerTextFilter(language))
                 .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
 
         List<Article> sourceList = new ArrayList<>();

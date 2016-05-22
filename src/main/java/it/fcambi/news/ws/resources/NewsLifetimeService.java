@@ -1,7 +1,6 @@
 package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.relevance.NewsRelevance;
-import it.fcambi.news.ws.resources.dto.ChartPoint;
 import it.fcambi.news.ws.resources.dto.LifetimeInfoDTO;
 import it.fcambi.news.ws.resources.dto.NewsLifetimeDTO;
 
@@ -13,7 +12,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.LongSummaryStatistics;
 import java.util.stream.Collectors;
 
 /**

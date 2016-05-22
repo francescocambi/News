@@ -4,14 +4,18 @@
 angular.module("NewsApp")
     .controller("ArticlesListCtrl", function ($scope, $rootScope, $http, SERVER_URL, loadingSpinner, $location) {
 
-        $scope.npfilter = {
-            repubblica: true,
-            lastampa: true,
-            corriere: true,
-            ansa: true,
-            adnkronos: true,
-            giornale: true
-        };
+        //Initialize newspapers list and filter object
+        loadingSpinner.begin();
+        $http.get(SERVER_URL+"/newspapers")
+            .then(function (response) {
+                $scope.newspapers = response.data;
+
+                $scope.npfilter = {};
+                angular.forEach($scope.newspapers, function (object, index) {
+                    $scope.npfilter[object] = true;
+                });
+            })
+            .finally(function () {loadingSpinner.end();});
 
         $scope.onlyNotMatched = $rootScope.articleFilterOnlyNotMatched;
 

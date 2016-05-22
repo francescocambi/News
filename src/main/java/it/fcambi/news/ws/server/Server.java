@@ -17,7 +17,6 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLClassLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

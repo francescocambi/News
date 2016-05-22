@@ -15,6 +15,7 @@ public class User implements Principal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String email;
+    @Column(unique = true)
     private String username;
     private String password;
 

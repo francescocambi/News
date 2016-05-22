@@ -14,3 +14,7 @@ HOURLY_ARTICLE_DOWNLOAD=true
 
 #General
 CONSOLE_LOG=false
+
+#Manual Clustering
+clustering.manual.tfdictionary=italian_stemmed
+clustering.manual.language=it

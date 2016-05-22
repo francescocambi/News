@@ -1,33 +1,41 @@
 package it.fcambi.news.filters;
 
 import it.fcambi.news.Application;
+import it.fcambi.news.model.Language;
 import it.fcambi.news.model.NoiseWordsList;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
  * Created by Francesco on 26/10/15.
  */
-public class NoiseWordsTextFilter implements TextFilter  {
+public class NoiseWordsTextFilter extends LanguageDependentTextFilter  {
 
-    private static final String DICTIONARY_NAME = "noise_words_FULL";
-    private static List<String> stopWords;
+    private static Map<Language, List<String>> stopWordsLists = new ConcurrentHashMap<>();
 
     static {
         EntityManager em = Application.createEntityManager();
-        NoiseWordsList list = em.createQuery("select l from NoiseWordsList l where l.description = :name", NoiseWordsList.class)
-                .setParameter("name", DICTIONARY_NAME).getSingleResult();
+        stopWordsLists = em.createQuery("select l from NoiseWordsList l", NoiseWordsList.class).getResultList()
+                .stream().collect(Collectors.toMap(NoiseWordsList::getLanguage, NoiseWordsList::getWords));
         em.close();
-        if (list != null)
-            stopWords = list.getWords();
-        else
-            throw new IllegalArgumentException("Noise words dictionary "+DICTIONARY_NAME+" does not exists.");
+        if (stopWordsLists.size() == 0)
+            throw new IllegalArgumentException("No noise words lists found. Please provide at least one list.");
+    }
+
+    public NoiseWordsTextFilter(Language language) {
+        super(language);
+
+        if (!stopWordsLists.containsKey(language)) {
+            throw new LanguageNotSupportedException("Language "+language.toString().toUpperCase()+" is not supported by NoiseWordsTextFilter");
+        }
     }
 
     public List<String> filter(List<String> words) {
-        return words.parallelStream().filter(s -> !stopWords.contains(s.toLowerCase()))
+        return words.parallelStream().filter(s -> !stopWordsLists.get(this.language).contains(s.toLowerCase()))
                 .collect(Collectors.toList());
     }
 }

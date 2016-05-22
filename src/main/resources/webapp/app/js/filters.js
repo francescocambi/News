@@ -24,12 +24,7 @@ angular.module("NewsApp")
         return function (collection, npfilter, propertyName) {
             var filteredCollection = [];
             angular.forEach(collection, function (item) {
-                if (npfilter.repubblica && item[propertyName] == "LA_REPUBBLICA") filteredCollection.push(item);
-                else if (npfilter.lastampa && item[propertyName] == "LA_STAMPA") filteredCollection.push(item);
-                else if (npfilter.corriere && item[propertyName] == "CORRIERE_DELLA_SERA") filteredCollection.push(item);
-                else if (npfilter.ansa && item[propertyName] == "ANSA") filteredCollection.push(item);
-                else if (npfilter.adnkronos && item[propertyName] == "ADNKRONOS") filteredCollection.push(item);
-                else if (npfilter.giornale && item[propertyName] == "IL_GIORNALE") filteredCollection.push(item);
+                if (npfilter[item[propertyName]]) filteredCollection.push(item);
             });
             return filteredCollection;
         }

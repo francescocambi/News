@@ -1,11 +1,6 @@
 package it.fcambi.news.ws.resources.dto;
 
-import it.fcambi.news.model.News;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Francesco on 28/12/15.

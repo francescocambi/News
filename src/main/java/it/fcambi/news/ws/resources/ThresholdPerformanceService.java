@@ -2,21 +2,16 @@ package it.fcambi.news.ws.resources;
 
 import it.fcambi.news.Application;
 import it.fcambi.news.clustering.MatchMapGeneratorConfiguration;
-import it.fcambi.news.data.Text;
-import it.fcambi.news.model.TFDictionary;
 import it.fcambi.news.tasks.ComputeThresholdPerformanceTask;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Singleton;
-import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Francesco on 09/11/15.
@@ -34,13 +29,15 @@ public class ThresholdPerformanceService extends TaskService<ComputeThresholdPer
                               @QueryParam("limit") int limit,
                               @QueryParam("metricName") String metricName,
                               @QueryParam("noiseWordsFilter") boolean noiseWordsFilter,
+                              @QueryParam("language") String languageString,
                               @QueryParam("stemming") boolean stemming,
                               @QueryParam("tfidf") boolean tfidf,
+                              @QueryParam("tfidfDictionary") String tfDictionaryName,
                               @QueryParam("keywordExtraction") String keywordExtraction) {
 
         MatchMapGeneratorConfigurationParser parser = new MatchMapGeneratorConfigurationParser();
         try {
-            parser.parse(metricName, noiseWordsFilter, stemming, tfidf, keywordExtraction);
+            parser.parse(metricName, noiseWordsFilter, stemming, tfidf, tfDictionaryName, languageString, keywordExtraction);
         } catch (IllegalArgumentException e) {
             return Response.status(400).entity(e.getMessage()).build();
         }

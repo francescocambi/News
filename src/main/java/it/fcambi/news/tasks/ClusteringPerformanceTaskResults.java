@@ -2,9 +2,6 @@ package it.fcambi.news.tasks;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by Francesco on 20/12/15.
  */

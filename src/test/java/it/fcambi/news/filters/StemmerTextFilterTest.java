@@ -1,5 +1,6 @@
 package it.fcambi.news.filters;
 
+import it.fcambi.news.model.Language;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -18,7 +19,7 @@ public class StemmerTextFilterTest {
         String[] stemmedWords = { "abbandon", "abbandon", "pront", "pronunc", "propag", "propaghin", "propension", "proponent"};
 
         List<String> text = Arrays.asList(words);
-        new StemmerTextFilter().filter(text);
+        new StemmerTextFilter(Language.IT).filter(text);
 
         assertArrayEquals(stemmedWords, text.toArray(new String[text.size()]));
 

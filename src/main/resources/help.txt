@@ -1,0 +1,13 @@
+NewsApp Usage
+
+Possible actions:
+
+    > [News].jar multilevel-clustering <clustering-name> <meta-news-threshold> <news-threshold> <tf-dictionary-name> <language>
+
+    > [News].jar multilevel-performance <meta-news-threshold-seed> <meta-news-threshold-limit> <news-threshold-seed> <news-threshold-limit> <tf-dictionary-name> <language>
+
+    > [News].jar generate-tf-dictionary <tf-dictionary-name> <language>
+
+    > [News].jar help
+
+Call [News].jar without arguments to start web application server

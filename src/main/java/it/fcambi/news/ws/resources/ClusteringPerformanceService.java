@@ -35,15 +35,17 @@ public class ClusteringPerformanceService extends TaskService<ClusteringPerforma
                               @QueryParam("testSet") float testSetFraction,
                               @QueryParam("metricName") String metricName,
                               @QueryParam("noiseWordsFilter") boolean noiseWordsFilter,
+                              @QueryParam("language") String languageString,
                               @QueryParam("stemming") boolean stemming,
                               @QueryParam("tfidf") boolean tfidf,
+                              @QueryParam("tfidfDictionary") String tfDictionary,
                               @QueryParam("keywordExtraction") String keywordExtraction,
                               @QueryParam("matcherName") String matcherName,
                               @QueryParam("newspapers") String newspapersString) {
 
         MatchMapGeneratorConfigurationParser parser = new MatchMapGeneratorConfigurationParser();
         try {
-            parser.parse(metricName, noiseWordsFilter, stemming, tfidf, keywordExtraction);
+            parser.parse(metricName, noiseWordsFilter, stemming, tfidf, tfDictionary, languageString, keywordExtraction);
         } catch (IllegalArgumentException e) {
             return Response.status(400).entity(e.getMessage()).build();
         }

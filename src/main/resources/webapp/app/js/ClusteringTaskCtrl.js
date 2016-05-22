@@ -10,14 +10,48 @@ angular.module("NewsApp")
             noiseWordsFilter: true,
             stemming: true,
             tfidf: true,
+            tfidfDictionary: null,
+            language: null,
             keywordExtraction: "capitals",
             threshold: 0.47,
             matcherName: "highest_mean_over_threshold",
             clusteringName: undefined,
             articlesFrom: undefined,
             articlesTo: undefined,
-            newspapers: ["LA_REPUBBLICA", "LA_STAMPA", "CORRIERE_DELLA_SERA", "ANSA", "ADNKRONOS", "IL_GIORNALE"]
+            newspapers: []
         };
+
+        //Retrieve tfidf dictionaries
+        loadingSpinner.begin();
+        $http.get(SERVER_URL+"/dictionaries")
+            .then(function (response) {
+                $scope.dictionaries = response.data;
+
+                if ($scope.dictionaries.length > 0)
+                    $scope.taskConfig.tfidfDictionary = $scope.dictionaries[0].description;
+            })
+            .finally(function () { loadingSpinner.end(); });
+
+        //Retrieve languages
+        loadingSpinner.begin();
+        $http.get(SERVER_URL+"/languages")
+            .then(function (response) {
+                $scope.languages = response.data;
+
+                if ($scope.languages.length > 0)
+                    $scope.taskConfig.language = $scope.languages[0];
+            })
+            .finally(function () { loadingSpinner.end(); });
+
+        //Initialize newspapers list and filter object
+        loadingSpinner.begin();
+        $http.get(SERVER_URL+"/newspapers")
+            .then(function (response) {
+                $scope.newspapers = response.data;
+
+                $scope.taskConfig.newspapers = $scope.newspapers.slice();
+            })
+            .finally(function () {loadingSpinner.end();});
 
         $scope.toggleNewspaper = function (newspaper) {
             var index = $scope.taskConfig.newspapers.indexOf(newspaper);
@@ -46,6 +80,16 @@ angular.module("NewsApp")
         updateTaskList();
 
         $scope.createAndStartTask = function (taskConfig) {
+            //Check parameters
+            if (!taskConfig.tfidfDictionary || taskConfig.tfidfDictionary == null || taskConfig.tfidfDictionary.length == 0) {
+                alert("Please choose a TF-IDF Dictionary to use for clustering, or remove \"Use TF-IDF\" flag.");
+                return;
+            }
+            if (!taskConfig.language || taskConfig.language == null || taskConfig.language.length == 0) {
+                alert("Please select a language to use for stemming and noise words filtering.");
+                return;
+            }
+
             var url = SERVER_URL+"/clustering/start?";
             angular.forEach(taskConfig, function (value, key) {
                 if (value != undefined && value != null && value != "" )

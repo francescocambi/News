@@ -14,7 +14,6 @@ import it.fcambi.news.metrics.Metric;
 import it.fcambi.news.model.*;
 
 import javax.annotation.security.RolesAllowed;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by Francesco on 18/10/15.
@@ -88,7 +86,9 @@ public class NewsService {
         List<Article> articles = em.createQuery("select a from Article a where key(a.news) = 'manual'", Article.class).getResultList();
 
         Clustering clustering = em.find(Clustering.class, "manual");
-        TFDictionary dictionary = em.find(TFDictionary.class, "italian_stemmed");
+        TFDictionary dictionary = em.find(TFDictionary.class, Application.getProperty(Application.MANUAL_CLUSTERING_TFDICTIONARY));
+
+        Language language = Language.valueOf(Application.getProperty(Application.MANUAL_CLUSTERING_LANGUAGE).toUpperCase());
 
         em.close();
 
@@ -96,8 +96,8 @@ public class NewsService {
 
         MatchMapGeneratorConfiguration conf = new MatchMapGeneratorConfiguration()
                 .addMetric(cosine)
-                .addTextFilter(new NoiseWordsTextFilter())
-                .addTextFilter(new StemmerTextFilter())
+                .addTextFilter(new NoiseWordsTextFilter(language))
+                .addTextFilter(new StemmerTextFilter(language))
                 .setWordVectorFactory(new TFIDFWordVectorFactory(dictionary));
 //                .setKeywordSelectionFunction((title, description, body) -> new Text(title, description, body));
 //                .setKeywordSelectionFunction((title, description, body) -> {

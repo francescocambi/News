@@ -40,8 +40,10 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
     @Produces(MediaType.APPLICATION_JSON)
     public Response createNew(@QueryParam("metricName") String metricName,
                               @QueryParam("noiseWordsFilter") boolean noiseWordsFilter,
+                              @QueryParam("language") String languageString,
                               @QueryParam("stemming") boolean stemming,
                               @QueryParam("tfidf") boolean tfidf,
+                              @QueryParam("tfidfDictionary") String tfDictionary,
                               @QueryParam("keywordExtraction") String keywordExtraction,
                               @QueryParam("clusteringName") String clusteringName,
                               @QueryParam("matcherName") String matcherName,
@@ -54,7 +56,7 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
 
         MatchMapGeneratorConfigurationParser parser = new MatchMapGeneratorConfigurationParser();
         try {
-            parser.parse(metricName, noiseWordsFilter, stemming, tfidf, keywordExtraction);
+            parser.parse(metricName, noiseWordsFilter, stemming, tfidf, tfDictionary, languageString, keywordExtraction);
         } catch (IllegalArgumentException e) {
             Response.status(400).entity(e.getMessage()).build();
         }
@@ -74,7 +76,7 @@ public class ClusteringTaskService extends TaskService<IncrementalClusteringTask
                 clustering = new Clustering();
                 clustering.setName(clusteringName);
                 clustering.setDescription("Metric "+metricName+"@"+threshold+"; Stemming "+stemming+"; TFIDF "+tfidf+
-                        "; Keyword Extraction "+keywordExtraction+"; Matcher "+matcherName);
+                        " ("+tfDictionary+"); Keyword Extraction "+keywordExtraction+"; Matcher "+matcherName);
             }
         } else
             return Response.status(400).entity("Invalid clustering name.").build();

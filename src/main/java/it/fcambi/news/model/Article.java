@@ -5,7 +5,6 @@ package it.fcambi.news.model;
  */
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Entity
 @Table(name = "article")
-public class Article {
+public class Article implements Cluster {
 
     /**
      * Unique key for article
@@ -65,6 +64,13 @@ public class Article {
     @MapKeyColumn(length = 100)
     @JsonManagedReference
     private Map<String, News> news = new ConcurrentHashMap<>();
+
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+//    @Fetch(FetchMode.JOIN)
+//    @MapKeyColumn(length = 100)
+//    @JsonManagedReference
+    @Transient
+    private Map<String, Centroid> centroids = new ConcurrentHashMap<>();
 
 //    @OneToOne(mappedBy = "article", cascade = CascadeType.ALL)
 //    @JsonIgnore
@@ -135,8 +141,21 @@ public class Article {
         return news.get(c.getName());
     }
 
-    public synchronized void setNews(Clustering c, News news) {
+    public void setNews(Clustering c, News news) {
         this.news.put(c.getName(), news);
+    }
+
+    public void enableParallelism() {
+        if (!(this.news instanceof ConcurrentHashMap)) {
+            ConcurrentHashMap<String, News> map = new ConcurrentHashMap<>();
+            map.putAll(this.news);
+            this.news = map;
+        }
+        if (!(this.centroids instanceof ConcurrentHashMap)) {
+            ConcurrentHashMap<String, Centroid> map = new ConcurrentHashMap<>();
+            map.putAll(this.centroids);
+            this.centroids = map;
+        }
     }
 
     public void removeNews(Clustering c) {
@@ -145,6 +164,10 @@ public class Article {
 
     public Map<String, News> getNewsMap() {
         return news;
+    }
+
+    public Map<String, Centroid> getCentroidsMap() {
+        return this.centroids;
     }
 
     public List<FrontPage> getFrontPages() {
@@ -162,5 +185,29 @@ public class Article {
 
     public boolean equals(Article obj) {
         return obj.getId() == this.getId();
+    }
+
+    public void setCentroid(Clustering clustering, Centroid c) {
+        this.centroids.put(clustering.getName(), c);
+    }
+
+    @Override
+    public Centroid getCentroid(Clustering clustering) {
+        return this.centroids.getOrDefault(clustering.getName(), null);
+    }
+
+    @Override
+    public boolean hasChild() {
+        return false;
+    }
+
+    @Override
+    public List<Cluster> getChildren() {
+        return null;
+    }
+
+    @Override
+    public Cluster getParent(Clustering clustering) {
+        return this.news.get(clustering.getName());
     }
 }
