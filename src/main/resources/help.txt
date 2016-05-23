@@ -8,6 +8,9 @@ Possible actions:
 
     > [News].jar generate-tf-dictionary <tf-dictionary-name> <language>
 
+    > [News].jar add-user <username> <password> <role>
+       (Role can be one of "admin" or "guest")
+
     > [News].jar help
 
 Call [News].jar without arguments to start web application server
