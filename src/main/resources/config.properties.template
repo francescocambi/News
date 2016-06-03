@@ -7,7 +7,7 @@ DEVELOPMENT_MODE=false
 DEV_GUI_APP_PATH=src/main/resources/webapp/
 
 # Persistence Unit Properties
-PERSISTENCE_UNIT=it.fcambi.news.jpa.some...
+PERSISTENCE_UNIT=it.fcambi.news.jpa.local
 
 # Scheduled Tasks
 HOURLY_ARTICLE_DOWNLOAD=true
