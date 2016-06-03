@@ -8,6 +8,8 @@ Possible actions:
 
     > [News].jar generate-tf-dictionary <tf-dictionary-name> <language>
 
+    > [News].jar load-words-list <file-path> <language>
+
     > [News].jar add-user <username> <password> <role>
        (Role can be one of "admin" or "guest")
 
